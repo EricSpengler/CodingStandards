@@ -626,15 +626,17 @@ process(concrete);   // only the IReadable part of concrete is copied in
 
 **RULE**  A hand-written copy assignment operator must produce a correct result when the source and target are the same object (a = a;).
 
-**RATIONALE**  a = a; must remain a valid, safe operation. A naive assignment operator that releases its own resources before copying from the source will corrupt itself in the self-assignment case, since source and target are the same object — it ends up reading from memory it just freed. This ties directly to the Rule of Five (6.4.2): any hand-written assignment operator needs this guard.
+**RATIONALE**  a = a; must remain a valid, safe operation. A naive assignment operator that releases its own resources before copying from the source will corrupt itself in the self-assignment case, since source and target are the same object — it ends up reading from a resource it just released. This applies to every kind of resource, not just heap memory — a wrapped C API handle (6.4.4) has exactly the same failure, and since 6.4.1 rules out raw owning memory in first-party code, a handle is the form this actually takes here. This ties directly to the Rule of Five (6.4.2): any hand-written assignment operator needs this guard.
 
 **GOOD**
 
 ```cpp
-MyType& operator=(const MyType& other)
+Hdf5File& operator=(const Hdf5File& other)
 {
     if (this == &other) return *this;   // self-assignment guard
-    // ... release old resources, copy from other ...
+
+    H5Fclose(fileHandle);
+    fileHandle = H5Freopen(other.fileHandle);
     return *this;
 }
 ```
@@ -642,11 +644,11 @@ MyType& operator=(const MyType& other)
 **BAD**
 
 ```cpp
-MyType& operator=(const MyType& other)
+Hdf5File& operator=(const Hdf5File& other)
 {
-    delete data;             // BAD -- if other is *this, this frees the data
-    data = new int(*other.data);  // being read from on this line -- use-after-free
-    return *this;
+    H5Fclose(fileHandle);                       // BAD -- if other is *this, this closes
+    fileHandle = H5Freopen(other.fileHandle);   // the very handle being reopened on the
+    return *this;                               // next line -- use-after-close
 }
 ```
 
