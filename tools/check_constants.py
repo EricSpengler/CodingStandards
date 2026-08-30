@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Consistency check for the constants registry (standards/00-constants.md).
+"""Consistency check for the constants registry (standards/constants.md).
 
 Three failure modes it catches, all of which are silent otherwise:
 
@@ -19,19 +19,19 @@ import glob
 import re
 import sys
 
-STANDARDS = "standards/*.md"
-REGISTRY = "standards/00-constants.md"
+STANDARDS = "standards/**/*.md"
+REGISTRY = "standards/constants.md"
 PROFILE = "project/PROJECT_PROFILE.md"
 
 # Section numbers deliberately retired rather than reassigned.
-RETIRED = {"2.5", "2.5.1"}
+RETIRED = {"P2.5", "P2.5.1"}
 
 
 def rule_ids():
     ids = set()
-    for path in glob.glob(STANDARDS):
+    for path in glob.glob(STANDARDS, recursive=True):
         for line in open(path, encoding="utf-8"):
-            match = re.match(r"^#{1,6} (\d+(?:\.\d+)*)", line)
+            match = re.match(r"^#{1,6} ([PC]\d+(?:\.\d+)*)", line)
             if match:
                 ids.add(match.group(1))
     return ids
@@ -56,8 +56,8 @@ def registry_rows():
 
 def rule_corpus():
     parts = []
-    for path in glob.glob(STANDARDS):
-        if path.endswith("00-constants.md"):
+    for path in glob.glob(STANDARDS, recursive=True):
+        if path.endswith("constants.md"):
             continue
         parts.append(open(path, encoding="utf-8").read())
     return "\n".join(parts)
@@ -72,7 +72,7 @@ def main():
 
     for row in rows:
         # 1: every referenced rule must exist
-        for ref in re.findall(r"\b\d+\.\d+(?:\.\d+)?\b", row["used_in"]):
+        for ref in re.findall(r"\b[PC]\d+\.\d+(?:\.\d+)?\b", row["used_in"]):
             if ref not in ids and ref not in RETIRED:
                 failures.append(f"{row['id']} ({row['name']}): 'Used in' names rule {ref}, which does not exist")
 

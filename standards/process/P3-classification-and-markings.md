@@ -1,10 +1,10 @@
-# 4. Classification & Export Control Markings
+# P3. Classification & Export Control Markings
 
 Every tracked .h/.cpp file carries a classification header as the very first lines of the file, no exceptions.
 
 ## File markings and data scope
 
-### 4.1 Standard header, present on every file
+### P3.1 Standard header, present on every file
 
 **RULE**  The header includes: the classification marking (UNCLASSIFIED by default), an @file tag naming the file, an @brief tag summarizing its purpose in one or two sentences, and an @export_control statement. "Not subject to export control regulations" is the safe default for the vast majority of files. If a file is ever suspected to warrant a different classification or export-control status, that determination goes to the export-control point of contact — never guessed.
 
@@ -29,9 +29,9 @@ Every tracked .h/.cpp file carries a classification header as the very first lin
 #define CORE_IO_RECORDREADER_H
 ```
 
-**ENFORCEMENT**  Advisory — code review today. A pre-commit hook or CI script checking the first 10 lines of every tracked .h/.cpp file for the marking is a strong automation candidate once available (see Section 7, known gap).
+**ENFORCEMENT**  Advisory — code review today. A pre-commit hook or CI script checking the first 10 lines of every tracked .h/.cpp file for the marking is a strong automation candidate once available (see the Enforcement Summary, known gap).
 
-### 4.2 Data sensitivity scope
+### P3.2 Data sensitivity scope
 
 **RULE**  Every project records a data-sensitivity determination in its project profile, stating which categories of regulated data it does and does not handle — PHI, PII, CUI, export-controlled technical data. The determination is made explicitly and confirmed with whoever owns compliance for the program; it is never inferred from the project's name or assumed from what the code appears to touch.
 

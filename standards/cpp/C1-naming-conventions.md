@@ -1,10 +1,10 @@
-# 3. Naming Conventions
+# C1. Naming Conventions
 
 Every naming decision below was worked through as its own question rather than inherited wholesale from an existing style guide — several (member variable prefixing, boolean naming, local constant casing) had genuine tradeoffs worth deciding deliberately, not defaulting on.
 
 ## Files, paths, and include guards
 
-### 3.1 Version-like tokens fuse with the following word
+### C1.1 Version-like tokens fuse with the following word
 
 **RULE**  A version-like or numeric-suffixed token (utf8, base64, sha256, etc.) is treated as a single fused word rather than getting its own underscore-separated segment, in any snake_case or SCREAMING_SNAKE_CASE context — directory names, file names, include guards, namespaces.
 
@@ -26,7 +26,7 @@ CORE_TEXT_UTF8_DECODER_H
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 3.2 Directory and file names
+### C1.2 Directory and file names
 
 **RULE**  Lowercase, snake_case, applying the fusion rule above. File names match the primary class they define.
 
@@ -47,7 +47,7 @@ RecordReader.h  // wrong casing, and doesn't match the class-name-only rule if t
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 3.3 Include guards
+### C1.3 Include guards
 
 **RULE**  SCREAMING_SNAKE_CASE, mirroring the full path exactly (including the fusion rule above), for guaranteed uniqueness across the tree.
 
@@ -77,13 +77,13 @@ RecordReader.h  // wrong casing, and doesn't match the class-name-only rule if t
 #endif
 ```
 
-*The classification/Doxygen header shown here (UNCLASSIFIED, @file, @brief, @export_control) is the standard file header required on every tracked .h/.cpp file — see 4.1 for the full rule.*
+*The classification/Doxygen header shown here (UNCLASSIFIED, @file, @brief, @export_control) is the standard file header required on every tracked .h/.cpp file — see P3.1 for the full rule.*
 
 **ENFORCEMENT**  clang-tidy llvm-header-guard, configured to require path-based naming (Manual MR checklist — no CI today).
 
 ## Namespaces, types, and functions
 
-### 3.4 Namespaces
+### C1.4 Namespaces
 
 **RULE**  Lowercase, snake_case, nested to mirror directory structure.
 
@@ -107,7 +107,7 @@ namespace Core::IO  // wrong casing
 
 **ENFORCEMENT**  clang-tidy readability-identifier-naming (NamespaceCase: lower_case) — Manual MR checklist.
 
-### 3.5 Classes and structs
+### C1.5 Classes and structs
 
 **RULE**  CamelCase (PascalCase), a noun or noun phrase.
 
@@ -127,7 +127,7 @@ struct record_batch { /* ... */ };  // wrong casing
 
 **ENFORCEMENT**  clang-tidy readability-identifier-naming (ClassCase/StructCase: CamelCase) — Manual MR checklist.
 
-### 3.6 Enum class and enum members
+### C1.6 Enum class and enum members
 
 **RULE**  enum class always (never a plain enum). Both the enum class name and its members are CamelCase.
 
@@ -157,7 +157,7 @@ enum LogLevel  // BAD -- plain enum, not scoped
 
 **ENFORCEMENT**  clang-tidy readability-identifier-naming (EnumCase/EnumConstantCase: CamelCase) — Manual MR checklist.
 
-### 3.7 Free functions and public member functions
+### C1.7 Free functions and public member functions
 
 **RULE**  camelBack, a verb or verb phrase. No get prefix for a simple accessor (bare noun instead); set prefix is kept for setters, since it distinguishes a mutation from a query at the call site.
 
@@ -192,7 +192,7 @@ public:
 
 ## Variables and members
 
-### 3.8 Local variables and function parameters
+### C1.8 Local variables and function parameters
 
 **RULE**  camelBack, descriptive, no type-encoding (no Hungarian notation), no cryptic abbreviation. Function parameters follow the exact same convention as local variables — no distinct marking to tell them apart.
 
@@ -213,11 +213,11 @@ std::string strErr;  // type-encoded, cryptic
 
 **ENFORCEMENT**  clang-tidy readability-identifier-naming (VariableCase/ParameterCase: camelBack) — Manual MR checklist.
 
-### 3.9 Member variables (private/protected)
+### C1.9 Member variables (private/protected)
 
 **RULE**  camelBack, no m_ prefix, no trailing underscore — same casing as a local variable. Readability comes from scope (you're inside the class), not name decoration.
 
-**RATIONALE**  Considered and rejected the m_ / trailing-underscore alternatives deliberately: they add a small amount of visual noise to every single member access in exchange for a distinction most readers can get from context (which function/class they're already reading). This choice has two direct consequences elsewhere: for boolean naming, see 3.10, and for parameters that would otherwise take the same name as the member they initialize, see 3.20.
+**RATIONALE**  Considered and rejected the m_ / trailing-underscore alternatives deliberately: they add a small amount of visual noise to every single member access in exchange for a distinction most readers can get from context (which function/class they're already reading). This choice has two direct consequences elsewhere: for boolean naming, see C1.10, and for parameters that would otherwise take the same name as the member they initialize, see 3.20.
 
 **GOOD**
 
@@ -241,11 +241,11 @@ private:
 
 **ENFORCEMENT**  clang-tidy readability-identifier-naming (MemberCase: camelBack) — Manual MR checklist.
 
-### 3.10 Boolean naming, and the member/accessor collision
+### C1.10 Boolean naming, and the member/accessor collision
 
 **RULE**  Free functions, member functions, and local variables that are or return a boolean use an is/has/should/can prefix so they read like a question at the call site. A private member variable backing a boolean accessor does NOT carry the prefix itself — only the public accessor does.
 
-**RATIONALE**  Under the no-prefix member convention (3.9), a member variable and a member function can't share a name in the same class — bool isOpen; and bool isOpen() const; is a compile error, not a style choice. Putting the prefix only on the accessor still delivers the actual readability payoff, since if (connection.isOpen()) at the call site is the only place this is ever read by someone outside the class.
+**RATIONALE**  Under the no-prefix member convention (C1.9), a member variable and a member function can't share a name in the same class — bool isOpen; and bool isOpen() const; is a compile error, not a style choice. Putting the prefix only on the accessor still delivers the actual readability payoff, since if (connection.isOpen()) at the call site is the only place this is ever read by someone outside the class.
 
 **GOOD**
 
@@ -277,7 +277,7 @@ public:
 
 ## Constants
 
-### 3.11 Constants — class-level and namespace-level
+### C1.11 Constants — class-level and namespace-level
 
 **RULE**  UPPER_SNAKE_CASE.
 
@@ -306,7 +306,7 @@ namespace core::io
 
 **ENFORCEMENT**  clang-tidy readability-identifier-naming (ConstantCase: UPPER_CASE, scoped to class/namespace level) — Manual MR checklist.
 
-### 3.12 Constants — local (inside a function)
+### C1.12 Constants — local (inside a function)
 
 **RULE**  camelBack, same as a normal local variable — not UPPER_SNAKE_CASE.
 
@@ -334,7 +334,7 @@ void processRecords()
 
 ## Templates and macros
 
-### 3.13 Template parameters
+### C1.13 Template parameters
 
 **RULE**  CamelCase, a single descriptive word where possible.
 
@@ -360,7 +360,7 @@ class Buffer
 
 **ENFORCEMENT**  clang-tidy readability-identifier-naming (TemplateParameterCase: CamelCase) — Manual MR checklist.
 
-### 3.14 Macros
+### C1.14 Macros
 
 **RULE**  UPPER_SNAKE_CASE, restricted to include guards only (language feature policy for macros generally is not yet covered).
 
@@ -381,11 +381,11 @@ class Buffer
 
 ## Statics, aliases, and file extensions
 
-### 3.15 Static member variables
+### C1.15 Static member variables
 
-**RULE**  Same casing as a normal member variable (3.9) — camelBack, no distinct prefix (no s_) even though it's shared across all instances rather than per-instance.
+**RULE**  Same casing as a normal member variable (C1.9) — camelBack, no distinct prefix (no s_) even though it's shared across all instances rather than per-instance.
 
-**RATIONALE**  Consistent with the broader decision in 3.9 not to encode structural facts about a variable (member-ness, static-ness) into its name — the static keyword at the declaration site already says this.
+**RATIONALE**  Consistent with the broader decision in C1.9 not to encode structural facts about a variable (member-ness, static-ness) into its name — the static keyword at the declaration site already says this.
 
 **GOOD**
 
@@ -403,13 +403,13 @@ private:
 class ConnectionPool
 {
 private:
-    static int s_activeConnections;  // BAD -- s_ prefix, inconsistent with 3.9
+    static int s_activeConnections;  // BAD -- s_ prefix, inconsistent with C1.9
 };
 ```
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 3.16 Type aliases / using declarations
+### C1.16 Type aliases / using declarations
 
 **RULE**  CamelCase, same as a class — consistent with the rule that CamelCase names anything that stands in for a type, since a using alias behaves exactly like a type everywhere it's used.
 
@@ -428,7 +428,7 @@ using record_id_t = uint64_t;  // inconsistent with class/type casing elsewhere
 
 **ENFORCEMENT**  clang-tidy readability-identifier-naming (TypeAliasCase: CamelCase) — Manual MR checklist.
 
-### 3.17 File extensions
+### C1.17 File extensions
 
 **RULE**  .h / .cpp for everything, no exceptions — no .hpp for template-heavy or header-only code, no .cc in place of .cpp.
 
@@ -452,9 +452,9 @@ recordreader.cc  // BAD -- inconsistent with the rest of the codebase
 
 ## Interfaces, internal namespaces, and name collisions
 
-### 3.18 Pure interfaces: I-prefix
+### C1.18 Pure interfaces: I-prefix
 
-**RULE**  A pure interface (all-abstract base class, per 6.1.4) is named with a leading I followed by CamelCase, e.g. IReadable, IWritable. This is the one deliberate exception to this document's general avoidance of decorative naming prefixes (compare 3.9's rejection of m_ on members) — it exists specifically to make “this type is a pure interface, not a concrete class” visible at every use site, not just at the class definition.
+**RULE**  A pure interface (all-abstract base class, per C3.1.4) is named with a leading I followed by CamelCase, e.g. IReadable, IWritable. This is the one deliberate exception to this document's general avoidance of decorative naming prefixes (compare C1.9's rejection of m_ on members) — it exists specifically to make “this type is a pure interface, not a concrete class” visible at every use site, not just at the class definition.
 
 **RATIONALE**  Unlike a member variable (where the reader is already inside the class and has full context), a pure interface is referenced constantly from far-away call sites — function signatures, template parameters, inheritance lists — where the reader has no other cue that IReadable is an interface rather than a concrete type. The prefix earns its keep here in a way it didn't for member variables.
 
@@ -477,11 +477,11 @@ class Readable { /* pure interface */ };  // BAD -- no I-prefix, looks like a co
 
 **ENFORCEMENT**  clang-tidy readability-identifier-naming (ClassCase with a class-specific prefix rule for abstract classes) — Manual MR checklist.
 
-### 3.19 Internal-only namespaces: detail
+### C1.19 Internal-only namespaces: detail
 
 **RULE**  Implementation-only symbols that must be shared across multiple .h/.cpp files within a module, but are not part of that module's public interface, live in a nested detail namespace (e.g. core::io::detail) rather than the module's own namespace.
 
-**RATIONALE**  detail is the established C++ convention for this (used throughout the standard library's own implementations and Boost), so it's immediately recognizable rather than a project-specific invention. It gives implementation helpers a real home when a single .cpp's anonymous namespace (6.1) isn't enough — i.e. when the helper needs to be shared across more than one file within the module.
+**RATIONALE**  detail is the established C++ convention for this (used throughout the standard library's own implementations and Boost), so it's immediately recognizable rather than a project-specific invention. It gives implementation helpers a real home when a single .cpp's anonymous namespace (C3.1) isn't enough — i.e. when the helper needs to be shared across more than one file within the module.
 
 **GOOD**
 
@@ -501,11 +501,11 @@ class RecordReader { /* public interface, uses detail:: helpers internally */ };
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 3.20 Parameter names versus member names
+### C1.20 Parameter names versus member names
 
-**RULE**  A function parameter is not required to carry the same name as the member it initializes or assigns, and where the two would otherwise be identical, the parameter is the side that changes — never the member. A renamed parameter must still denote the same value: name it for what it is inside the function, and let the function's own name supply the context the member name has to state explicitly. A parameter is never renamed to a name that denotes a different member, and never shortened to a placeholder that says nothing — 3.8 applies to it in full.
+**RULE**  A function parameter is not required to carry the same name as the member it initializes or assigns, and where the two would otherwise be identical, the parameter is the side that changes — never the member. A renamed parameter must still denote the same value: name it for what it is inside the function, and let the function's own name supply the context the member name has to state explicitly. A parameter is never renamed to a name that denotes a different member, and never shortened to a placeholder that says nothing — C1.8 applies to it in full.
 
-**RATIONALE**  There are two reasons, one mechanical and one about readability. Mechanically, 3.8 and 3.9 give parameters and members identical naming rules, so a constructor that stores the value it was handed produces a parameter that shadows the member it initializes. MSVC reports that as C4458 at /W4, which under this project's warnings-as-errors build is not a warning but a build failure — the naming rules as written describe code that does not compile. Note that `this->` does not fix this: the diagnostic fires at the parameter's declaration, not at the point of use, so qualifying the member inside the function body leaves the error exactly where it was.
+**RATIONALE**  There are two reasons, one mechanical and one about readability. Mechanically, C1.8 and C1.9 give parameters and members identical naming rules, so a constructor that stores the value it was handed produces a parameter that shadows the member it initializes. MSVC reports that as C4458 at /W4, which under this project's warnings-as-errors build is not a warning but a build failure — the naming rules as written describe code that does not compile. Note that `this->` does not fix this: the diagnostic fires at the parameter's declaration, not at the point of use, so qualifying the member inside the function body leaves the error exactly where it was.
 
 The parameter is the side that changes because the member's name is read by every function in the class, while the parameter's name is read inside one. Letting a constructor dictate what a member is called for the rest of its life inverts that relationship for no gain.
 
@@ -543,7 +543,7 @@ public:
                                                            // failure under warnings-as-errors
 
     void setInputPath(std::filesystem::path p);            // BAD -- collision dodged by saying
-                                                           // nothing at all; violates 3.8
+                                                           // nothing at all; violates C1.8
 
     void setOutputPath(std::filesystem::path inputPath);   // BAD -- renamed to a name that
                                                            // denotes a different member

@@ -1,6 +1,6 @@
 # Appendix C: Example .clang-tidy
 
-This is the file Sections 3 and 6 refer to whenever a rule's ENFORCEMENT line names a clang-tidy check. It lives at the repository root. Every check enabled below traces to a specific numbered rule, noted in the comment above it — checks with no rule behind them are deliberately not enabled, so that turning a check off is always a visible decision about a written rule rather than silent tuning.
+This is the file C1 and C3 refer to whenever a rule's ENFORCEMENT line names a clang-tidy check. It lives at the repository root. Every check enabled below traces to a specific numbered rule, noted in the comment above it — checks with no rule behind them are deliberately not enabled, so that turning a check off is always a visible decision about a written rule rather than silent tuning.
 
 ```yaml
 ---
@@ -48,10 +48,10 @@ WarningsAsErrors: '*'
 FormatStyle: file
 
 CheckOptions:
-  # ---- 3.4 namespaces ----
+  # ---- C1.4 namespaces ----
   readability-identifier-naming.NamespaceCase: lower_case
 
-  # ---- 3.5 classes and structs, 3.16 type aliases, 3.13 template parameters ----
+  # ---- C1.5 classes and structs, C1.16 type aliases, C1.13 template parameters ----
   readability-identifier-naming.ClassCase: CamelCase
   readability-identifier-naming.StructCase: CamelCase
   readability-identifier-naming.UnionCase: CamelCase
@@ -61,16 +61,16 @@ CheckOptions:
   readability-identifier-naming.TypeTemplateParameterCase: CamelCase
   readability-identifier-naming.ValueTemplateParameterCase: CamelCase
 
-  # ---- 3.18 pure interfaces take an I prefix ----
+  # ---- C1.18 pure interfaces take an I prefix ----
   readability-identifier-naming.AbstractClassCase: CamelCase
   readability-identifier-naming.AbstractClassPrefix: 'I'
 
-  # ---- 3.6 enum class and its members ----
+  # ---- C1.6 enum class and its members ----
   readability-identifier-naming.EnumCase: CamelCase
   readability-identifier-naming.EnumConstantCase: CamelCase
   readability-identifier-naming.ScopedEnumConstantCase: CamelCase
 
-  # ---- 3.7 functions, 3.8 locals and parameters ----
+  # ---- C1.7 functions, C1.8 locals and parameters ----
   readability-identifier-naming.FunctionCase: camelBack
   readability-identifier-naming.MethodCase: camelBack
   readability-identifier-naming.PublicMethodCase: camelBack
@@ -80,7 +80,7 @@ CheckOptions:
   readability-identifier-naming.LocalVariableCase: camelBack
   readability-identifier-naming.ParameterCase: camelBack
 
-  # ---- 3.9 members carry no prefix or suffix, 3.15 statics are no different ----
+  # ---- C1.9 members carry no prefix or suffix, C1.15 statics are no different ----
   readability-identifier-naming.MemberCase: camelBack
   readability-identifier-naming.PublicMemberCase: camelBack
   readability-identifier-naming.ProtectedMemberCase: camelBack
@@ -92,39 +92,39 @@ CheckOptions:
   readability-identifier-naming.ClassMemberCase: camelBack
   readability-identifier-naming.StaticVariableCase: camelBack
 
-  # ---- 3.11 class- and namespace-level constants are UPPER_SNAKE ----
+  # ---- C1.11 class- and namespace-level constants are UPPER_SNAKE ----
   readability-identifier-naming.ClassConstantCase: UPPER_CASE
   readability-identifier-naming.GlobalConstantCase: UPPER_CASE
   readability-identifier-naming.StaticConstantCase: UPPER_CASE
 
-  # ---- 3.12 local constants are camelBack, NOT UPPER_SNAKE ----
-  # Known limitation, already noted in 3.12's ENFORCEMENT line: clang-tidy
+  # ---- C1.12 local constants are camelBack, NOT UPPER_SNAKE ----
+  # Known limitation, already noted in C1.12's ENFORCEMENT line: clang-tidy
   # resolves a constexpr local against both LocalConstantCase and
   # ConstexprVariableCase, and which one wins is not reliably documented.
   # ConstexprVariableCase is therefore left unset rather than pinned to a value
-  # that would contradict 3.11 or 3.12 depending on scope. Local constant
+  # that would contradict C1.11 or C1.12 depending on scope. Local constant
   # casing stays a code-review item until this is resolved upstream.
   readability-identifier-naming.LocalConstantCase: camelBack
   readability-identifier-naming.LocalConstantPointerCase: camelBack
 
-  # ---- 3.14 macros, restricted to include guards ----
+  # ---- C1.14 macros, restricted to include guards ----
   readability-identifier-naming.MacroDefinitionCase: UPPER_CASE
 
-  # ---- 3.3 include guards mirror the full path ----
+  # ---- C1.3 include guards mirror the full path ----
   # GuardPrefix is empty because the guard already starts at the source root
   # (CORE_IO_RECORDREADER_H), not at a project-wide prefix.
   llvm-header-guard.HeaderFileExtensions: 'h'
 
-  # ---- 6.2.1 max function length 60 lines ----
+  # ---- C3.2.1 max function length 60 lines ----
   readability-function-size.LineThreshold: 60
 
-  # ---- 6.2.3 max nesting depth 3 ----
+  # ---- C3.2.3 max nesting depth 3 ----
   readability-function-size.NestingThreshold: 3
 
-  # ---- 6.2.4 max 5 parameters ----
+  # ---- C3.2.4 max 5 parameters ----
   readability-function-size.ParameterThreshold: 5
 
-  # ---- 6.2.2 complexity ceiling ----
+  # ---- C3.2.2 complexity ceiling ----
   # See the note below: readability-function-size has no cyclomatic-complexity
   # option, so BranchThreshold is the closest available proxy and
   # readability-function-cognitive-complexity is enabled alongside it.
@@ -132,24 +132,24 @@ CheckOptions:
   readability-function-cognitive-complexity.Threshold: 25
   readability-function-cognitive-complexity.IgnoreMacros: true
 
-  # ---- 6.4.2 rule of five, all five declared explicitly ----
+  # ---- C3.4.2 rule of five, all five declared explicitly ----
   cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor: false
   cppcoreguidelines-special-member-functions.AllowMissingMoveFunctions: false
 
-  # ---- 6.1.18 string_view for read-only string parameters ----
+  # ---- C3.1.18 string_view for read-only string parameters ----
   performance-unnecessary-value-param.AllowedTypes: 'std::string_view;std::span'
 ...
 ```
 
-## Correction to 6.2.2's stated enforcement
+## Correction to C3.2.2's stated enforcement
 
-Section 6.2.2 sets a cyclomatic complexity ceiling of 10 and names `readability-function-size (CyclomaticComplexityThreshold: 10)` as its enforcement. That option does not exist. `readability-function-size` measures lines, statements, branches, parameters, nesting, and variables — not McCabe cyclomatic complexity — and there is no clang-tidy check that computes McCabe directly.
+Section C3.2.2 sets a cyclomatic complexity ceiling of 10 and names `readability-function-size (CyclomaticComplexityThreshold: 10)` as its enforcement. That option does not exist. `readability-function-size` measures lines, statements, branches, parameters, nesting, and variables — not McCabe cyclomatic complexity — and there is no clang-tidy check that computes McCabe directly.
 
 Two checks together get close, and both are enabled above:
 
 - `readability-function-size.BranchThreshold: 10` counts branch statements, which is the dominant term in the McCabe count. It does not count `&&` and `||` as separate paths, so it reads slightly lower than true cyclomatic complexity for a function with compound conditions.
 - `readability-function-cognitive-complexity.Threshold: 25` measures cognitive complexity (the Sonar metric), which weights nesting more heavily than McCabe does and ignores a flat `switch`. It catches the deeply-nested functions that a pure branch count misses.
 
-Neither is the metric 6.2.2 names, and the pair is deliberately set slightly loose so the two of them together approximate a McCabe ceiling of 10 rather than double-penalizing the same function. If an exact McCabe number is wanted as a gate, that needs a separate tool (`lizard` is the usual choice) wired into CI, which does not exist today.
+Neither is the metric C3.2.2 names, and the pair is deliberately set slightly loose so the two of them together approximate a McCabe ceiling of 10 rather than double-penalizing the same function. If an exact McCabe number is wanted as a gate, that needs a separate tool (`lizard` is the usual choice) wired into CI, which does not exist today.
 
-*Open item, needs team ratification: either 6.2.2's rule text is amended to name branch count and cognitive complexity as the actual metrics, or a dedicated cyclomatic-complexity tool is adopted. Written here as a documented approximation rather than left as a rule whose stated enforcement does not exist.*
+*Open item, needs team ratification: either C3.2.2's rule text is amended to name branch count and cognitive complexity as the actual metrics, or a dedicated cyclomatic-complexity tool is adopted. Written here as a documented approximation rather than left as a rule whose stated enforcement does not exist.*

@@ -1,10 +1,10 @@
-# 6. Code Style
+# C3. Code Style
 
 This project targets C++23, and follows a consistent, modern C++ style throughout — where a newer feature cleanly replaces an older idiom, this document prefers the modern one (concepts over SFINAE, for example) rather than carrying legacy patterns forward out of habit. See the separate References document for the guides this section draws from.
 
-## 6.1 Language Feature Policy
+## C3.1 Language Feature Policy
 
-### 6.1.1 Smart pointers vs raw pointers — ownership
+### C3.1.1 Smart pointers vs raw pointers — ownership
 
 **RULE**  std::unique_ptr is the default for any owning pointer. std::shared_ptr is used only when ownership is genuinely shared across multiple independent owners. Raw pointers are always non-owning — never used to express or transfer ownership.
 
@@ -26,7 +26,7 @@ RecordReader* reader = new RecordReader(path);  // BAD -- raw owning pointer, un
 
 **ENFORCEMENT**  clang-tidy cppcoreguidelines-owning-memory (Manual MR checklist).
 
-### 6.1.2 No C-style casts
+### C3.1.2 No C-style casts
 
 **RULE**  Named casts only — static_cast, dynamic_cast, const_cast, reinterpret_cast — matching whichever conversion is actually intended.
 
@@ -47,9 +47,9 @@ auto x = (float)count / 2.0f;  // BAD -- C-style cast, doesn't say which convers
 
 **ENFORCEMENT**  clang-tidy cppcoreguidelines-pro-type-cstyle-cast.
 
-### 6.1.3 Macros
+### C3.1.3 Macros
 
-**RULE**  Banned except #ifndef include guards (naming 3.3, 3.14). No other use of the preprocessor for constants, inline-like functions, or conditional logic.
+**RULE**  Banned except #ifndef include guards (naming C1.3, C1.14). No other use of the preprocessor for constants, inline-like functions, or conditional logic.
 
 **RATIONALE**  Macros bypass the type system and scoping rules entirely, and their errors are notoriously hard to trace back to source — constexpr, templates, and inline functions cover every legitimate case a macro used to handle, with none of the downsides.
 
@@ -69,9 +69,9 @@ auto x = (float)count / 2.0f;  // BAD -- C-style cast, doesn't say which convers
 
 **ENFORCEMENT**  Advisory — code review; a grep-based check for #define outside include guards is a good CI candidate later.
 
-### 6.1.4 Multiple inheritance
+### C3.1.4 Multiple inheritance
 
-**RULE**  Banned except pure interfaces — all-abstract base classes where every method is pure virtual and there are no data members, named per the I-prefix convention (naming 3.18).
+**RULE**  Banned except pure interfaces — all-abstract base classes where every method is pure virtual and there are no data members, named per the I-prefix convention (naming C1.18).
 
 **RATIONALE**  Multiple inheritance from stateful classes reintroduces the classic C++ diamond-inheritance and initialization-order problems. Pure interfaces sidestep this entirely, since there's no state to conflict.
 
@@ -109,7 +109,7 @@ class RecordStore : public FileHandle, public LoggingMixin  // BAD -- neither ba
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.1.5 friend
+### C3.1.5 friend
 
 **RULE**  Banned by default. When used, requires a one-line justification comment directly above the friend declaration explaining why the public interface can't accomplish the same thing.
 
@@ -137,7 +137,7 @@ class Matrix
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.1.6 Template metaprogramming: concepts over SFINAE
+### C3.1.6 Template metaprogramming: concepts over SFINAE
 
 **RULE**  Concepts/requires (C++20) are the required way to constrain a template. SFINAE-style enable_if tricks are banned for new code.
 
@@ -160,7 +160,7 @@ T clamp(T value, T low, T high);  // BAD -- SFINAE trick, use concepts instead
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.1.7 auto usage
+### C3.1.7 auto usage
 
 **RULE**  Use auto when the type is obvious from the right-hand side, or would otherwise be unreadably long (iterators, lambdas). Don't use it where it hides a type the reader actually needs to see to understand the code.
 
@@ -181,9 +181,9 @@ auto count = getCount();  // BAD if whether "count" is int vs size_t matters to 
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.1.8 enum vs enum class
+### C3.1.8 enum vs enum class
 
-**RULE**  enum class always, matching naming 3.6 — listed here too since it's as much a language-feature rule as a naming one.
+**RULE**  enum class always, matching naming C1.6 — listed here too since it's as much a language-feature rule as a naming one.
 
 **GOOD**
 
@@ -197,9 +197,9 @@ enum class LogLevel : uint8_t { Critical, Error, Warning, Info };
 enum LogLevel { Critical, Error, Warning, Info };  // BAD -- unscoped, implicitly converts to int
 ```
 
-**ENFORCEMENT**  Advisory — code review (see naming 3.6 for the full rule).
+**ENFORCEMENT**  Advisory — code review (see naming C1.6 for the full rule).
 
-### 6.1.9 Range-based for vs index/iterator loops
+### C3.1.9 Range-based for vs index/iterator loops
 
 **RULE**  Range-based for by default. An index or iterator loop is used only when the index itself is needed for something beyond element access.
 
@@ -217,7 +217,7 @@ for (size_t i = 0; i < records.size(); ++i) { use(records[i]); }  // BAD -- inde
 
 **ENFORCEMENT**  clang-tidy modernize-loop-convert (Manual MR checklist).
 
-### 6.1.10 Algorithms/ranges vs hand-rolled loops
+### C3.1.10 Algorithms/ranges vs hand-rolled loops
 
 **RULE**  Prefer a standard algorithm when it's at least as readable as the loop to someone unfamiliar with it, and when it avoids reimplementing something the standard library already provides correctly. Write the loop when in doubt, or when the algorithm would need a non-obvious lambda to express.
 
@@ -239,7 +239,7 @@ auto it = std::ranges::find_if(records, [&](const auto& r) {  // BAD -- nested l
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.1.11 Lambda captures: explicit only, no defaults
+### C3.1.11 Lambda captures: explicit only, no defaults
 
 **RULE**  Lambda captures are always explicit — name each variable captured, by value or reference. Default captures ([=] or [&]) are never used.
 
@@ -259,7 +259,7 @@ auto callback = [&](const Record& r) { /* ... */ };  // BAD -- default capture, 
 
 **ENFORCEMENT**  clang-tidy cppcoreguidelines-avoid-capturing-lambda-coroutines catches one related case; explicit-vs-default capture style is otherwise Advisory — code review.
 
-### 6.1.12 const-correctness
+### C3.1.12 const-correctness
 
 **RULE**  Member functions that don't mutate object state are marked const. Parameters passed by reference that aren't modified are const&. Local variables that are never reassigned are const.
 
@@ -285,7 +285,7 @@ size_t recordCount();  // BAD -- doesn't mutate state, should be const
 
 **ENFORCEMENT**  clang-tidy misc-const-correctness (Manual MR checklist).
 
-### 6.1.13 nullptr, never NULL or 0
+### C3.1.13 nullptr, never NULL or 0
 
 **RULE**  nullptr is used for every null pointer value.
 
@@ -306,7 +306,7 @@ RecordReader* reader = 0;     // BAD
 
 **ENFORCEMENT**  clang-tidy modernize-use-nullptr.
 
-### 6.1.14 Explicit constructors
+### C3.1.14 Explicit constructors
 
 **RULE**  Any constructor callable with a single argument is marked explicit, unless implicit conversion is specifically and deliberately desired.
 
@@ -337,7 +337,7 @@ class RecordId { public: RecordId(uint64_t value); };  // BAD -- allows silent i
 
 **ENFORCEMENT**  clang-tidy google-explicit-constructor (Manual MR checklist).
 
-### 6.1.15 override and final
+### C3.1.15 override and final
 
 **RULE**  override is required on every virtual override, with no exceptions. final is used when a class or method is deliberately closed to further derivation or overriding.
 
@@ -361,7 +361,7 @@ void write(const RecordBatch& batch);  // BAD -- overrides IWritable::write but 
 
 **ENFORCEMENT**  clang-tidy modernize-use-override.
 
-### 6.1.16 noexcept: required on move operations and swap only
+### C3.1.16 noexcept: required on move operations and swap only
 
 **RULE**  noexcept is required on move constructors, move assignment operators, and swap — the cases where the standard library changes real behavior based on the promise (e.g. std::vector uses moves instead of copies during reallocation only if the move is noexcept). It is not required, and not applied as a matter of habit, anywhere else.
 
@@ -383,7 +383,7 @@ void processRecord(const Record& r) noexcept;  // BAD -- no real payoff here, an
 
 **ENFORCEMENT**  clang-tidy performance-noexcept-move-constructor (Manual MR checklist).
 
-### 6.1.17 No trailing return types
+### C3.1.17 No trailing return types
 
 **RULE**  Traditional return-type-first syntax is used for all functions. Trailing return type (auto foo() -> ReturnType) is not used. In the rare template case where the return type depends on a parameter declared later in the signature, prefer plain auto with the return type deduced from the function body instead of introducing a trailing return type.
 
@@ -405,7 +405,7 @@ auto readBatch(const std::string& name) -> RecordBatch;  // BAD -- trailing retu
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.1.18 std::string_view for read-only string parameters
+### C3.1.18 std::string_view for read-only string parameters
 
 **RULE**  A function parameter that only reads a string (never stores it beyond the call, never needs a stable owned copy) takes std::string_view instead of const std::string&. A function that needs to keep the string beyond its own scope (store it in a member, pass it to another thread, etc.) still takes an owned std::string, since string_view doesn't own its data and can dangle.
 
@@ -419,7 +419,7 @@ void logMessage(std::string_view message);   // read-only, used and discarded wi
 class RecordReader
 {
 public:
-    explicit RecordReader(std::string initialPath);   // parameter renamed per 3.20; BAD example
+    explicit RecordReader(std::string initialPath);   // parameter renamed per C1.20; BAD example
                                                     // below shows why this stays std::string
 private:
     std::string path;   // stored beyond the constructor call -- needs to own the data
@@ -434,7 +434,7 @@ void logMessage(const std::string& message);  // BAD -- forces a std::string to 
 
 **ENFORCEMENT**  clang-tidy performance-unnecessary-value-param / modernize-pass-by-value related checks flag some cases; the read-only-vs-stored distinction itself is Advisory — code review.
 
-### 6.1.19 Internal linkage: anonymous namespace, not static
+### C3.1.19 Internal linkage: anonymous namespace, not static
 
 **RULE**  A function or variable that's local to a single .cpp file (not declared in any header) is given internal linkage via an anonymous namespace, not the static keyword.
 
@@ -465,7 +465,7 @@ static bool isRecoverable(ReadError error) { /* ... */ }  // BAD -- same issue
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.1.20 size_t/unsigned for sizes and counts; never mix signed and unsigned in one expression
+### C3.1.20 size_t/unsigned for sizes and counts; never mix signed and unsigned in one expression
 
 **RULE**  size_t and other unsigned types remain the default for sizes, counts, and indices, matching what the standard library itself returns (container .size(), etc.) — this codebase does not require signed types for sizes/indices, given the ergonomic cost of casting at every standard-library boundary. However, signed and unsigned values are never compared or combined in arithmetic within the same expression without an explicit, deliberate cast.
 
@@ -492,7 +492,7 @@ if (delta < count) { /* BAD -- delta is silently converted to a huge unsigned
 
 **ENFORCEMENT**  Compiler warning (-Wsign-compare / -Wsign-conversion on GCC/Clang, /W4's C4018/C4245 on MSVC) is the real gate once warnings-as-errors is configured — that belongs to the not-yet-built Toolchain/Build Specifics topic on the master list, so this isn't wired up as an actual gate yet. Advisory — code review in the meantime.
 
-### 6.1.21 Pre-increment (++X), not post-increment (X++), when the returned value isn't used
+### C3.1.21 Pre-increment (++X), not post-increment (X++), when the returned value isn't used
 
 **RULE**  Use pre-increment/decrement (++x, --x) rather than post-increment/decrement (x++, x--) whenever the expression's own value isn't used by the surrounding statement — loop counters and iterator advancement being the common case. Post-increment is only used when the old value is specifically what's needed.
 
@@ -516,7 +516,7 @@ it++;                                              // BAD -- same issue
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.1.22 No using namespace — explicit namespace prefixes always
+### C3.1.22 No using namespace — explicit namespace prefixes always
 
 **RULE**  using namespace std; and any other using namespace X; directive are never used, in headers or .cpp files. Every identifier from another namespace is written out with its full qualification (std::string, core::io::RecordReader, etc.) at every use.
 
@@ -539,11 +539,11 @@ string name;           // BAD -- relies on the banned using-namespace directive 
 
 **ENFORCEMENT**  clang-tidy google-build-using-namespace (Manual MR checklist).
 
-### 6.1.23 Virtual destructor required on any polymorphic base class
+### C3.1.23 Virtual destructor required on any polymorphic base class
 
 **RULE**  Any class with at least one virtual function, and that might be deleted through a pointer to that base class, has a virtual destructor.
 
-**RATIONALE**  Deleting a derived object through a base-class pointer with a non-virtual destructor skips the derived destructor entirely — undefined behavior, and in practice a resource leak (any RAII members the derived class owns never get cleaned up). This is directly why every pure interface in this document (6.1.4) declares its destructor virtual.
+**RATIONALE**  Deleting a derived object through a base-class pointer with a non-virtual destructor skips the derived destructor entirely — undefined behavior, and in practice a resource leak (any RAII members the derived class owns never get cleaned up). This is directly why every pure interface in this document (C3.1.4) declares its destructor virtual.
 
 **GOOD**
 
@@ -572,7 +572,7 @@ std::unique_ptr<IReadable> reader = std::make_unique<RecordReader>(path);
 
 **ENFORCEMENT**  clang-tidy cppcoreguidelines-virtual-class-destructor.
 
-### 6.1.24 No virtual function calls from constructors or destructors
+### C3.1.24 No virtual function calls from constructors or destructors
 
 **RULE**  A constructor or destructor never calls a virtual function on *this, directly or indirectly.
 
@@ -597,7 +597,7 @@ public:
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.1.25 No object slicing — pass polymorphic types by reference or pointer, never by value
+### C3.1.25 No object slicing — pass polymorphic types by reference or pointer, never by value
 
 **RULE**  A polymorphic type (anything with virtual functions) is never passed, returned, or stored by value where a base-class type is used to hold a potentially-derived object. Use a reference, pointer, or smart pointer instead.
 
@@ -622,11 +622,11 @@ process(concrete);   // only the IReadable part of concrete is copied in
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.1.26 Self-assignment must not corrupt the object
+### C3.1.26 Self-assignment must not corrupt the object
 
 **RULE**  A hand-written copy assignment operator must produce a correct result when the source and target are the same object (a = a;).
 
-**RATIONALE**  a = a; must remain a valid, safe operation. A naive assignment operator that releases its own resources before copying from the source will corrupt itself in the self-assignment case, since source and target are the same object — it ends up reading from a resource it just released. This applies to every kind of resource, not just heap memory — a wrapped C API handle (6.4.4) has exactly the same failure, and since 6.4.1 rules out raw owning memory in first-party code, a handle is the form this actually takes here. This ties directly to the Rule of Five (6.4.2): any hand-written assignment operator needs this guard.
+**RATIONALE**  a = a; must remain a valid, safe operation. A naive assignment operator that releases its own resources before copying from the source will corrupt itself in the self-assignment case, since source and target are the same object — it ends up reading from a resource it just released. This applies to every kind of resource, not just heap memory — a wrapped C API handle (C3.4.4) has exactly the same failure, and since C3.4.1 rules out raw owning memory in first-party code, a handle is the form this actually takes here. This ties directly to the Rule of Five (C3.4.2): any hand-written assignment operator needs this guard.
 
 **GOOD**
 
@@ -654,9 +654,9 @@ FileHandle& operator=(const FileHandle& other)
 
 **ENFORCEMENT**  clang-tidy bugprone-unhandled-self-assignment.
 
-## 6.2 Complexity & Readability Limits
+## C3.2 Complexity & Readability Limits
 
-### 6.2.1 Max function length: 60 lines
+### C3.2.1 Max function length: 60 lines
 
 **RULE**  A function body, excluding braces and blank lines, does not exceed 60 lines.
 
@@ -664,7 +664,7 @@ FileHandle& operator=(const FileHandle& other)
 
 **ENFORCEMENT**  clang-tidy readability-function-size (LineThreshold: 60).
 
-### 6.2.2 Max cyclomatic complexity: 10
+### C3.2.2 Max cyclomatic complexity: 10
 
 **RULE**  Cyclomatic complexity — the count of independent paths through a function, starting at 1 and incrementing for every if/else if/while/for/case/&&/|| — does not exceed 10 for any function.
 
@@ -687,7 +687,7 @@ void processRecord(const Record& r)
 
 **ENFORCEMENT**  clang-tidy readability-function-size (BranchThreshold: 10) plus readability-function-cognitive-complexity (Threshold: 25), together — Manual MR checklist. Note that neither check measures McCabe cyclomatic complexity directly; there is no clang-tidy check that does. See Appendix C for what the two actually measure, how closely the pair approximates a ceiling of 10, and the open item this leaves.
 
-### 6.2.3 Max nesting depth: 3, use guard clauses
+### C3.2.3 Max nesting depth: 3, use guard clauses
 
 **RULE**  Nesting depth does not exceed 3 levels. When a function would otherwise nest deeper, restructure using early-return guard clauses for invalid/edge cases at the top of the function.
 
@@ -721,7 +721,7 @@ void processRecord(const Record& r)
 
 **ENFORCEMENT**  clang-tidy readability-function-size (NestingThreshold: 3).
 
-### 6.2.4 Max function parameters: 5, then pass a struct
+### C3.2.4 Max function parameters: 5, then pass a struct
 
 **RULE**  A function takes at most 5 parameters. Beyond that, group related parameters into a struct.
 
@@ -747,13 +747,13 @@ void configureReader(size_t batchSize, bool strictMode, size_t maxRecords, bool 
 
 **ENFORCEMENT**  clang-tidy readability-function-size (ParameterThreshold: 5).
 
-### 6.2.5 Max file length: 1000 lines (advisory)
+### C3.2.5 Max file length: 1000 lines (advisory)
 
 **RULE**  A file should not exceed 1000 lines. Beyond that, split the class or namespace it contains.
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.2.6 Single responsibility: for classes and functions alike
+### C3.2.6 Single responsibility: for classes and functions alike
 
 **RULE**  A class or function should have one job. If a class name needs “and” to describe it accurately (e.g. ReaderAndValidator), or a function does multiple unrelated things (e.g. validateAndSave()), that's a signal to split it.
 
@@ -774,11 +774,11 @@ void validateAndSave(const Record& r);  // BAD -- two unrelated jobs bundled int
 
 **ENFORCEMENT**  Advisory — code review.
 
-## 6.3 Error Handling Strategy
+## C3.3 Error Handling Strategy
 
-### 6.3.1 Exceptions for programming errors, std::expected for recoverable failures
+### C3.3.1 Exceptions for programming errors, std::expected for recoverable failures
 
-**RULE**  Throw an exception when a function is called with arguments that violate a documented precondition or invariant, or when the program reaches a state that should be impossible if the rest of the codebase is correct — including constructor validation for classes with invariants (6.4.5). Use std::expected<T, E> when a function's failure is a normal, anticipated outcome the caller is expected to handle explicitly — file I/O, parsing untrusted input, network calls, user-facing validation.
+**RULE**  Throw an exception when a function is called with arguments that violate a documented precondition or invariant, or when the program reaches a state that should be impossible if the rest of the codebase is correct — including constructor validation for classes with invariants (C3.4.5). Use std::expected<T, E> when a function's failure is a normal, anticipated outcome the caller is expected to handle explicitly — file I/O, parsing untrusted input, network calls, user-facing validation.
 
 **RATIONALE**  Exceptions unwind the stack automatically and can't be silently ignored, which matters most exactly when the program has already reached an impossible state. std::expected keeps genuinely normal, anticipated failures visible in the type system without paying the cost of an exception for something that isn't exceptional.
 
@@ -797,12 +797,12 @@ public:
     }
 };
 
-std::expected<RecordBatch, ParseError> parseCsvFile(const std::filesystem::path& path);  // expected failure, see 6.3.4 for [[nodiscard]]
+std::expected<RecordBatch, ParseError> parseCsvFile(const std::filesystem::path& path);  // expected failure, see C3.3.4 for [[nodiscard]]
 ```
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.3.2 No error codes or bool success flags, anywhere, with no exceptions
+### C3.3.2 No error codes or bool success flags, anywhere, with no exceptions
 
 **RULE**  First-party code never returns an int/bool status code communicated via an out-parameter or errno-style global — zero exceptions to this, including the boundary layer that wraps any third-party C-style API (a compression, database, graphics, or file-format library, for example). That wrapper layer's entire job is to convert the underlying library's error convention into std::expected or an exception right at the boundary, before anything else in the codebase ever sees it — the wrapper does not inherit or forward the C API's own convention.
 
@@ -811,7 +811,7 @@ std::expected<RecordBatch, ParseError> parseCsvFile(const std::filesystem::path&
 **GOOD**
 
 ```cpp
-[[nodiscard]] std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);  // see 6.3.4
+[[nodiscard]] std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);  // see C3.3.4
 ```
 
 **BAD**
@@ -822,9 +822,9 @@ bool tryReadBatch(RecordBatch& out);  // BAD -- error-code style, banned even in
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.3.3 assert() only for invariant checks in identified hot paths
+### C3.3.3 assert() only for invariant checks in identified hot paths
 
-**RULE**  assert() is permitted only for invariant checks inside identified hot paths — code that runs many times per second in a tight loop (a render loop, the inner loop of large batch processing) — and only for a condition that would otherwise be routed to an exception under 6.3.1, where paying that cost every iteration is measurably expensive. A hot path must be identified by profiling, not by feel. Everywhere else, invariant violations are exceptions, per 6.3.1, with no assert() carve-out.
+**RULE**  assert() is permitted only for invariant checks inside identified hot paths — code that runs many times per second in a tight loop (a render loop, the inner loop of large batch processing) — and only for a condition that would otherwise be routed to an exception under C3.3.1, where paying that cost every iteration is measurably expensive. A hot path must be identified by profiling, not by feel. Everywhere else, invariant violations are exceptions, per C3.3.1, with no assert() carve-out.
 
 **RATIONALE**  assert() is compiled out entirely in release builds, so it's genuinely free at runtime — but that also means it silently disappears in production if misused as a general validation tool. Scoping it strictly to profiling-justified hot paths keeps it from becoming a way to skip real error handling anywhere a dev feels like it's “just a debug check.”
 
@@ -842,7 +842,7 @@ void transformVertex(Vertex& v, const Matrix& m)
 **BAD**
 
 ```cpp
-void setBatchSize(size_t size)  // BAD -- not a hot path, should throw per 6.3.1
+void setBatchSize(size_t size)  // BAD -- not a hot path, should throw per C3.3.1
 {
     assert(size > 0 && "batch size must be positive");
 }
@@ -850,11 +850,11 @@ void setBatchSize(size_t size)  // BAD -- not a hot path, should throw per 6.3.1
 
 **ENFORCEMENT**  Advisory — code review; reviewer should ask for the profiling justification when assert() appears.
 
-### 6.3.4 [[nodiscard]] on every function returning std::expected
+### C3.3.4 [[nodiscard]] on every function returning std::expected
 
 **RULE**  Every function that returns std::expected<T, E> is marked [[nodiscard]], with no exceptions.
 
-**RATIONALE**  Without [[nodiscard]], nothing stops a caller from invoking the function and discarding the returned std::expected entirely — silently ignoring a possible failure with no compiler warning. This directly undermines the whole point of 6.3.1's split: std::expected only keeps failures visible in the type system if something actually forces the caller to look at the return value.
+**RATIONALE**  Without [[nodiscard]], nothing stops a caller from invoking the function and discarding the returned std::expected entirely — silently ignoring a possible failure with no compiler warning. This directly undermines the whole point of C3.3.1's split: std::expected only keeps failures visible in the type system if something actually forces the caller to look at the return value.
 
 **GOOD**
 
@@ -870,9 +870,9 @@ std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);
 
 **ENFORCEMENT**  Compiler warning (real gate, [[nodiscard]] is a language feature enforced by every compiler) once applied; Advisory — code review to confirm it's applied everywhere it should be.
 
-## 6.4 Memory Management & Ownership
+## C3.4 Memory Management & Ownership
 
-### 6.4.1 No manual memory management
+### C3.4.1 No manual memory management
 
 **RULE**  new, delete, malloc, and free never appear in first-party code. Use stack-allocated variables and RAII wrappers (smart pointers, containers) exclusively.
 
@@ -892,7 +892,7 @@ RecordReader* reader = new RecordReader(path);  // BAD
 
 **ENFORCEMENT**  clang-tidy cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory.
 
-### 6.4.2 Rule of five, explicit
+### C3.4.2 Rule of five, explicit
 
 **RULE**  If a class declares a custom destructor, it must also explicitly declare (or explicitly = default / = delete) the copy constructor, copy assignment, move constructor, and move assignment operators.
 
@@ -920,7 +920,7 @@ class RecordReader { public: ~RecordReader(); };  // BAD -- compiler-generated c
 
 **ENFORCEMENT**  clang-tidy cppcoreguidelines-special-member-functions.
 
-### 6.4.3 Passing ownership: unique_ptr by value; non-owning by pointer or reference
+### C3.4.3 Passing ownership: unique_ptr by value; non-owning by pointer or reference
 
 **RULE**  Ownership is transferred by passing a std::unique_ptr by value. Non-owning access is expressed with a raw pointer or reference — never a raw owning pointer.
 
@@ -941,11 +941,11 @@ void takeOwnership(RecordReader* reader);  // BAD -- unclear whether this takes 
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.4.4 RAII for every resource, not just heap memory
+### C3.4.4 RAII for every resource, not just heap memory
 
 **RULE**  Every resource that must be explicitly acquired and released — file handles, locks, network/database connections, handles from a wrapped C API — is wrapped in an RAII type whose constructor acquires it and whose destructor releases it. Nothing is manually released.
 
-**RATIONALE**  Manual acquire/release pairs are exactly as fragile as manual new/delete (6.4.1), just for a different kind of resource — an exception or early return between acquire and release leaves the resource held forever. RAII guarantees the release runs via the destructor, regardless of how the scope is exited.
+**RATIONALE**  Manual acquire/release pairs are exactly as fragile as manual new/delete (C3.4.1), just for a different kind of resource — an exception or early return between acquire and release leaves the resource held forever. RAII guarantees the release runs via the destructor, regardless of how the scope is exited.
 
 **GOOD**
 
@@ -966,7 +966,7 @@ mutex_.unlock();
 
 **ENFORCEMENT**  Advisory — code review.
 
-### 6.4.5 struct vs class: presence of any function beyond data
+### C3.4.5 struct vs class: presence of any function beyond data
 
 **RULE**  struct is for a pure container of variables — no member functions beyond perhaps an aggregate initializer. The moment a type has any member function, it's a class.
 
@@ -989,9 +989,9 @@ class RecordReader          // has functions (and an invariant the constructor p
 
 **ENFORCEMENT**  Advisory — code review.
 
-## 6.5 Formatting
+## C3.5 Formatting
 
-### 6.5.1 Brace style: Allman
+### C3.5.1 Brace style: Allman
 
 **RULE**  Opening braces go on their own new line, for every block — functions, control statements, classes.
 
@@ -1018,19 +1018,19 @@ void readBatch() {  // BAD -- K&R style, not Allman
 
 **ENFORCEMENT**  clang-format (BreakBeforeBraces: Allman).
 
-### 6.5.2 Indentation: 4 spaces, never tabs
+### C3.5.2 Indentation: 4 spaces, never tabs
 
 **RULE**  4 spaces per indentation level. Tabs are never committed.
 
 **ENFORCEMENT**  clang-format (IndentWidth: 4, UseTab: Never).
 
-### 6.5.3 Column limit: 100
+### C3.5.3 Column limit: 100
 
 **RULE**  Lines wrap at 100 columns.
 
 **ENFORCEMENT**  clang-format (ColumnLimit: 100).
 
-### 6.5.4 Pointer/reference alignment: left
+### C3.5.4 Pointer/reference alignment: left
 
 **RULE**  The * or & binds to the type, not the variable name.
 
@@ -1049,11 +1049,11 @@ int *pointer;  // BAD
 
 **ENFORCEMENT**  clang-format (PointerAlignment: Left).
 
-### 6.5.5 Access modifiers: flush with the class keyword, no indent
+### C3.5.5 Access modifiers: flush with the class keyword, no indent
 
 **RULE**  public:/private:/protected: are flush with the class declaration's indentation — not indented an extra level.
 
-**RATIONALE**  Access modifiers act more like section dividers within the class than genuine nested scope — keeping them flush avoids an extra visual nesting level for no real benefit, consistent with this document's general preference for flat, low-nesting code (6.2.3).
+**RATIONALE**  Access modifiers act more like section dividers within the class than genuine nested scope — keeping them flush avoids an extra visual nesting level for no real benefit, consistent with this document's general preference for flat, low-nesting code (C3.2.3).
 
 **GOOD**
 
@@ -1079,7 +1079,7 @@ class RecordReader
 
 **ENFORCEMENT**  clang-format (AccessModifierOffset: -4, IndentAccessModifiers: false).
 
-### 6.5.6 Space before parens in control statements
+### C3.5.6 Space before parens in control statements
 
 **RULE**  A space always separates a control keyword from its parenthesis: if (x), never if(x).
 
@@ -1097,9 +1097,9 @@ if(isValid) { }  // BAD
 
 **ENFORCEMENT**  clang-format (SpaceBeforeParens: ControlStatements).
 
-### 6.5.7 Single-line function bodies: trivial getters/setters only
+### C3.5.7 Single-line function bodies: trivial getters/setters only
 
-**RULE**  Only a trivial inline getter/setter may collapse to one line. Every other function body spans multiple lines regardless of how short its content is — the same multi-line-always principle already applied to Doxygen blocks (5.3).
+**RULE**  Only a trivial inline getter/setter may collapse to one line. Every other function body spans multiple lines regardless of how short its content is — the same multi-line-always principle already applied to Doxygen blocks (C2.3).
 
 **GOOD**
 
@@ -1115,7 +1115,7 @@ bool isValid() const { if (!ptr) return false; return ptr->check(); }  // BAD --
 
 **ENFORCEMENT**  clang-format (AllowShortFunctionsOnASingleLine: InlineOnly); Advisory — code review for the “trivial” judgment call.
 
-### 6.5.8 Include order: own header, first-party, third-party, C system + standard library
+### C3.5.8 Include order: own header, first-party, third-party, C system + standard library
 
 **RULE**  A .cpp file's #includes are grouped and ordered: (1) the matching header for this file (e.g. recordreader.cpp includes recordreader.h first), (2) this project's other first-party headers, (3) third-party library headers, whichever the project depends on (see C-32), (4) C system headers and C++ standard library headers, combined into one group. Each group is separated by a blank line and alphabetized within itself.
 
@@ -1150,7 +1150,7 @@ bool isValid() const { if (!ptr) return false; return ptr->check(); }  // BAD --
 
 **ENFORCEMENT**  clang-format (IncludeBlocks: Regroup, SortIncludes: CaseInsensitive, IncludeCategories — see Appendix B). The CaseInsensitive setting matters for the alphabetization claim above: clang-format's default ASCII sort would place every capitalised third-party header ahead of every lowercase one, which is not what the example shows.
 
-### 6.5.9 Member order: public/protected/private, then types → constants → factory functions → constructors → assignment operators → destructor → other methods → data members
+### C3.5.9 Member order: public/protected/private, then types → constants → factory functions → constructors → assignment operators → destructor → other methods → data members
 
 **RULE**  A class's access-level blocks appear in the order public, then protected, then private — each access level as one contiguous block, never scattered (e.g. two separate public: sections with something else between them). Within each access-level block, declarations follow this order: types (nested typedefs/using/structs/classes), constants, factory functions, constructors, assignment operators, destructor, all other methods, data members. Within any one of those 8 groups — e.g. among the “other methods” — declarations are NOT required to be alphabetical; group related declarations together instead. For data members specifically, declaration order follows initialization dependencies, not alphabetical order or grouping — C++ always initializes members in declaration order regardless of constructor initializer-list order, so a member that depends on another member already being initialized must be declared after it.
 

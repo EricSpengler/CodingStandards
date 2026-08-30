@@ -4,35 +4,35 @@
 BasedOnStyle: LLVM
 Language: Cpp
 
-# 6.5.2, 6.5.3
+# C3.5.2, C3.5.3
 IndentWidth: 4
 TabWidth: 4
 UseTab: Never
 ColumnLimit: 100
 
-# 6.5.1
+# C3.5.1
 BreakBeforeBraces: Allman
 
-# 6.5.4
+# C3.5.4
 PointerAlignment: Left
 DerivePointerAlignment: false
 
-# 6.5.5
+# C3.5.5
 AccessModifierOffset: -4
 IndentAccessModifiers: false
 
-# 6.5.6
+# C3.5.6
 SpaceBeforeParens: ControlStatements
 
-# 6.5.7
+# C3.5.7
 AllowShortFunctionsOnASingleLine: InlineOnly
 AllowShortIfStatementsOnASingleLine: false
 
-# 6.5.8 -- include order: own header, first-party, third-party, C system + stdlib combined
+# C3.5.8 -- include order: own header, first-party, third-party, C system + stdlib combined
 IncludeBlocks: Regroup
 # CaseInsensitive, not `true`: `true` sorts by raw ASCII, which puts every
 # capitalised header (<GuiToolkit/Window.h>) ahead of every lowercase one
-# regardless of letter. 6.5.8 says groups are "alphabetized within
+# regardless of letter. C3.5.8 says groups are "alphabetized within
 # themselves", and this is the setting that makes that literally true.
 # Requires clang-format 13 or newer.
 SortIncludes: CaseInsensitive
