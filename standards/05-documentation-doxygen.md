@@ -162,7 +162,7 @@ class Buffer
 
 ### 5.4 Namespaces are documented once, in a dedicated doc-only header
 
-**RULE**  Each namespace gets exactly one Doxygen block, using the @namespace command, living in a dedicated file (e.g. docs/namespaces.h) that contains nothing but namespace documentation — no actual code. Namespaces are never documented inline at the point they're opened in an ordinary header, since a namespace is typically reopened across many files and there'd be no single obvious place to put its one canonical description.
+**RULE**  Each namespace gets exactly one Doxygen block, using the @namespace command, living in a dedicated file — docs/namespaces.h in this project, per C-31 — that contains nothing but namespace documentation — no actual code. Namespaces are never documented inline at the point they're opened in an ordinary header, since a namespace is typically reopened across many files and there'd be no single obvious place to put its one canonical description.
 
 **RATIONALE**  A namespace is reopened in dozens of files; documenting it inline in “whichever header happened to be first” is exactly the kind of ambiguity this document exists to remove. A dedicated doc-only file makes it mechanical: one namespace, one block, one obvious location to look. It's still a tracked .h file, so it carries the same file header as any other (4.1).
 

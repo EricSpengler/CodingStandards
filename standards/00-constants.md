@@ -15,10 +15,27 @@ Numbered `0` so it sorts ahead of Section 1 without disturbing any existing sect
 - **Examples and config appendices use the literal value.** An example full of placeholders is not copyable, and a `.clang-format` file cannot contain a role name. These are instantiations of the registry, and the **Used in** column is what makes them findable when a value changes.
 - **Changing a constant is a normal MR** that updates this row, every rule listed in **Used in**, and nothing else.
 - **Adding a constant** means adding a row here in the same MR as the rule that introduced it.
+- **If a rule states a project-scoped value literally, it cites the constant id on the same line.** Stating the value is usually the more readable choice — what is not acceptable is stating it with nothing to tell a reader, or a fork of this guide, that it is a value rather than a principle. This is mechanically checked; see below.
 
 *Status: the inventory is complete and the scope column is settled. The guide's prose has not yet been rewritten to the role-name convention above — see the generalization status section below.*
 
 ---
+
+## Consistency check
+
+`tools/check_constants.py` verifies this registry against the rules. Run it from the repository root; it exits non-zero on failure, so it can gate a merge once CI exists.
+
+```bash
+python3 tools/check_constants.py
+```
+
+It catches three things, all of which are otherwise silent:
+
+1. **A "Used in" column naming a rule that no longer exists** — the usual cause is a rule being renumbered or removed without the registry being updated.
+2. **A constant delegated to the project profile with no value there** — the delegation silently pointing at nothing.
+3. **A project-scoped value written out in a rule without citing its constant id** — the two-sources-of-truth problem rule 5.6 prohibits for documentation. This check is what found C-14, where the commit scope list was written out in both 1.3.1 and the project profile, and C-31.
+
+What it deliberately does *not* check is whether a stated value is *correct* — that `72 characters` in 1.3.1 still matches C-15. Doing that reliably would need a machine-readable probe per constant, which is more registry bookkeeping than the drift risk justifies. The **Used in** column is the manual answer: change a value, visit the rules it names.
 
 ## Scope vocabulary
 
