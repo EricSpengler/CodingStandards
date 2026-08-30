@@ -21,7 +21,7 @@ import sys
 
 STANDARDS = "standards/*.md"
 REGISTRY = "standards/00-constants.md"
-PROFILE = "PROJECT_PROFILE.md"
+PROFILE = "project/PROJECT_PROFILE.md"
 
 # Section numbers deliberately retired rather than reassigned.
 RETIRED = {"2.5", "2.5.1"}

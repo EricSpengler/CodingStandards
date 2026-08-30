@@ -16,6 +16,20 @@ Changing a value rather than a rule — a branch name, a line limit, a library? 
 
 ---
 
+## Repository layout
+
+One file at the root — this one. Everything else is filed by what it is.
+
+```
+README.md            you are here: scope, index, how to read a rule
+standards/           the standard itself: sections, appendices, references
+project/             per-project values -- forked, not shared
+planning/            the working tracker: open topics, decisions, findings
+tools/               scripts that check the standard against itself
+```
+
+The split that matters is `standards/` versus `project/`. The standard is shared and changes rarely; the profile is rewritten by every project that adopts the standard. If you are about to add something to `standards/` that is true of only one project, it belongs in `project/` instead.
+
 ## The documents
 
 | | Document | What it is | Rules |
@@ -37,14 +51,14 @@ Changing a value rather than a rule — a branch name, a line limit, a library? 
 | **B** | [Example .clang-format](standards/appendix-b-clang-format.md) | 6.5 formatting |
 | **C** | [Example .clang-tidy](standards/appendix-c-clang-tidy.md) | Section 3 naming, Section 6 style and complexity |
 | **D** | [Example cliff.toml](standards/appendix-d-cliff-toml.md) | 2.4 changelog generation |
+| — | [References](standards/references.md) | External standards this guide draws on, with links |
 
 ### Supporting files
 
 | File | Purpose |
 |---|---|
-| [`PROJECT_PROFILE.md`](PROJECT_PROFILE.md) | **Everything specific to one project.** Source layout, commit scopes, third-party libraries, the data-sensitivity determination, product-specific release requirements. A new project forks this file and rewrites it — it does not fork the standard. |
-| [`Master_Topic_List.md`](Master_Topic_List.md) | The working tracker: topics not yet written, decisions awaiting a human, findings against written material, and notes parked for sections that do not exist yet. If something is open, it is in here. |
-| [`References.md`](References.md) | External standards this guide draws on, with links. |
+| [`project/PROJECT_PROFILE.md`](project/PROJECT_PROFILE.md) | **Everything specific to one project.** Source layout, commit scopes, third-party libraries, the data-sensitivity determination, product-specific release requirements. A new project forks this file and rewrites it — it does not fork the standard. |
+| [`planning/Master_Topic_List.md`](planning/Master_Topic_List.md) | The working tracker: topics not yet written, decisions awaiting a human, findings against written material, and notes parked for sections that do not exist yet. If something is open, it is in here. |
 | [`tools/check_constants.py`](tools/check_constants.py) | Verifies Section 0 against the rules. Exits non-zero, so it can gate a merge once CI exists. |
 
 ---
@@ -77,7 +91,7 @@ A change to the standard is an ordinary merge request against this repository, f
 - **Changing a rule** — edit the rule. If it has an entry in Section 7, update that too.
 - **Changing a value** (branch name, a limit, a library) — edit its row in Section 0 first, then visit every rule its **Used in** column names. Run `python3 tools/check_constants.py` before pushing.
 - **Adding a rule** — add it at the end of its section and take the next number. Numbers are never reused or reassigned, so an existing reference is never ambiguous. Section 2.5 is deliberately unused for this reason.
-- **Anything unresolved** — record it in `Master_Topic_List.md` rather than leaving it in a commit message. That file exists so open threads have somewhere to live.
+- **Anything unresolved** — record it in `planning/Master_Topic_List.md` rather than leaving it in a commit message. That file exists so open threads have somewhere to live.
 
 ---
 

@@ -67,7 +67,7 @@ Scope assignments below are settled. See the generalization status section at th
 | ID | Constant | Current value | Scope | Used in |
 |---|---|---|---|---|
 | C-09 | Integration branch name | `development` | `org` | 1.1.1–1.1.3, 1.2.1–1.2.3, 1.4.1, 1.4.2, 1.5.1, 1.8.1, 2.4.1 |
-| C-10 | Production branch name | `release` | `org` | 1.1.1–1.1.4, 1.2.3, 1.4.2, 2.1.1, 2.2, 2.3.1, 2.4.1, 2.4.2, plus `PROJECT_PROFILE.md` |
+| C-10 | Production branch name | `release` | `org` | 1.1.1–1.1.4, 1.2.3, 1.4.2, 2.1.1, 2.2, 2.3.1, 2.4.1, 2.4.2, plus `project/PROJECT_PROFILE.md` |
 | C-11 | Merge method | Fast-forward, squash per-MR | `org` | 1.2.3, 1.4.1 |
 | C-12 | Stale branch thresholds | *not yet adopted — see D-07* | `org` | — |
 
@@ -142,9 +142,9 @@ These are the values that make this a *product* document rather than a *standard
 
 | ID | Constant | Current value | Used in | Proposed disposition |
 |---|---|---|---|---|
-| C-46 | Product name | *moved* | App. A `PROJECT_NAME` now a placeholder | **done** — in `PROJECT_PROFILE.md` |
-| C-47 | Build expiry mechanism | *moved* | 2.5 removed; 2.2 generalized | **done** — rule text verbatim in `PROJECT_PROFILE.md`. Section number 2.5 left unused rather than reassigned |
-| C-48 | Data sensitivity determination | *moved* | 4.2 rewritten | **done** — 4.2 now requires every project to record a determination; this project's answer is in `PROJECT_PROFILE.md` |
+| C-46 | Product name | *moved* | App. A `PROJECT_NAME` now a placeholder | **done** — in `project/PROJECT_PROFILE.md` |
+| C-47 | Build expiry mechanism | *moved* | 2.5 removed; 2.2 generalized | **done** — rule text verbatim in `project/PROJECT_PROFILE.md`. Section number 2.5 left unused rather than reassigned |
+| C-48 | Data sensitivity determination | *moved* | 4.2 rewritten | **done** — 4.2 now requires every project to record a determination; this project's answer is in `project/PROJECT_PROFILE.md` |
 | C-49 | Running example types | `RecordReader`, `RecordBatch`, `ReadError`, `FileHandle` | §§ 1, 3, 5, 6 | **done** — domain-neutral throughout. `utf8decoder` retained in 3.1 and 3.3, which need a version-like token to demonstrate the fusion rule at all |
 
 ---
@@ -156,7 +156,7 @@ The scope column is settled. The generalization pass ran on this basis:
 - **C-07, C-08** — review process and release cadence are organization policy. 1.8 and 2.2 stay in the standard unchanged.
 - **C-43, C-44** — classification marking is an organization-wide obligation. Section 4 stays, with 4.2 rewritten to require a *determination* rather than to state this product's answer.
 - **C-49** — the running example is now domain-neutral.
-- **C-46, C-47, C-48** — product-scoped values moved to `PROJECT_PROFILE.md`.
+- **C-46, C-47, C-48** — product-scoped values moved to `project/PROJECT_PROFILE.md`.
 
 Still outstanding: the guide's prose states constant *values* inline rather than referring to them by role, so changing one still means visiting the rules its **Used in** column names rather than editing only this table. That rewrite is F-32 on the master topic list.
 

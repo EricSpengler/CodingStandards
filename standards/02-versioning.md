@@ -31,7 +31,7 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 - If a sprint's commits warrant a version bump, that's a normal release: new tag, changelog entry, the full process below. If they do not, no new tag and no changelog entry are created.
 
-- Whether a build still goes out when there is nothing to tag is a project matter, not a standard: a project whose distribution mechanism requires a periodic rebuild records that requirement, and its trigger, in its project profile. *(Section 2.5 previously held one such product-specific rule; it moved to `PROJECT_PROFILE.md`. The number is left unused rather than reassigned, so existing references stay unambiguous.)*
+- Whether a build still goes out when there is nothing to tag is a project matter, not a standard: a project whose distribution mechanism requires a periodic rebuild records that requirement, and its trigger, in its project profile. *(Section 2.5 previously held one such product-specific rule; it moved to `project/PROJECT_PROFILE.md`. The number is left unused rather than reassigned, so existing references stay unambiguous.)*
 
 ## 2.3 Release-cutting
 

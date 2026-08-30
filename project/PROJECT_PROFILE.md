@@ -4,7 +4,7 @@ The standards in `standards/` are written to be shared across projects. This fil
 
 A new project forks this file and rewrites it. It does not fork the standard.
 
-Constant IDs below refer to `standards/00-constants.md`.
+Constant IDs below refer to [`standards/00-constants.md`](../standards/00-constants.md), relative to the repository root.
 
 ---
 
