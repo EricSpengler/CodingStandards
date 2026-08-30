@@ -305,6 +305,57 @@ git add .vs/  # BAD -- IDE-local state, differs per developer
 
 **ENFORCEMENT**  Advisory — code review.
 
+#### 1.6.3 Line endings are normalized by a committed .gitattributes, not by developer settings
+
+**RULE**  A .gitattributes at the repository root sets `* text=auto`, so text files are stored with LF in the repository and checked out with whatever endings the developer's platform expects. File types that require CRLF to function (.bat, .cmd, .ps1) are pinned to CRLF explicitly. Binary file types committed under test_data/ (1.6.2) are marked binary explicitly rather than left to git's content-detection heuristic. No developer relies on a personal core.autocrlf setting to get correct results.
+
+**RATIONALE**  Without this file, what actually lands in the repository depends on each developer's local core.autocrlf. Two people with different settings editing the same file produce a diff in which every line changed, which makes reviewing the real one-line change impossible and makes git blame point at whoever last flipped the endings rather than whoever wrote the code. Today this is latent, since everyone is on Windows; it surfaces the moment anything is built or edited on a second platform, which is a stated future direction. The rule costs one file now and prevents a repository-wide reformatting event later.
+
+Marking binaries explicitly matters more here than in most repositories precisely because 1.6.2 commits test fixtures to git. Git's binary detection is good but not infallible, and a line-ending-normalized HDF5 file is a corrupted HDF5 file — one that fails at read time with an error pointing nowhere near the cause. Pinning the Windows script types is the mirror image of the same concern: cmd.exe mis-parses a .bat file that has LF endings.
+
+**GOOD**
+
+```cpp
+# .gitattributes at the repository root
+
+# Normalize on commit: LF in the repository, native in the working tree.
+* text=auto
+
+# Explicit for the types this project actually has, so no tool's guess
+# overrides the rule above.
+*.h      text eol=lf
+*.cpp    text eol=lf
+*.cmake  text eol=lf
+*.txt    text eol=lf
+*.md     text eol=lf
+*.json   text eol=lf
+
+# Windows scripts must keep CRLF or cmd.exe mis-parses them.
+*.bat    text eol=crlf
+*.cmd    text eol=crlf
+*.ps1    text eol=crlf
+
+# Binary -- never normalized, never diffed as text. This matters because
+# test_data/ is committed (1.6.2): a normalized .h5 is a corrupted .h5.
+*.h5     binary
+*.hdf5   binary
+*.zip    binary
+*.png    binary
+*.ico    binary
+```
+
+**BAD**
+
+```cpp
+git config --global core.autocrlf true  # BAD as the project's answer -- this is a per-developer
+                                        # setting, so it guarantees nothing about what any other
+                                        # developer commits
+```
+
+*Adding .gitattributes to a repository that already has content does not retroactively fix files already committed with the wrong endings. Immediately after the .gitattributes commit, run `git add --renormalize .` once and commit the result as its own chore commit, so the one-time reformatting is isolated from any real change.*
+
+**ENFORCEMENT**  Git itself (actual gate) — once .gitattributes is committed, normalization happens at commit time regardless of any developer's local configuration. Advisory — code review that a newly introduced binary file type gets added to the binary list before the first file of that type is committed.
+
 ## 1.7 Merge request mechanics
 
 #### 1.7.1 One required approval, any team member

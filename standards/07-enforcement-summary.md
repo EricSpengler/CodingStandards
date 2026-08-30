@@ -12,6 +12,7 @@ A quick-reference map of every hard rule above to what actually enforces it. Any
 | Fast-forward-only release, no direct push to development/release | 1.1, 1.4 | GitLab branch protection rules (actual gate) |
 | 1 approval minimum before merge | 1.7 | GitLab MR approval rule (actual gate) |
 | Branch auto-delete on merge | 1.5 | GitLab repo setting (actual gate) |
+| Line-ending normalization (.gitattributes) | 1.6.3 | Git (actual gate) once committed; Advisory for adding new binary types |
 | Four-step manual review (agent → review → build → test) | 1.8 | Manual MR checklist — no automated gate exists |
 | Version bump derived from commit types | 2.1 | Manual MR checklist at release-cut time |
 | Release process sequence, tag-after-merge | 2.4 | Documented procedure, not tool-enforced |
