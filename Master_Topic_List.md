@@ -28,6 +28,7 @@ Read this before editing, so the file stays mechanically scannable.
 
 | # | Section | File | Status |
 |---|---|---|---|
+| 0 | Constants Registry | `standards/00-constants.md` | inventory done; scope column needs confirming |
 | 1 | Git Workflow | `standards/01-git-workflow.md` | done |
 | 2 | Versioning | `standards/02-versioning.md` | done |
 | 3 | Naming Conventions | `standards/03-naming-conventions.md` | done |
@@ -94,6 +95,9 @@ Nothing here can be resolved by drafting. Each blocks or reshapes the work named
 | D-07 | Stale/abandoned branch policy — wanted at all? Flagged in the original list as "unclear if this is even wanted". | § 1.5 | open |
 | D-08 | Blank-line conventions within a file, beyond what clang-format enforces — wanted at all? | § 6.5 | open |
 | D-09 | Member variable decoration: keep 3.9's no-`m_`/no-trailing-underscore rule, or adopt Google's `foo_`. | 3.9 | **done** — keep 3.9 as written |
+| D-10 | Confirm the `org`/`project`/`product` scope column in § 0, specifically C-07, C-08, C-43, C-44, C-14, C-28, C-32. Blocks the generalization pass. | § 0 | open |
+| D-11 | C-49: replace the `Hdf5Reader` running example with a domain-neutral one, or keep it? 35 rules affected — the largest single edit in the generalization. | §§ 1, 3, 5, 6 | open |
+| D-12 | C-47: remove 2.5 (poison-pill) from the standard entirely, or keep it flagged as product-scoped? | § 2 | open |
 
 ---
 
@@ -133,6 +137,9 @@ From the standards review. Done rows retained deliberately.
 | F-28 | Fixed-width integer types vs `int`/`size_t` — no stated preference, and this codebase parses binary formats | § 6.1 | open |
 | F-29 | Uniform/brace initialization style not addressed | § 6.1 | open |
 | F-30 | Structured bindings not addressed | § 6.1 | open |
+| F-31 | Guide is written as a product document, not a standard: 42 Jira refs, 28 GitLab refs, and 35 rules using `Hdf5Reader` as the running example. Agreed disposition is option B — keep org-wide tooling, strip product-specific content | all | open |
+| F-32 | Prose states constant *values* inline rather than referring to them by role, so changing one means grepping. Rewrite to the role-name convention in § 0 | all | open |
+| F-33 | `standards/` has no index or title page — the split never got one, so the document set does not state its own scope | new `README.md` | open |
 
 ---
 
