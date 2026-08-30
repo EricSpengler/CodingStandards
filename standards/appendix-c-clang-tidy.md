@@ -37,11 +37,12 @@ Checks: >
   cppcoreguidelines-special-member-functions
 
 # Only first-party headers are analyzed. Third-party headers pulled in from
-# vcpkg (Qt, HDF5, Vulkan, DuckDB) are not ours to fix -- see 11.4.
+# vcpkg (Qt, HDF5, Vulkan, DuckDB) are not ours to fix.
 HeaderFilterRegex: '^.*/(core|gui|tests)/.*\.h$'
 
-# Every enabled check is an error, not a warning. Rationale in 16.2: a warning
-# nobody is forced to clear accumulates until the output is worthless.
+# Every enabled check is an error, not a warning: a warning nobody is forced to
+# clear accumulates until the output is worthless. Note this only bites once
+# clang-tidy runs in CI -- today it is run by hand during the review in 1.8.
 WarningsAsErrors: '*'
 
 FormatStyle: file

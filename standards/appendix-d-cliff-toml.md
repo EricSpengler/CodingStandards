@@ -53,8 +53,8 @@ filter_commits = false
 topo_order = false
 sort_commits = "oldest"
 
-# Release tags only (2.4.1, step 8). The abandoned/* archive tags from 1.5.2
-# are not releases and must never be read as tag boundaries.
+# Release tags only (2.4.1, step 8). Any non-release tag the repo may carry
+# must never be read as a tag boundary.
 tag_pattern = "v[0-9]*"
 
 commit_preprocessors = [

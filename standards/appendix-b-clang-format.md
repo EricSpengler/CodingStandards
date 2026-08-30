@@ -28,10 +28,6 @@ SpaceBeforeParens: ControlStatements
 AllowShortFunctionsOnASingleLine: InlineOnly
 AllowShortIfStatementsOnASingleLine: false
 
-# 6.5.10
-MaxEmptyLinesToKeep: 1
-KeepEmptyLinesAtTheStartOfBlocks: false
-
 # 6.5.8 -- include order: own header, first-party, third-party, C system + stdlib combined
 IncludeBlocks: Regroup
 SortIncludes: true

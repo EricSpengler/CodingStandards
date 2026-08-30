@@ -78,7 +78,7 @@ feature/JIRA-123-hdf5-batch-reader  // type prefix, but this isn't an umbrella b
 
 #### 1.2.2 Exception: umbrella branches get a type prefix
 
-**RULE**  Only when a branch is itself an umbrella — i.e. other branches will be merged into it before it merges into development — does it get a type prefix: `<type>/JIRA-XXX-kebab-desc`, tied to the umbrella-level Jira ticket. `<type>` matches the commit type list in 1.3 (feature, fix, chore, docs, refactor, test, perf, build, ci). Sub-branches cut from that umbrella branch still follow the default in 1.2.1 (no prefix), since the umbrella branch already carries that context.
+**RULE**  Only when a branch is itself an umbrella — i.e. other branches will be merged into it before it merges into development — does it get a type prefix: `<type>`/JIRA-XXX-kebab-desc, tied to the umbrella-level Jira ticket. `<type>` matches the commit type list in 1.3 (feature, fix, chore, docs, refactor, test, perf, build, ci). Sub-branches cut from that umbrella branch still follow the default in 1.2.1 (no prefix), since the umbrella branch already carries that context.
 
 **RATIONALE**  Keeps the type prefix meaningful at exactly one level: the umbrella branch, which is the thing that eventually becomes a feat/fix/etc. commit on development. Applying it to every branch would be noise, since the vast majority of branches are never an umbrella for anything else.
 
@@ -257,35 +257,6 @@ feat(core): add hdf5 batch reader and fix related edge cases in the be...  // BA
 **RATIONALE**  Free cleanup, zero downside — a merged branch has already had its content absorbed via squash.
 
 **ENFORCEMENT**  GitLab “automatically delete source branch” setting (actual gate).
-
-#### 1.5.2 Unmerged branches: stale at 30 days, archived and deleted at 90
-
-**RULE**  A branch with no new commits for 30 days is stale: at the next sprint close-out, whoever pushed it last is asked whether it's still live. A branch that reaches 90 days with no commits and no open MR is archived and deleted — archived meaning a lightweight tag `abandoned/<original-branch-name>` is pushed at its tip first, so the commits stay reachable forever, then the branch itself is deleted. Reviving archived work is just `git checkout -b <new-branch> abandoned/<old-name>`. development and release are never subject to this, and neither is any branch with an open MR, regardless of age.
-
-**RATIONALE**  The cost of a stale branch isn't storage, it's that git branch -r stops being a readable list of what's actually in flight — which matters more here than on most teams, since the umbrella-branch structure (1.2.2) already puts multiple live branches in play per feature. Tagging before deleting is what makes the 90-day cutoff safe to apply mechanically: nothing is ever actually lost, so nobody has to weigh "is this worth keeping" against "is this cluttering the list." The 30-day prompt exists because the useful moment to ask is while the author still remembers the branch, not at 90 days when they don't.
-
-**GOOD**
-
-```cpp
-# archiving a branch at the 90-day cutoff
-git tag abandoned/JIRA-123-hdf5-batch-reader origin/JIRA-123-hdf5-batch-reader
-git push origin abandoned/JIRA-123-hdf5-batch-reader
-git push origin --delete JIRA-123-hdf5-batch-reader
-
-# reviving it later, whenever
-git checkout -b JIRA-456-hdf5-batch-reader-take-two abandoned/JIRA-123-hdf5-batch-reader
-```
-
-**BAD**
-
-```cpp
-git push origin --delete JIRA-123-hdf5-batch-reader  # BAD -- deleted without archiving first;
-                                                      # the commits are now unreachable on the remote
-```
-
-*Open item, needs team ratification: this rule was flagged as "unclear if this is even wanted" on the master topic list and is written here as a concrete proposal rather than a settled decision. The 30/90-day thresholds in particular are a starting point, not a researched number — adjust or drop the whole rule at review.*
-
-**ENFORCEMENT**  Advisory — sprint close-out ritual; the 30-day prompt and the 90-day sweep are both manual today. A scheduled GitLab job listing branches by last-commit date is an easy automation candidate once CI exists.
 
 ## 1.6 Repository hygiene
 
