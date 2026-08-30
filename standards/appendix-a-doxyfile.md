@@ -1,6 +1,6 @@
 # Appendix A: Example Doxyfile
 
-```cpp
+```ini
 PROJECT_NAME           = "CRNA PA Data Extraction & Visual Analysis"
 OUTPUT_DIRECTORY       = docs/generated
 INPUT                  = core gui docs/namespaces.h

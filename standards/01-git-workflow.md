@@ -4,7 +4,7 @@ This project uses GitLab Flow with a production branch: development is the singl
 
 ## 1.1 Branching model
 
-#### 1.1.1 development is the integration branch; release is a fast-forward-only mirror
+### 1.1.1 development is the integration branch; release is a fast-forward-only mirror
 
 **RULE**  All work branches off development and merges back into development via MR. release is never committed to directly — it only ever fast-forwards to a point already reached on development. There is no separate main/master; development is the default branch.
 
@@ -12,7 +12,7 @@ This project uses GitLab Flow with a production branch: development is the singl
 
 **GOOD**
 
-```cpp
+```bash
 git checkout release
 git merge --ff-only development
 git push origin release
@@ -20,14 +20,14 @@ git push origin release
 
 **BAD**
 
-```cpp
+```bash
 git checkout release
 git merge development  # BAD -- creates a merge commit if release has diverged, breaking fast-forward-only
 ```
 
 **ENFORCEMENT**  GitLab branch protection: release accepts fast-forward merges only, no direct pushes.
 
-#### 1.1.2 No hotfix branches — all fixes go through development first
+### 1.1.2 No hotfix branches — all fixes go through development first
 
 **RULE**  Even urgent post-release bugs are fixed via a normal branch off development, merged through the standard MR process. There is no separate hotfix/* branch type or expedited path.
 
@@ -35,7 +35,7 @@ git merge development  # BAD -- creates a merge commit if release has diverged, 
 
 **ENFORCEMENT**  Advisory — code review / team convention.
 
-#### 1.1.3 development is always in a buildable, runnable “beta” state
+### 1.1.3 development is always in a buildable, runnable “beta” state
 
 **RULE**  Known bugs are acceptable on development. A change that would leave development unable to build or unable to run (an incomplete CMakeLists.txt, a half-wired feature that crashes on startup, etc.) must not be merged there — that work stays on its feature/umbrella branch until it is at least buildable and non-crashing, even if functionally incomplete.
 
@@ -43,7 +43,7 @@ git merge development  # BAD -- creates a merge commit if release has diverged, 
 
 **ENFORCEMENT**  Manual MR checklist — the manual build/test step in 1.8 is precisely what catches this.
 
-#### 1.1.4 Single release line
+### 1.1.4 Single release line
 
 **RULE**  release is never branched into version-specific lines (release/1.x, release/2.x, etc.). It always represents the one current shippable state. There is no requirement to patch older shipped versions independently.
 
@@ -53,7 +53,7 @@ git merge development  # BAD -- creates a merge commit if release has diverged, 
 
 ## 1.2 Branch naming
 
-#### 1.2.1 Default: JIRA-XXX-kebab-desc, no type prefix
+### 1.2.1 Default: JIRA-XXX-kebab-desc, no type prefix
 
 **RULE**  Most branches — anything that merges straight into development, and any sub-branch cut from an umbrella branch — are named JIRA-XXX-kebab-desc. No type prefix. The type prefix is reserved for the one exception in 1.2.2.
 
@@ -76,7 +76,7 @@ feat/JIRA-123-hdf5-batch-reader  // type prefix, but this isn't an umbrella bran
 
 **ENFORCEMENT**  Advisory — code review; a server-side branch-name hook (regex) is a good candidate if/when available on the GitLab tier in use.
 
-#### 1.2.2 Exception: umbrella branches get a type prefix
+### 1.2.2 Exception: umbrella branches get a type prefix
 
 **RULE**  Only when a branch is itself an umbrella — i.e. other branches will be merged into it before it merges into development — does it get a type prefix: `<type>`/JIRA-XXX-kebab-desc, tied to the umbrella-level Jira ticket. `<type>` is drawn from the same fixed type list as 1.3.1 — feat, fix, style, chore, docs, refactor, test, perf, build, ci, revert — using the identical short form, so a branch prefix and the commit it eventually becomes never disagree. Sub-branches cut from that umbrella branch still follow the default in 1.2.1 (no prefix), since the umbrella branch already carries that context.
 
@@ -96,7 +96,7 @@ feat/JIRA-999-fix-typo  // BAD -- this is a single, standalone change; no type p
 
 **ENFORCEMENT**  Advisory — code review.
 
-#### 1.2.3 Sub-branches squash into the umbrella branch; the umbrella branch fast-forwards into development
+### 1.2.3 Sub-branches squash into the umbrella branch; the umbrella branch fast-forwards into development
 
 **RULE**  Each sub-branch MR into the umbrella branch is squashed to one commit, following the same Conventional Commits format as a normal development merge. The umbrella branch itself is the one exception to squashing: its merge into development is a fast-forward — no squash, no merge commit — which requires the umbrella branch to be rebased onto the latest development (1.4.2) immediately before merging so the fast-forward is possible. This preserves each sub-branch's individual squashed commit exactly as it appears on the umbrella branch.
 
@@ -104,7 +104,7 @@ feat/JIRA-999-fix-typo  // BAD -- this is a single, standalone change; no type p
 
 **GOOD**
 
-```cpp
+```bash
 git checkout development
 git merge --ff-only feat/JIRA-123-hdf5-work   # umbrella branch, NOT squashed
 git push origin development
@@ -125,7 +125,7 @@ feat(core): JIRA-123 umbrella of hdf5 work
 
 ## 1.3 Commit messages — Conventional Commits
 
-#### 1.3.1 Format: type(scope): description (JIRA-XXX)
+### 1.3.1 Format: type(scope): description (JIRA-XXX)
 
 **RULE**  Type is one of feat, fix, style, chore, docs, refactor, test, perf, build, ci, revert. Scope is required whenever the change is scoped to a specific part of the tree, and must be one of a fixed list — core, gui, cmake, ci, docs, tests, build — extendable only via a one-line addition to this document, never invented ad hoc. Description is imperative mood, lowercase, no trailing period. Jira ticket reference is always required, no exceptions, even for trivial changes (typo fixes, dependency bumps get a real ticket first). The subject line (the whole type(scope): description (JIRA-XXX) string) is capped at 72 characters; if the change needs more explanation, that goes in the commit body, wrapped at 100 characters per line.
 
@@ -150,7 +150,7 @@ feat(core): add a much longer description that blows well past the seventy-two c
 
 **ENFORCEMENT**  Advisory — code review, checked as part of the four-step manual review process (1.8). No commit-message linting tool is in use today; deliberately not adopting one for now given GitLab’s squash-message truncation behavior (1.4.3) limits how much a tool like this can actually guarantee.
 
-#### 1.3.2 WIP commits are unformatted; only the squash message conforms
+### 1.3.2 WIP commits are unformatted; only the squash message conforms
 
 **RULE**  Commits on a feature branch during active work are not required to follow Conventional Commits. The MR title (which becomes the squash commit message on merge) is the only commit message enforced.
 
@@ -158,7 +158,7 @@ feat(core): add a much longer description that blows well past the seventy-two c
 
 **ENFORCEMENT**  Advisory — not tool-checked; the MR title is what a reviewer checks, not individual pushes to the feature branch.
 
-#### 1.3.3 Breaking changes use ! + a BREAKING CHANGE: footer
+### 1.3.3 Breaking changes use ! + a BREAKING CHANGE: footer
 
 **RULE**  A commit that breaks compatibility (API signature change, changed file format, removed CLI flag, etc.) marks the type with ! and includes a BREAKING CHANGE: footer describing what breaks and how to migrate.
 
@@ -175,7 +175,7 @@ instead of a raw RecordBatch. Callers must check the result before use.
 
 **ENFORCEMENT**  Advisory — code review, both for footer format and for whether a change actually warrants the marker.
 
-#### 1.3.4 Reverts follow the same convention
+### 1.3.4 Reverts follow the same convention
 
 **RULE**  git revert's auto-generated Revert "..." message is reformatted before merge to revert: <original description> (JIRA-XXX), referencing the original ticket or a new one if the revert needs its own justification captured.
 
@@ -195,7 +195,7 @@ Revert "feat(core): add hdf5 batch reader (JIRA-456)"  // BAD -- raw git-generat
 
 ## 1.4 Merging
 
-#### 1.4.1 Merge method: fast-forward, with squash applied per-MR by default
+### 1.4.1 Merge method: fast-forward, with squash applied per-MR by default
 
 **RULE**  The GitLab project merge method is set to Fast-forward merge — no merge commits are ever created, for any branch, full stop. Combined with the per-MR squash option (checked by default), a normal branch's MR into development results in a single squashed commit fast-forwarded into place, with no merge commit. The umbrella branch's own merge into development (1.2.3) is the one case where squash is left unchecked, so its already-squashed sub-branch commits fast-forward in individually. The squash commit message follows the Conventional Commits rule (1.3.1); since the MR title should already be in that format, the default squash message needs no editing — but see 1.4.3 for a GitLab-specific caveat on this.
 
@@ -214,7 +214,7 @@ Merge branch 'JIRA-123-hdf5-batch-reader' into development  # BAD -- merge commi
 
 **ENFORCEMENT**  GitLab project setting: Merge method = Fast-forward merge. Per-MR squash checkbox: on by default, off only for the umbrella branch's own merge into development (1.2.3).
 
-#### 1.4.2 Feature branches are rebased onto development, never merged from it
+### 1.4.2 Feature branches are rebased onto development, never merged from it
 
 **RULE**  While a MR is open, if development has moved forward, the dev rebases their feature branch onto the latest development and force-pushes with --force-with-lease (never bare --force). Rebase/force-push is only ever performed on your own feature branch — never on development or release. This applies to umbrella branches too: keeping an umbrella branch rebased onto development throughout its life is what makes its eventual fast-forward merge (1.2.3) possible at all.
 
@@ -222,19 +222,19 @@ Merge branch 'JIRA-123-hdf5-batch-reader' into development  # BAD -- merge commi
 
 **GOOD**
 
-```cpp
+```bash
 git fetch origin && git rebase origin/development && git push --force-with-lease
 ```
 
 **BAD**
 
-```cpp
-git push --force  // no lease check — can silently destroy a teammate's commits
+```bash
+git push --force   # no lease check — can silently destroy a teammate's commits
 ```
 
 **ENFORCEMENT**  GitLab branch protection prevents force-push to development/release entirely (actual gate). Advisory — code review / onboarding docs for --force-with-lease usage on feature branches.
 
-#### 1.4.3 GitLab truncates long squash-merge messages — verify before confirming
+### 1.4.3 GitLab truncates long squash-merge messages — verify before confirming
 
 **RULE**  This applies to normal squashed merges only (not the umbrella branch's un-squashed fast-forward, 1.2.3, which introduces no new commit message). GitLab auto-generates the squash-merge commit message from the MR's title/commits, but truncates it with a trailing “...” when it runs long. The person completing the merge must check the commit message field before confirming and, if truncated, manually retype it in full, correctly-formatted Conventional Commits form — never merge with a silently truncated message.
 
@@ -250,7 +250,7 @@ feat(core): add hdf5 batch reader and fix related edge cases in the be...  // BA
 
 ## 1.5 Branch cleanup
 
-#### 1.5.1 Branches auto-delete on merge
+### 1.5.1 Branches auto-delete on merge
 
 **RULE**  Repository setting deletes the source branch automatically once a MR is merged into development.
 
@@ -260,7 +260,7 @@ feat(core): add hdf5 batch reader and fix related edge cases in the be...  // BA
 
 ## 1.6 Repository hygiene
 
-#### 1.6.1 .gitignore follows durable principles, not a locked exhaustive list
+### 1.6.1 .gitignore follows durable principles, not a locked exhaustive list
 
 **RULE**  Entries fall into a small set of categories — build output, package-manager artifacts, IDE-local state for both supported IDEs — and new entries are added as they come up rather than requiring this document to be revised for every one. Note that test_data/ is NOT in this list — see 1.6.2, it's committed to the repo, not ignored.
 
@@ -268,7 +268,7 @@ feat(core): add hdf5 batch reader and fix related edge cases in the be...  // BA
 
 **GOOD**
 
-```cpp
+```gitignore
 # build output
 build/
 out/
@@ -290,14 +290,14 @@ cmake-build-*/
 
 **BAD**
 
-```cpp
+```bash
 git add build/  # BAD -- build output should never be tracked
 git add .vs/  # BAD -- IDE-local state, differs per developer
 ```
 
 **ENFORCEMENT**  Advisory — code review. .gitignore evolves by ordinary MR, no special process.
 
-#### 1.6.2 test_data/ is committed to the repository, with a controlled addition process
+### 1.6.2 test_data/ is committed to the repository, with a controlled addition process
 
 **RULE**  Test fixtures and sample data live in test_data/ and are tracked normally in git — not gitignored. Adding new files to test_data/ requires following a specific process (details TBD — open item, not yet documented here).
 
@@ -305,7 +305,7 @@ git add .vs/  # BAD -- IDE-local state, differs per developer
 
 **ENFORCEMENT**  Advisory — code review.
 
-#### 1.6.3 Line endings are normalized by a committed .gitattributes, not by developer settings
+### 1.6.3 Line endings are normalized by a committed .gitattributes, not by developer settings
 
 **RULE**  A .gitattributes at the repository root sets `* text=auto`, so text files are stored with LF in the repository and checked out with whatever endings the developer's platform expects. File types that require CRLF to function (.bat, .cmd, .ps1) are pinned to CRLF explicitly. Binary file types committed under test_data/ (1.6.2) are marked binary explicitly rather than left to git's content-detection heuristic. No developer relies on a personal core.autocrlf setting to get correct results.
 
@@ -315,7 +315,7 @@ Marking binaries explicitly matters more here than in most repositories precisel
 
 **GOOD**
 
-```cpp
+```gitattributes
 # .gitattributes at the repository root
 
 # Normalize on commit: LF in the repository, native in the working tree.
@@ -346,7 +346,7 @@ Marking binaries explicitly matters more here than in most repositories precisel
 
 **BAD**
 
-```cpp
+```bash
 git config --global core.autocrlf true  # BAD as the project's answer -- this is a per-developer
                                         # setting, so it guarantees nothing about what any other
                                         # developer commits
@@ -358,19 +358,19 @@ git config --global core.autocrlf true  # BAD as the project's answer -- this is
 
 ## 1.7 Merge request mechanics
 
-#### 1.7.1 One required approval, any team member
+### 1.7.1 One required approval, any team member
 
 **RULE**  Minimum 1 approval before merge. No CODEOWNERS restriction, no seniority requirement — any team member may approve any MR.
 
 **ENFORCEMENT**  GitLab MR approval rule: 1 required approval, no restricted approver group (actual gate).
 
-#### 1.7.2 MR size is soft-guided, not hard-blocked
+### 1.7.2 MR size is soft-guided, not hard-blocked
 
 **RULE**  Target under ~400 changed lines, excluding generated/lockfiles. MRs trending larger should be reconsidered as an umbrella-branch structure (1.2.2) rather than one large diff.
 
 **ENFORCEMENT**  Manual MR checklist / Advisory — reviewer's judgment during manual code review.
 
-#### 1.7.3 MR description follows a fixed template
+### 1.7.3 MR description follows a fixed template
 
 **RULE**  What changed · Jira link · how it was tested · screenshots/recording for any UI-visible change.
 
@@ -380,7 +380,7 @@ git config --global core.autocrlf true  # BAD as the project's answer -- this is
 
 This project does not currently run an automated CI pipeline. Every MR is verified by the approving reviewer performing four steps, in order, before approving. This section documents that process explicitly — until now it existed only as tribal knowledge, which is itself the kind of ambiguity this whole document exists to remove.
 
-#### 1.8.1 Four-step sequence, performed by the approving reviewer
+### 1.8.1 Four-step sequence, performed by the approving reviewer
 
 **RULE**  1) AI agent review — reviewer exports the MR's .diff and runs it through the in-house review agent (checks standards adherence, commit message format, formatting/static-analysis conformance), and posts the agent's output as an MR comment before proceeding. 2) Manual code review — reviewer reads the diff themselves, informed by (not replaced by) the agent's output. 3) Manual build — reviewer pulls the branch and builds it locally. Windows only today, since no Linux development environment exists yet; revisit once one does. 4) Manual test — reviewer runs the relevant test suite locally and confirms the MR's stated “how tested” claims. A MR is not approved until all four steps are complete, in this order.
 

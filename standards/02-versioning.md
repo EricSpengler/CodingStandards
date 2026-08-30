@@ -4,7 +4,7 @@ Semantic Versioning, pre-1.0 convention, derived mechanically from Conventional 
 
 ## 2.1 Version scheme
 
-#### 2.1.1 0.MINOR.PATCH, pinned MAJOR until first stable release
+### 2.1.1 0.MINOR.PATCH, pinned MAJOR until first stable release
 
 **RULE**  MAJOR stays pinned at 0 until the project reaches its first stable public contract, at which point this rule is revisited and standard post-1.0 SemVer takes over (breaking → MAJOR, feat → MINOR, fix/other → PATCH). Until then: MINOR bumps on any commit since the last tag with a ! marker or BREAKING CHANGE: footer, OR any feat commit. PATCH bumps when a release contains only fix/chore/docs/refactor/test/perf/build/ci commits — no feat, no breaking changes.
 
@@ -33,7 +33,7 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 ## 2.3 Release-cutting
 
-#### 2.3.1 Documented procedure, not restricted to one person
+### 2.3.1 Documented procedure, not restricted to one person
 
 **RULE**  Any team member should be able to cut a release by following the written procedure in 2.4; it is not restricted to a specific individual by design, even though one person does it today in practice.
 
@@ -43,7 +43,7 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 ## 2.4 Release process
 
-#### 2.4.1 Full sequence
+### 2.4.1 Full sequence
 
 **RULE**  1) Cut a release-prep branch off development, named JIRA-XXX-desc (a Jira ticket for the release itself; no type prefix, same as any other sub-branch). 2) Pull latest development into it. 3) Generate the changelog entry for commits since the last tag using git-cliff. 4) Append the generated entry to CHANGELOG.md. 5) Commit the changelog update, following standard Conventional Commits format (e.g. chore(docs): update changelog for v0.5.0 (JIRA-XXX)). 6) Push the branch, open an MR into development. 7) Squash-merge into development — standard merge rule, no exception. 8) Tag the resulting squash commit on development as v0.MINOR.PATCH (per 2.1), push the tag. 9) Fast-forward release to that same tagged commit, push. 10) Build from the tagged commit; package for distribution.
 
@@ -51,7 +51,7 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 **ENFORCEMENT**  Manual MR checklist / documented procedure — anyone should be able to execute this from the written steps, per 2.3.1.
 
-#### 2.4.2 Changelog tooling: git-cliff
+### 2.4.2 Changelog tooling: git-cliff
 
 **RULE**  Changelog entries are generated with git-cliff, configured via a committed cliff.toml at the repo root, grouping entries by Conventional Commit type and reading directly from commit history between tags. git-cliff must be run over full history, never restricted to first-parent traversal — doing so would skip the individual sub-branch commits preserved by the umbrella-branch merge exception (1.2.3) and only see the merge commit itself. git-cliff exposes this as a `--first-parent` flag; confirm the exact spelling against the version actually installed before relying on it in a script, since the flag name has not been verified against a live install.
 
@@ -61,7 +61,7 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 ## 2.5 Poison-pill reset rebuild
 
-#### 2.5.1 Day-14 rebuild fallback when nothing is releasable
+### 2.5.1 Day-14 rebuild fallback when nothing is releasable
 
 **RULE**  The tool has a poison-pill license mechanism: builds expire and shut down 21 days after being built, by design, to force users onto current versions during testing. Every sprint close-out (day 14, biweekly) produces a build. If the sprint's commits don't warrant a version bump per 2.1, no new tag or changelog entry is created — instead, release at its current tip is rebuilt and repackaged as-is (same source, same version tag, fresh build/package output only) purely to reset the license expiry timer.
 

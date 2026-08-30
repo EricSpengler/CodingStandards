@@ -1,6 +1,6 @@
 # Appendix B: Example .clang-format
 
-```cpp
+```yaml
 BasedOnStyle: LLVM
 Language: Cpp
 
@@ -38,11 +38,18 @@ IncludeBlocks: Regroup
 SortIncludes: CaseInsensitive
 IncludeIsMainRegex: '(Test)?$'   # default -- own header auto-detected as Priority 0,
                                  # matched by base filename against the .cpp, not by the regexes below
+# Listed in priority order for readability. Note that clang-format applies the
+# FIRST matching regex, so the specific third-party pattern must stay ahead of
+# the general angle-bracket one -- reordering those two silently sends every Qt
+# and HDF5 header into the standard-library group.
 IncludeCategories:
-  - Regex:           '^<(Q[A-Za-z0-9]+|hdf5|H5[A-Za-z]*|vulkan|zip|zlib|duckdb|CLI|glaze|nlohmann)'  # 2: third-party
-    Priority:        2
-  - Regex:           '^<.*>$'               # 3: everything else in angle brackets --
-    Priority:        3                      #    C system + C++ standard library, combined
-  - Regex:           '^".*"$'               # 1: first-party (any quoted include that isn't the main header)
+  # 1: first-party -- any quoted include that is not the main header
+  - Regex:           '^".*"$'
     Priority:        1
+  # 2: third-party, named explicitly
+  - Regex:           '^<(Q[A-Za-z0-9]+|hdf5|H5[A-Za-z]*|vulkan|zip|zlib|duckdb|CLI|glaze|nlohmann)'
+    Priority:        2
+  # 3: everything else in angle brackets -- C system + C++ standard library, combined
+  - Regex:           '^<.*>$'
+    Priority:        3
 ```

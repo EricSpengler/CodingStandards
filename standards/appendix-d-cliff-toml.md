@@ -4,7 +4,7 @@ The git-cliff configuration referenced by 2.4.2. It lives at the repository root
 
 Two things in here exist specifically because of rules elsewhere in this guide, and should not be changed without revisiting those rules: the commit parsers mirror the exact type vocabulary fixed in 1.3.1, and `filter_unconventional = false` is what makes a malformed commit message show up in the changelog as an unfiled entry rather than vanishing from it silently.
 
-```cpp
+```toml
 [changelog]
 header = """
 # Changelog
@@ -87,7 +87,7 @@ commit_parsers = [
 
 Step 3 of the release process (2.4.1) is this command, run from the release-prep branch:
 
-```cpp
+```bash
 git-cliff --unreleased --tag v0.5.0 --prepend CHANGELOG.md
 ```
 
@@ -99,7 +99,7 @@ git-cliff --unreleased --tag v0.5.0 --prepend CHANGELOG.md
 
 The MINOR-versus-PATCH derivation in 2.1 reads the same commit types this file parses, so git-cliff can be used to check the bump before tagging — if the unreleased section contains a Features group or any entry marked BREAKING, it is a MINOR bump; if it contains only the other groups, it is a PATCH bump:
 
-```cpp
+```bash
 git-cliff --unreleased --context | grep -E '"group"|"breaking": true'
 ```
 

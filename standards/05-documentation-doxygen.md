@@ -2,7 +2,9 @@
 
 Documentation coverage isn't limited to the public API surface — private and protected members are documented just as thoroughly as public ones, since understanding the implementation matters for onboarding, maintenance, and code review, not just for calling into a public interface.
 
-#### 5.1 Comment style: /** ... */ Javadoc-style, matching the file header
+## Comment style and coverage
+
+### 5.1 Comment style: /** ... */ Javadoc-style, matching the file header
 
 **RULE**  All Doxygen documentation blocks use /** ... */, consistent with the @file/@brief/@export_control header already established in Section 4. No /// triple-slash style.
 
@@ -22,7 +24,7 @@ Documentation coverage isn't limited to the public API surface — private and p
 
 **ENFORCEMENT**  Doxygen build warns on non-conforming comment styles it can't parse as documentation; otherwise Advisory — code review.
 
-#### 5.2 Scope: every function, variable, class, struct, and namespace — regardless of access level
+### 5.2 Scope: every function, variable, class, struct, and namespace — regardless of access level
 
 **RULE**  Every free function, every member function (public, protected, AND private), every member variable, every namespace/global-scope variable or constant, every class/struct, and every namespace gets a Doxygen comment. Function-local variables are excluded (3.8/3.12 already cover their naming; they don't get Doxygen blocks).
 
@@ -30,7 +32,9 @@ Documentation coverage isn't limited to the public API surface — private and p
 
 **ENFORCEMENT**  Doxygen build with EXTRACT_ALL=NO, EXTRACT_PRIVATE=YES, WARN_IF_UNDOCUMENTED=YES (see Appendix A) surfaces every undocumented entity at build time. Manual MR checklist today (reviewer runs the Doxygen build during the manual build step, 1.8) — CI gate once available (Section 7, known gap).
 
-#### 5.3 Required tags: @brief, @param, and @return on everything (@return omitted only for void); @throws when a function can throw
+## Required tags
+
+### 5.3 Required tags: @brief, @param, and @return on everything (@return omitted only for void); @throws when a function can throw
 
 **RULE**  @brief is mandatory on every documented entity, even a short description for a trivial private member. @brief is written in third-person descriptive form with an implied subject of “This function/class/etc.” — e.g. “Reads the dataset” or “Opens the file,” not imperative mood (“Read the dataset,” “Open the file”). @param is mandatory for every parameter, with no exception for names that seem self-explanatory — same full-coverage principle as 5.2/5.5. @return is mandatory for every function with a non-void return type; a void function omits @return entirely, since there's no value to describe. @throws is required whenever a function can throw. Every Doxygen block spans multiple lines — opening /**, content, closing */ — never collapsed onto a single line, regardless of how short the content is.
 
@@ -154,7 +158,9 @@ class Buffer
 
 **ENFORCEMENT**  Doxygen WARN_IF_UNDOCUMENTED (Manual MR checklist).
 
-#### 5.4 Namespaces are documented once, in a dedicated doc-only header
+## Placement and special cases
+
+### 5.4 Namespaces are documented once, in a dedicated doc-only header
 
 **RULE**  Each namespace gets exactly one Doxygen block, using the @namespace command, living in a dedicated file (e.g. docs/namespaces.h) that contains nothing but namespace documentation — no actual code. Namespaces are never documented inline at the point they're opened in an ordinary header, since a namespace is typically reopened across many files and there'd be no single obvious place to put its one canonical description.
 
@@ -179,7 +185,7 @@ class Buffer
 
 **ENFORCEMENT**  Advisory — code review; Doxygen will warn if a namespace has no @namespace documentation anywhere in the project.
 
-#### 5.5 Enum documentation: @brief on the enum class, and on every enumerator
+### 5.5 Enum documentation: @brief on the enum class, and on every enumerator
 
 **RULE**  The enum class itself gets a standard multi-line @brief block above it. Every enumerator also gets its own multi-line block above it — never an inline single-line trailing comment — with no exception for enumerators whose name might seem self-explanatory. This follows the same full-coverage requirement as 5.2 and the same multi-line-always convention as everywhere else in this document.
 
@@ -230,7 +236,7 @@ enum class LogLevel : uint8_t
 
 **ENFORCEMENT**  Doxygen WARN_IF_UNDOCUMENTED catches missing enumerator docs the same as any other entity (5.2); Advisory — code review for the multi-line formatting.
 
-#### 5.6 Documentation lives at the declaration, not the definition
+### 5.6 Documentation lives at the declaration, not the definition
 
 **RULE**  For anything with a separate declaration and definition (a member or free function declared in a .h and defined in the matching .cpp, an out-of-line static member, etc.), the Doxygen block goes on the declaration only. The definition carries no Doxygen block — a plain // comment there is fine if something implementation-specific needs explaining, but @brief/@param/@return/etc. are never repeated. If something is declared and defined in the same place (an inline function in a header, a function-local to one .cpp with no header declaration), the documentation goes wherever that single declaration+definition is.
 

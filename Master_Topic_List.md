@@ -113,11 +113,11 @@ From the standards review. Done rows retained deliberately.
 | F-08 | 3.9 had no answer for constructor-parameter/member shadowing | 3.20 | done |
 | F-09 | 6.1.26 illustrated self-assignment with `new`/`delete`, which 6.4.1 bans | 6.1.26 | done |
 | F-10 | No `.gitattributes` / line-ending rule | 1.6.3 | done |
-| F-11 | 167 code fences all tagged `cpp`; 11 contain git, gitignore, YAML or TOML | all | open |
-| F-12 | Heading levels skip `h2 → h4` and `h1 → h4` in 21 places (markdownlint MD001) | all | open |
-| F-13 | Sections 3/4/5 use two-level numbering; 1/2/6 use three-level | § 3, 4, 5 | open |
-| F-14 | 5.3.1 and 5.3.2 render as siblings of 5.3, not children | § 5 | open |
-| F-15 | Appendix B lists `IncludeCategories` in priority order 2, 3, 1 — correct but reads as an error | App. B | open |
+| F-11 | Code fences all tagged `cpp`; 15 contained git, gitignore, gitattributes, Doxygen, YAML or TOML | all | done |
+| F-12 | Heading levels skip `h2 → h4` and `h1 → h4` in 21 places (markdownlint MD001) | all | done |
+| F-13 | Sections 3/4/5 use two-level numbering; 1/2/6 use three-level | § 3, 4, 5 | done — unnumbered group headings, so no rule was renumbered |
+| F-14 | 5.3.1 and 5.3.2 render as siblings of 5.3, not children | § 5 | done |
+| F-15 | Appendix B lists `IncludeCategories` in priority order 2, 3, 1 — correct but reads as an error | App. B | done — reordered 1/2/3, with a note that clang-format takes the first match |
 | F-16 | No copyright/licence header rule; no SPDX identifier. Google and LLVM both require one | § 4 | open |
 | F-17 | `// UNCLASSIFIED` is a classification statement, not a CUI marking. Check against 32 CFR 2002 / ISOO CUI Marking Handbook / DoDI 5200.48 | § 4 | open |
 | F-18 | No `.editorconfig` — covers files clang-format does not touch | § 1.6 | open |

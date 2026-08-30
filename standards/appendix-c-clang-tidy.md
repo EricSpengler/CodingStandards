@@ -2,7 +2,7 @@
 
 This is the file Sections 3 and 6 refer to whenever a rule's ENFORCEMENT line names a clang-tidy check. It lives at the repository root. Every check enabled below traces to a specific numbered rule, noted in the comment above it — checks with no rule behind them are deliberately not enabled, so that turning a check off is always a visible decision about a written rule rather than silent tuning.
 
-```cpp
+```yaml
 ---
 # Enabled checks. Order matches the sections they enforce.
 # -* first: start from nothing enabled and opt in explicitly, so a clang-tidy

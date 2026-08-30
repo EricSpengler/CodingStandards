@@ -2,7 +2,9 @@
 
 Every tracked .h/.cpp file carries a classification header as the very first lines of the file, no exceptions.
 
-#### 4.1 Standard header, present on every file
+## File markings and data scope
+
+### 4.1 Standard header, present on every file
 
 **RULE**  The header includes: the classification marking (UNCLASSIFIED by default), an @file tag naming the file, an @brief tag summarizing its purpose in one or two sentences, and an @export_control statement. "Not subject to export control regulations" is the safe default for the vast majority of files. If a file is ever suspected to warrant a different classification or export-control status, that determination goes to the export-control point of contact — never guessed.
 
@@ -29,7 +31,7 @@ Every tracked .h/.cpp file carries a classification header as the very first lin
 
 **ENFORCEMENT**  Advisory — code review today. A pre-commit hook or CI script checking the first 10 lines of every tracked .h/.cpp file for the marking is a strong automation candidate once available (see Section 7, known gap).
 
-#### 4.2 Data sensitivity scope
+### 4.2 Data sensitivity scope
 
 **RULE**  This tool does not process PHI, PII, or other personally-regulated data. CUI/export-control (per 4.1) is the only sensitivity classification that applies to this codebase and the data it handles.
 
