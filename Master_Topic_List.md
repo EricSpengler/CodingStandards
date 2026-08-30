@@ -36,6 +36,7 @@ Read this before editing, so the file stays mechanically scannable.
 | 5 | Documentation (Doxygen) | `standards/05-documentation-doxygen.md` | done |
 | 6 | Code Style | `standards/06-code-style.md` | done |
 | 7 | Enforcement Summary | `standards/07-enforcement-summary.md` | done — extend as sections land |
+| — | Index / front door | `README.md` | done |
 | — | Project Profile | `PROJECT_PROFILE.md` | done — holds every `project`- and `product`-scoped value |
 | A | Example Doxyfile | `standards/appendix-a-doxyfile.md` | done |
 | B | Example .clang-format | `standards/appendix-b-clang-format.md` | done |
@@ -140,7 +141,8 @@ From the standards review. Done rows retained deliberately.
 | F-30 | Structured bindings not addressed | § 6.1 | open |
 | F-31 | Guide was written as a product document, not a standard | all | done — option B applied: example de-domained, 2.5 and the data-sensitivity answer moved to `PROJECT_PROFILE.md`, org-wide tooling kept |
 | F-32 | Constant values duplicated between rules and the registry/profile | all | done — turned out much smaller than framed: 39 of 48 constants are `org` scope, so abstracting prose to role names would have cost readability for an edit made once every few years. Fixed the two genuine duplications (C-14 in 1.3.1, C-27 in 1.8.1), adopted a cite-the-constant convention, and added `tools/check_constants.py` to make drift detectable |
-| F-33 | `standards/` has no index or title page — the split never got one, so the document set does not state its own scope | new `README.md` | open |
+| F-33 | No index or title page; the document set did not state its own scope | `README.md` | done |
+| F-34 | `CPP_Code_Standards_and_Styling_Guide.md` was left in place after the split and never updated, so it still carried the GitHub Flow misnomer, 49 `Hdf5Reader` mentions, 57 `Manual PR checklist` labels, the nonexistent `CyclomaticComplexityThreshold`, rule 2.5 and the product name — a stale duplicate of the entire guide | repo root | done — deleted; recoverable at `729b9de` |
 
 ---
 
