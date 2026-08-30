@@ -1,5 +1,7 @@
 # C++ Coding Standards
 
+**v0.1.0 — Draft.** Not yet ratified. The major version stays at 0 until it is; see [Versioning this document](#versioning-this-document).
+
 A shared C++ standard: how code in this organization is written, reviewed, versioned, documented, and shipped. It is written to be used by more than one project — anything true of only one project lives in that project's own profile, not here.
 
 Every rule states what to do, why, what conforming and non-conforming code looks like, and what actually enforces it. Where nothing enforces a rule but a human reading a diff, it says so plainly.
@@ -112,11 +114,23 @@ A change to the standard is an ordinary merge request against this repository, f
 - **Adding a rule** — add it at the end of its section and take the next number. Numbers are never reused or reassigned, so an existing reference is never ambiguous. P2.5 is deliberately unused for this reason.
 - **Anything unresolved** — record it in `planning/Master_Topic_List.md` rather than leaving it in a commit message. That file exists so open threads have somewhere to live.
 
+### Versioning this document
+
+The standard versions itself the same way it tells code to version itself (P2.1.1): `0.MINOR.PATCH`, with the major version pinned at 0.
+
+| Bump | When |
+|---|---|
+| **MINOR** | A rule is added, removed, or changed such that code conforming yesterday might not conform today. Also any renumbering or restructuring that changes how rules are referenced. |
+| **PATCH** | Clarifications, corrected examples, rationale added to an existing rule, formatting, typos — anything that leaves the set of conforming code unchanged. |
+| **MAJOR** | Reserved. It goes to 1.0 when the standard is ratified and leaves draft, and not before. |
+
+The version lives in exactly one place, the line under the title. A merge request that changes a rule bumps it in the same commit, so "which version of the standard was in force when this was approved" is answerable from history.
+
 ---
 
 ## Status
 
-Seven sections are written, holding **106 rules**. The tracker records what is not:
+Six numbered sections are written — three process, three C++ — holding **106 rules**, plus the Constants Registry, Enforcement Summary and References. The tracker records what is not:
 
 | | Count |
 |---|---|
