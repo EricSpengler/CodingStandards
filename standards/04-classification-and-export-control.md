@@ -16,8 +16,8 @@ Every tracked .h/.cpp file carries a classification header as the very first lin
 // UNCLASSIFIED
 
 /**
- * @file hdf5reader.h
- * @brief RAII wrapper around HDF5 file access for core.
+ * @file recordreader.h
+ * @brief RAII wrapper around buffered file access for core.
  * @export_control This file is not subject to export control regulations.
  */
 ```
@@ -25,16 +25,16 @@ Every tracked .h/.cpp file carries a classification header as the very first lin
 **BAD**
 
 ```cpp
-#ifndef CORE_IO_HDF5READER_H  // BAD -- no classification header before the include guard
-#define CORE_IO_HDF5READER_H
+#ifndef CORE_IO_RECORDREADER_H  // BAD -- no classification header before the include guard
+#define CORE_IO_RECORDREADER_H
 ```
 
 **ENFORCEMENT**  Advisory — code review today. A pre-commit hook or CI script checking the first 10 lines of every tracked .h/.cpp file for the marking is a strong automation candidate once available (see Section 7, known gap).
 
 ### 4.2 Data sensitivity scope
 
-**RULE**  This tool does not process PHI, PII, or other personally-regulated data. CUI/export-control (per 4.1) is the only sensitivity classification that applies to this codebase and the data it handles.
+**RULE**  Every project records a data-sensitivity determination in its project profile, stating which categories of regulated data it does and does not handle — PHI, PII, CUI, export-controlled technical data. The determination is made explicitly and confirmed with whoever owns compliance for the program; it is never inferred from the project's name or assumed from what the code appears to touch.
 
-**RATIONALE**  Recorded explicitly so this doesn't get re-litigated or silently assumed differently later — confirmed directly with the team rather than inferred from the project name. If this ever changes (e.g. a future feature ingests personal data), it needs a dedicated data-handling topic — file-at-rest encryption, logging restrictions around sensitive fields, retention policy — none of which exists in this document today because it wasn't needed.
+**RATIONALE**  Recording it explicitly stops the question being re-litigated, or silently answered differently by two developers, six months apart. It is written down as a *determination* rather than an assumption because the consequences of getting it wrong are external to the codebase. The determination also decides how much of this guide a project needs: a project handling personal data requires a data-handling topic this standard does not currently contain — file-at-rest encryption, logging restrictions around sensitive fields, retention policy — and that absence is only safe while the determination says none is needed.
 
-**ENFORCEMENT**  Advisory — revisit this determination if the tool's data sources ever change.
+**ENFORCEMENT**  Advisory — the determination lives in the project profile and is revisited whenever a project's data sources change.

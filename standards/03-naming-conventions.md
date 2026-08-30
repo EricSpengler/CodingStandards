@@ -6,22 +6,22 @@ Every naming decision below was worked through as its own question rather than i
 
 ### 3.1 Version-like tokens fuse with the following word
 
-**RULE**  A version-like or product-derived token (hdf5, h5, zlib, etc.) is treated as a single fused word rather than getting its own underscore-separated segment, in any snake_case or SCREAMING_SNAKE_CASE context — directory names, file names, include guards, namespaces.
+**RULE**  A version-like or numeric-suffixed token (utf8, base64, sha256, etc.) is treated as a single fused word rather than getting its own underscore-separated segment, in any snake_case or SCREAMING_SNAKE_CASE context — directory names, file names, include guards, namespaces.
 
 **RATIONALE**  This is a general rule specifically because it was caught as an inconsistency during review — a directory/file name and its own include guard disagreeing on this point is exactly the kind of ambiguity a junior dev would copy inconsistently without a stated rule to follow.
 
 **GOOD**
 
 ```cpp
-hdf5reader.h
-CORE_IO_HDF5READER_H
+utf8decoder.h
+CORE_TEXT_UTF8DECODER_H
 ```
 
 **BAD**
 
 ```cpp
-hdf5_reader.h  // inconsistent with the fused form used elsewhere
-CORE_IO_HDF5_READER_H
+utf8_decoder.h  // inconsistent with the fused form used elsewhere
+CORE_TEXT_UTF8_DECODER_H
 ```
 
 **ENFORCEMENT**  Advisory — code review.
@@ -33,16 +33,16 @@ CORE_IO_HDF5_READER_H
 **GOOD**
 
 ```cpp
-core/io/hdf5reader/
-hdf5reader.h
-hdf5reader.cpp
+core/io/recordreader/
+recordreader.h
+recordreader.cpp
 ```
 
 **BAD**
 
 ```cpp
-core/io/HDF5Reader/  // wrong casing
-Hdf5Reader.h  // wrong casing, and doesn't match the class-name-only rule if the file held multiple classes
+core/io/RecordReader/  // wrong casing
+RecordReader.h  // wrong casing, and doesn't match the class-name-only rule if the file held multiple classes
 ```
 
 **ENFORCEMENT**  Advisory — code review.
@@ -57,22 +57,22 @@ Hdf5Reader.h  // wrong casing, and doesn't match the class-name-only rule if the
 // UNCLASSIFIED
 
 /**
- * @file hdf5reader.h
- * @brief RAII wrapper around HDF5 file access for core.
+ * @file recordreader.h
+ * @brief RAII wrapper around buffered file access for core.
  * @export_control This file is not subject to export control regulations.
  */
 
-#ifndef CORE_IO_HDF5READER_H
-#define CORE_IO_HDF5READER_H
+#ifndef CORE_IO_RECORDREADER_H
+#define CORE_IO_RECORDREADER_H
 // ...
-#endif  // CORE_IO_HDF5READER_H
+#endif  // CORE_IO_RECORDREADER_H
 ```
 
 **BAD**
 
 ```cpp
-#ifndef HDF5READER_H  // doesn't mirror the full path, not guaranteed unique
-#define HDF5READER_H
+#ifndef RECORDREADER_H  // doesn't mirror the full path, not guaranteed unique
+#define RECORDREADER_H
 // ...
 #endif
 ```
@@ -114,14 +114,14 @@ namespace Core::IO  // wrong casing
 **GOOD**
 
 ```cpp
-class Hdf5Reader { /* ... */ };
+class RecordReader { /* ... */ };
 struct RecordBatch { /* ... */ };
 ```
 
 **BAD**
 
 ```cpp
-class hdf5_reader { /* ... */ };  // wrong casing
+class record_reader { /* ... */ };  // wrong casing
 struct record_batch { /* ... */ };  // wrong casing
 ```
 
@@ -166,10 +166,10 @@ enum LogLevel  // BAD -- plain enum, not scoped
 ```cpp
 std::string normalizeName(const std::string& raw);
 
-class Hdf5Reader
+class RecordReader
 {
 public:
-    std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);
+    std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);
     size_t recordCount() const;          // getter, no "get" prefix
     void setRecordLimit(size_t limit);   // setter keeps "set"
 };
@@ -180,7 +180,7 @@ public:
 ```cpp
 std::string normalize_name(const std::string& raw);  // wrong casing
 
-class Hdf5Reader
+class RecordReader
 {
 public:
     size_t GetRecordCount() const;   // wrong casing, and unneeded "Get" prefix
@@ -222,20 +222,20 @@ std::string strErr;  // type-encoded, cryptic
 **GOOD**
 
 ```cpp
-class Hdf5Reader
+class RecordReader
 {
 private:
-    hid_t fileHandle;
+    std::FILE* fileHandle;
 };
 ```
 
 **BAD**
 
 ```cpp
-class Hdf5Reader
+class RecordReader
 {
 private:
-    hid_t m_fileHandle;  // BAD -- m_ prefix, rejected in favor of no decoration
+    std::FILE* m_fileHandle;  // BAD -- m_ prefix, rejected in favor of no decoration
 };
 ```
 
@@ -289,7 +289,7 @@ namespace core::io
     constexpr size_t MAX_RECORD_COUNT = 100000;
 }
 
-class Hdf5Reader
+class RecordReader
 {
     static constexpr size_t DEFAULT_BATCH_SIZE = 1024;
 };
@@ -367,13 +367,13 @@ class Buffer
 **GOOD**
 
 ```cpp
-#define CORE_IO_HDF5READER_H
+#define CORE_IO_RECORDREADER_H
 ```
 
 **BAD**
 
 ```cpp
-#define core_io_hdf5reader_h  // BAD -- wrong casing
+#define core_io_recordreader_h  // BAD -- wrong casing
 #define MAX_RETRIES 3  // BAD -- macro used outside an include guard
 ```
 
@@ -437,15 +437,15 @@ using record_id_t = uint64_t;  // inconsistent with class/type casing elsewhere
 **GOOD**
 
 ```cpp
-hdf5reader.h
-hdf5reader.cpp
+recordreader.h
+recordreader.cpp
 ```
 
 **BAD**
 
 ```cpp
-hdf5reader.hpp  // BAD -- .hpp carve-out, adds a second rule to remember
-hdf5reader.cc  // BAD -- inconsistent with the rest of the codebase
+recordreader.hpp  // BAD -- .hpp carve-out, adds a second rule to remember
+recordreader.cc  // BAD -- inconsistent with the rest of the codebase
 ```
 
 **ENFORCEMENT**  Advisory — code review.
@@ -465,7 +465,7 @@ class IReadable
 {
 public:
     virtual ~IReadable() = default;
-    virtual std::expected<RecordBatch, Hdf5Error> read() = 0;
+    virtual std::expected<RecordBatch, ReadError> read() = 0;
 };
 ```
 
@@ -494,7 +494,7 @@ namespace detail
     // implementation helpers, not part of core::io's public interface
 }
 
-class Hdf5Reader { /* public interface, uses detail:: helpers internally */ };
+class RecordReader { /* public interface, uses detail:: helpers internally */ };
 
 }  // namespace core::io
 ```
@@ -514,12 +514,12 @@ On readability: a setter named setInputPath has already said which path it takes
 **GOOD**
 
 ```cpp
-class Hdf5Exporter
+class RecordExporter
 {
 public:
     // Both parameters would collide with a member, so both are renamed -- to names
     // that still denote exactly the same values.
-    Hdf5Exporter(std::filesystem::path source, std::filesystem::path destination);
+    RecordExporter(std::filesystem::path source, std::filesystem::path destination);
 
     // No collision: the function name already says which path this is, so the
     // parameter does not repeat it.
@@ -535,10 +535,10 @@ private:
 **BAD**
 
 ```cpp
-class Hdf5Exporter
+class RecordExporter
 {
 public:
-    Hdf5Exporter(std::filesystem::path inputPath,         // BAD -- shadows the member it
+    RecordExporter(std::filesystem::path inputPath,         // BAD -- shadows the member it
                  std::filesystem::path outputPath);        // initializes; C4458, and a build
                                                            // failure under warnings-as-errors
 

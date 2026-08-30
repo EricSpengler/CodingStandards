@@ -37,7 +37,7 @@ Checks: >
   cppcoreguidelines-special-member-functions
 
 # Only first-party headers are analyzed. Third-party headers pulled in from
-# vcpkg (Qt, HDF5, Vulkan, DuckDB) are not ours to fix.
+# the package manager are not ours to fix.
 HeaderFilterRegex: '^.*/(core|gui|tests)/.*\.h$'
 
 # Every enabled check is an error, not a warning: a warning nobody is forced to
@@ -112,7 +112,7 @@ CheckOptions:
 
   # ---- 3.3 include guards mirror the full path ----
   # GuardPrefix is empty because the guard already starts at the source root
-  # (CORE_IO_HDF5READER_H), not at a project-wide prefix.
+  # (CORE_IO_RECORDREADER_H), not at a project-wide prefix.
   llvm-header-guard.HeaderFileExtensions: 'h'
 
   # ---- 6.2.1 max function length 60 lines ----

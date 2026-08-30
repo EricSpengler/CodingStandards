@@ -13,7 +13,7 @@ Semantic Versioning, pre-1.0 convention, derived mechanically from Conventional 
 **GOOD**
 
 ```cpp
-Release with feat(core): add hdf5 batch reader (JIRA-101) and
+Release with feat(core): add record batch reader (JIRA-101) and
 fix(gui): correct docking layout bug (JIRA-102)
   -> MINOR bump: 0.4.0 -> 0.5.0
 
@@ -29,7 +29,9 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 - Releases are cut biweekly, tied to sprint close-out (day 14 of each two-week sprint).
 
-- If a sprint's commits warrant a version bump, that's a normal release (new tag, changelog entry, full process below). If not, see 2.5 (poison-pill reset rebuild) — a build always goes out at day 14 regardless.
+- If a sprint's commits warrant a version bump, that's a normal release: new tag, changelog entry, the full process below. If they do not, no new tag and no changelog entry are created.
+
+- Whether a build still goes out when there is nothing to tag is a project matter, not a standard: a project whose distribution mechanism requires a periodic rebuild records that requirement, and its trigger, in its project profile. *(Section 2.5 previously held one such product-specific rule; it moved to `PROJECT_PROFILE.md`. The number is left unused rather than reassigned, so existing references stay unambiguous.)*
 
 ## 2.3 Release-cutting
 
@@ -58,13 +60,3 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 *This requirement exists specifically because of the umbrella-branch merge exception in 1.2.3 — if that rule ever changes, this one needs to be reconsidered too.*
 
 **ENFORCEMENT**  Manual — run as part of the release process (2.4.1, step 3); cliff.toml configuration is what actually controls this. See Appendix D for the file itself, the exact command, and how to use the same tool to verify the version bump derived in 2.1 before tagging.
-
-## 2.5 Poison-pill reset rebuild
-
-### 2.5.1 Day-14 rebuild fallback when nothing is releasable
-
-**RULE**  The tool has a poison-pill license mechanism: builds expire and shut down 21 days after being built, by design, to force users onto current versions during testing. Every sprint close-out (day 14, biweekly) produces a build. If the sprint's commits don't warrant a version bump per 2.1, no new tag or changelog entry is created — instead, release at its current tip is rebuilt and repackaged as-is (same source, same version tag, fresh build/package output only) purely to reset the license expiry timer.
-
-**RATIONALE**  Anchoring the rebuild trigger to the existing sprint close-out means there's no separate calendar to watch — “did we ship a build this sprint” is already a natural checkpoint the team hits every two weeks, and a build always goes out at day 14 regardless of which case applies, so the 21-day timer never has a chance to lapse.
-
-**ENFORCEMENT**  Manual MR checklist / sprint close-out ritual.

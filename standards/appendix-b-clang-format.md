@@ -31,7 +31,7 @@ AllowShortIfStatementsOnASingleLine: false
 # 6.5.8 -- include order: own header, first-party, third-party, C system + stdlib combined
 IncludeBlocks: Regroup
 # CaseInsensitive, not `true`: `true` sorts by raw ASCII, which puts every
-# capitalised Qt header (<QString>) ahead of every lowercase one (<hdf5.h>)
+# capitalised header (<GuiToolkit/Window.h>) ahead of every lowercase one
 # regardless of letter. 6.5.8 says groups are "alphabetized within
 # themselves", and this is the setting that makes that literally true.
 # Requires clang-format 13 or newer.
@@ -40,14 +40,14 @@ IncludeIsMainRegex: '(Test)?$'   # default -- own header auto-detected as Priori
                                  # matched by base filename against the .cpp, not by the regexes below
 # Listed in priority order for readability. Note that clang-format applies the
 # FIRST matching regex, so the specific third-party pattern must stay ahead of
-# the general angle-bracket one -- reordering those two silently sends every Qt
-# and HDF5 header into the standard-library group.
+# the general angle-bracket one -- reordering those two silently sends every
+# and other capitalised third-party header into the standard-library group.
 IncludeCategories:
   # 1: first-party -- any quoted include that is not the main header
   - Regex:           '^".*"$'
     Priority:        1
   # 2: third-party, named explicitly
-  - Regex:           '^<(Q[A-Za-z0-9]+|hdf5|H5[A-Za-z]*|vulkan|zip|zlib|duckdb|CLI|glaze|nlohmann)'
+  - Regex:           '^<(GuiToolkit|dataformat)'   # C-32: replace with this project's third-party prefixes
     Priority:        2
   # 3: everything else in angle brackets -- C system + C++ standard library, combined
   - Regex:           '^<.*>$'

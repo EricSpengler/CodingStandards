@@ -13,15 +13,15 @@ This project targets C++23, and follows a consistent, modern C++ style throughou
 **GOOD**
 
 ```cpp
-std::unique_ptr<Hdf5Reader> reader;         // owns the Hdf5Reader
+std::unique_ptr<RecordReader> reader;         // owns the RecordReader
 std::shared_ptr<ConnectionPool> pool;       // genuinely shared across owners
-Hdf5Reader* activeReader;                   // non-owning reference only
+RecordReader* activeReader;                   // non-owning reference only
 ```
 
 **BAD**
 
 ```cpp
-Hdf5Reader* reader = new Hdf5Reader(path);  // BAD -- raw owning pointer, unclear lifetime
+RecordReader* reader = new RecordReader(path);  // BAD -- raw owning pointer, unclear lifetime
 ```
 
 **ENFORCEMENT**  clang-tidy cppcoreguidelines-owning-memory (Manual MR checklist).
@@ -56,8 +56,8 @@ auto x = (float)count / 2.0f;  // BAD -- C-style cast, doesn't say which convers
 **GOOD**
 
 ```cpp
-#ifndef CORE_IO_HDF5READER_H
-#define CORE_IO_HDF5READER_H
+#ifndef CORE_IO_RECORDREADER_H
+#define CORE_IO_RECORDREADER_H
 ```
 
 **BAD**
@@ -82,7 +82,7 @@ class IReadable
 {
 public:
     virtual ~IReadable() = default;
-    virtual std::expected<RecordBatch, Hdf5Error> read() = 0;
+    virtual std::expected<RecordBatch, ReadError> read() = 0;
 };
 
 class IWritable
@@ -92,7 +92,7 @@ public:
     virtual void write(const RecordBatch& batch) = 0;
 };
 
-class Hdf5File : public IReadable, public IWritable  // ok -- both pure interfaces
+class RecordStore : public IReadable, public IWritable  // ok -- both pure interfaces
 {
     // ...
 };
@@ -101,7 +101,7 @@ class Hdf5File : public IReadable, public IWritable  // ok -- both pure interfac
 **BAD**
 
 ```cpp
-class Hdf5File : public Hdf5Handle, public LoggingMixin  // BAD -- neither base is a
+class RecordStore : public FileHandle, public LoggingMixin  // BAD -- neither base is a
 {                                                         // pure interface (both have state)
     // ...
 };
@@ -169,7 +169,7 @@ T clamp(T value, T low, T high);  // BAD -- SFINAE trick, use concepts instead
 **GOOD**
 
 ```cpp
-auto reader = std::make_unique<Hdf5Reader>(path);   // type is obvious (ctor call)
+auto reader = std::make_unique<RecordReader>(path);   // type is obvious (ctor call)
 auto it = records.begin();                          // iterator type is noise
 ```
 
@@ -268,7 +268,7 @@ auto callback = [&](const Record& r) { /* ... */ };  // BAD -- default capture, 
 **GOOD**
 
 ```cpp
-class Hdf5Reader
+class RecordReader
 {
 public:
     size_t recordCount() const;                     // const member function
@@ -294,14 +294,14 @@ size_t recordCount();  // BAD -- doesn't mutate state, should be const
 **GOOD**
 
 ```cpp
-Hdf5Reader* reader = nullptr;
+RecordReader* reader = nullptr;
 ```
 
 **BAD**
 
 ```cpp
-Hdf5Reader* reader = NULL;  // BAD
-Hdf5Reader* reader = 0;     // BAD
+RecordReader* reader = NULL;  // BAD
+RecordReader* reader = 0;     // BAD
 ```
 
 **ENFORCEMENT**  clang-tidy modernize-use-nullptr.
@@ -346,7 +346,7 @@ class RecordId { public: RecordId(uint64_t value); };  // BAD -- allows silent i
 **GOOD**
 
 ```cpp
-class Hdf5Writer final : public IWritable   // final -- no further derivation allowed
+class RecordWriter final : public IWritable   // final -- no further derivation allowed
 {
 public:
     void write(const RecordBatch& batch) override;
@@ -416,10 +416,10 @@ auto readBatch(const std::string& name) -> RecordBatch;  // BAD -- trailing retu
 ```cpp
 void logMessage(std::string_view message);   // read-only, used and discarded within the call
 
-class Hdf5Reader
+class RecordReader
 {
 public:
-    explicit Hdf5Reader(std::string initialPath);   // parameter renamed per 3.20; BAD example
+    explicit RecordReader(std::string initialPath);   // parameter renamed per 3.20; BAD example
                                                     // below shows why this stays std::string
 private:
     std::string path;   // stored beyond the constructor call -- needs to own the data
@@ -443,14 +443,14 @@ void logMessage(const std::string& message);  // BAD -- forces a std::string to 
 **GOOD**
 
 ```cpp
-// hdf5reader.cpp
+// recordreader.cpp
 namespace
 {
     constexpr size_t kChunkSize = 4096;
 
-    bool isRecoverable(Hdf5Error error)
+    bool isRecoverable(ReadError error)
     {
-        return error != Hdf5Error::FileNotFound;
+        return error != ReadError::FileNotFound;
     }
 }  // namespace
 ```
@@ -458,9 +458,9 @@ namespace
 **BAD**
 
 ```cpp
-// hdf5reader.cpp
+// recordreader.cpp
 static constexpr size_t kChunkSize = 4096;         // BAD -- static, not anonymous namespace
-static bool isRecoverable(Hdf5Error error) { /* ... */ }  // BAD -- same issue
+static bool isRecoverable(ReadError error) { /* ... */ }  // BAD -- same issue
 ```
 
 **ENFORCEMENT**  Advisory — code review.
@@ -518,7 +518,7 @@ it++;                                              // BAD -- same issue
 
 ### 6.1.22 No using namespace — explicit namespace prefixes always
 
-**RULE**  using namespace std; and any other using namespace X; directive are never used, in headers or .cpp files. Every identifier from another namespace is written out with its full qualification (std::string, core::io::Hdf5Reader, etc.) at every use.
+**RULE**  using namespace std; and any other using namespace X; directive are never used, in headers or .cpp files. Every identifier from another namespace is written out with its full qualification (std::string, core::io::RecordReader, etc.) at every use.
 
 **RATIONALE**  A using namespace directive in a header pollutes the namespace of every file that includes it, creating name clashes that are hard to trace back to their source. Even confined to a single .cpp file, it makes it unclear at a glance which namespace an identifier actually comes from — explicit prefixes keep that always visible at the point of use, and this codebase applies the same rule everywhere rather than relaxing it for .cpp files specifically.
 
@@ -527,7 +527,7 @@ it++;                                              // BAD -- same issue
 ```cpp
 std::string name;
 std::vector<Record> records;
-core::io::Hdf5Reader reader(path);
+core::io::RecordReader reader(path);
 ```
 
 **BAD**
@@ -552,7 +552,7 @@ class IReadable
 {
 public:
     virtual ~IReadable() = default;   // virtual -- required
-    virtual std::expected<RecordBatch, Hdf5Error> read() = 0;
+    virtual std::expected<RecordBatch, ReadError> read() = 0;
 };
 ```
 
@@ -563,11 +563,11 @@ class IReadable
 {
 public:
     ~IReadable() = default;   // BAD -- not virtual
-    virtual std::expected<RecordBatch, Hdf5Error> read() = 0;
+    virtual std::expected<RecordBatch, ReadError> read() = 0;
 };
 
-std::unique_ptr<IReadable> reader = std::make_unique<Hdf5Reader>(path);
-// deleting reader here only runs ~IReadable(), never ~Hdf5Reader() -- undefined behavior
+std::unique_ptr<IReadable> reader = std::make_unique<RecordReader>(path);
+// deleting reader here only runs ~IReadable(), never ~RecordReader() -- undefined behavior
 ```
 
 **ENFORCEMENT**  clang-tidy cppcoreguidelines-virtual-class-destructor.
@@ -616,7 +616,7 @@ void process(std::unique_ptr<IReadable> reader);   // or ownership transfer via 
 void process(IReadable reader);   // BAD -- IReadable is polymorphic; passing by value
                                    // slices away everything the derived type added
 
-Hdf5Reader concrete(path);
+RecordReader concrete(path);
 process(concrete);   // only the IReadable part of concrete is copied in
 ```
 
@@ -631,12 +631,12 @@ process(concrete);   // only the IReadable part of concrete is copied in
 **GOOD**
 
 ```cpp
-Hdf5File& operator=(const Hdf5File& other)
+FileHandle& operator=(const FileHandle& other)
 {
     if (this == &other) return *this;   // self-assignment guard
 
-    H5Fclose(fileHandle);
-    fileHandle = H5Freopen(other.fileHandle);
+    closeStream(stream);
+    stream = duplicateStream(other.stream);
     return *this;
 }
 ```
@@ -644,11 +644,11 @@ Hdf5File& operator=(const Hdf5File& other)
 **BAD**
 
 ```cpp
-Hdf5File& operator=(const Hdf5File& other)
+FileHandle& operator=(const FileHandle& other)
 {
-    H5Fclose(fileHandle);                       // BAD -- if other is *this, this closes
-    fileHandle = H5Freopen(other.fileHandle);   // the very handle being reopened on the
-    return *this;                               // next line -- use-after-close
+    closeStream(stream);                        // BAD -- if other is *this, this closes the
+    stream = duplicateStream(other.stream);     // very stream being duplicated on the next
+    return *this;                               // line -- use-after-close
 }
 ```
 
@@ -804,14 +804,14 @@ std::expected<RecordBatch, ParseError> parseCsvFile(const std::filesystem::path&
 
 ### 6.3.2 No error codes or bool success flags, anywhere, with no exceptions
 
-**RULE**  First-party code never returns an int/bool status code communicated via an out-parameter or errno-style global — zero exceptions to this, including the boundary layer that wraps any third-party C-style API (for example, but not limited to, HDF5 or Vulkan). That wrapper layer's entire job is to convert the underlying library's error convention into std::expected or an exception right at the boundary, before anything else in the codebase ever sees it — the wrapper does not inherit or forward the C API's own convention.
+**RULE**  First-party code never returns an int/bool status code communicated via an out-parameter or errno-style global — zero exceptions to this, including the boundary layer that wraps any third-party C-style API (a compression, database, graphics, or file-format library, for example). That wrapper layer's entire job is to convert the underlying library's error convention into std::expected or an exception right at the boundary, before anything else in the codebase ever sees it — the wrapper does not inherit or forward the C API's own convention.
 
 **RATIONALE**  Boolean/int status codes are the easiest error-handling mechanism to silently ignore. Allowing them inside a wrapper “because the underlying library uses them” would just relocate the ambiguity this rule exists to remove — the conversion has to happen exactly at the boundary, not be deferred past it.
 
 **GOOD**
 
 ```cpp
-[[nodiscard]] std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);  // see 6.3.4
+[[nodiscard]] std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);  // see 6.3.4
 ```
 
 **BAD**
@@ -859,13 +859,13 @@ void setBatchSize(size_t size)  // BAD -- not a hot path, should throw per 6.3.1
 **GOOD**
 
 ```cpp
-[[nodiscard]] std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);
+[[nodiscard]] std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);
 ```
 
 **BAD**
 
 ```cpp
-std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);  // BAD -- missing [[nodiscard]], caller can silently drop the error
+std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);  // BAD -- missing [[nodiscard]], caller can silently drop the error
 ```
 
 **ENFORCEMENT**  Compiler warning (real gate, [[nodiscard]] is a language feature enforced by every compiler) once applied; Advisory — code review to confirm it's applied everywhere it should be.
@@ -881,13 +881,13 @@ std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);
 **GOOD**
 
 ```cpp
-auto reader = std::make_unique<Hdf5Reader>(path);
+auto reader = std::make_unique<RecordReader>(path);
 ```
 
 **BAD**
 
 ```cpp
-Hdf5Reader* reader = new Hdf5Reader(path);  // BAD
+RecordReader* reader = new RecordReader(path);  // BAD
 ```
 
 **ENFORCEMENT**  clang-tidy cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory.
@@ -901,21 +901,21 @@ Hdf5Reader* reader = new Hdf5Reader(path);  // BAD
 **GOOD**
 
 ```cpp
-class Hdf5Reader
+class RecordReader
 {
 public:
-    ~Hdf5Reader();
-    Hdf5Reader(const Hdf5Reader&) = delete;
-    Hdf5Reader& operator=(const Hdf5Reader&) = delete;
-    Hdf5Reader(Hdf5Reader&&) noexcept;
-    Hdf5Reader& operator=(Hdf5Reader&&) noexcept;
+    ~RecordReader();
+    RecordReader(const RecordReader&) = delete;
+    RecordReader& operator=(const RecordReader&) = delete;
+    RecordReader(RecordReader&&) noexcept;
+    RecordReader& operator=(RecordReader&&) noexcept;
 };
 ```
 
 **BAD**
 
 ```cpp
-class Hdf5Reader { public: ~Hdf5Reader(); };  // BAD -- compiler-generated copy/move left implicit, likely wrong once the class owns a resource
+class RecordReader { public: ~RecordReader(); };  // BAD -- compiler-generated copy/move left implicit, likely wrong once the class owns a resource
 ```
 
 **ENFORCEMENT**  clang-tidy cppcoreguidelines-special-member-functions.
@@ -929,14 +929,14 @@ class Hdf5Reader { public: ~Hdf5Reader(); };  // BAD -- compiler-generated copy/
 **GOOD**
 
 ```cpp
-void takeOwnership(std::unique_ptr<Hdf5Reader> reader);
-void useReader(const Hdf5Reader& reader);
+void takeOwnership(std::unique_ptr<RecordReader> reader);
+void useReader(const RecordReader& reader);
 ```
 
 **BAD**
 
 ```cpp
-void takeOwnership(Hdf5Reader* reader);  // BAD -- unclear whether this takes ownership or just uses it
+void takeOwnership(RecordReader* reader);  // BAD -- unclear whether this takes ownership or just uses it
 ```
 
 **ENFORCEMENT**  Advisory — code review.
@@ -981,7 +981,7 @@ struct RecordBatch       // pure data, no functions
     size_t batchId;
 };
 
-class Hdf5Reader          // has functions (and an invariant the constructor protects)
+class RecordReader          // has functions (and an invariant the constructor protects)
 {
     // ...
 };
@@ -1058,19 +1058,19 @@ int *pointer;  // BAD
 **GOOD**
 
 ```cpp
-class Hdf5Reader
+class RecordReader
 {
 public:
     void readBatch();
 private:
-    hid_t fileHandle;
+    std::FILE* fileHandle;
 };
 ```
 
 **BAD**
 
 ```cpp
-class Hdf5Reader
+class RecordReader
 {
     public:  // BAD -- indented, adds a nesting level with no readability payoff
         void readBatch();
@@ -1117,21 +1117,21 @@ bool isValid() const { if (!ptr) return false; return ptr->check(); }  // BAD --
 
 ### 6.5.8 Include order: own header, first-party, third-party, C system + standard library
 
-**RULE**  A .cpp file's #includes are grouped and ordered: (1) the matching header for this file (e.g. hdf5reader.cpp includes hdf5reader.h first), (2) this project's other first-party headers, (3) third-party library headers (Qt, HDF5, vcpkg-installed libraries), (4) C system headers and C++ standard library headers, combined into one group. Each group is separated by a blank line and alphabetized within itself.
+**RULE**  A .cpp file's #includes are grouped and ordered: (1) the matching header for this file (e.g. recordreader.cpp includes recordreader.h first), (2) this project's other first-party headers, (3) third-party library headers, whichever the project depends on (see C-32), (4) C system headers and C++ standard library headers, combined into one group. Each group is separated by a blank line and alphabetized within itself.
 
-**RATIONALE**  Putting the file's own matching header first is what actually proves that header is self-contained — if hdf5reader.h secretly depends on something included earlier in hdf5reader.cpp, including it first is what makes that compile failure show up immediately, rather than being masked by whatever happened to be included before it. The remaining three groups reflect this codebase's existing convention (own header, first-party, third-party, then system/stdlib combined), rather than importing a different split from elsewhere.
+**RATIONALE**  Putting the file's own matching header first is what actually proves that header is self-contained — if recordreader.h secretly depends on something included earlier in recordreader.cpp, including it first is what makes that compile failure show up immediately, rather than being masked by whatever happened to be included before it. The remaining three groups reflect this codebase's existing convention (own header, first-party, third-party, then system/stdlib combined), rather than importing a different split from elsewhere.
 
 **GOOD**
 
 ```cpp
-// hdf5reader.cpp
-#include "hdf5reader.h"                     // 1: own header first
+// recordreader.cpp
+#include "recordreader.h"                     // 1: own header first
 
 #include "core/io/record_batch.h"           // 2: first-party (alphabetical)
 #include "gui/docking/dock_manager.h"
 
-#include <hdf5.h>                            // 3: third-party (alphabetical)
-#include <QString>
+#include <dataformat/reader.h>               // 3: third-party (alphabetical, case-insensitive)
+#include <GuiToolkit/Window.h>
 
 #include <optional>                          // 4: C system + standard library, combined (alphabetical)
 #include <string>
@@ -1141,14 +1141,14 @@ bool isValid() const { if (!ptr) return false; return ptr->check(); }  // BAD --
 **BAD**
 
 ```cpp
-// hdf5reader.cpp
+// recordreader.cpp
 #include <string>                            // BAD -- own header should come first, not stdlib
-#include "hdf5reader.h"
-#include <hdf5.h>                            // BAD -- third-party before first-party
+#include "recordreader.h"
+#include <dataformat/reader.h>               // BAD -- third-party before first-party
 #include "core/io/record_batch.h"
 ```
 
-**ENFORCEMENT**  clang-format (IncludeBlocks: Regroup, SortIncludes: CaseInsensitive, IncludeCategories — see Appendix B). The CaseInsensitive setting matters for the alphabetization claim above: clang-format's default ASCII sort would place every capitalised Qt header ahead of every lowercase third-party one, which is not what the example shows.
+**ENFORCEMENT**  clang-format (IncludeBlocks: Regroup, SortIncludes: CaseInsensitive, IncludeCategories — see Appendix B). The CaseInsensitive setting matters for the alphabetization claim above: clang-format's default ASCII sort would place every capitalised third-party header ahead of every lowercase one, which is not what the example shows.
 
 ### 6.5.9 Member order: public/protected/private, then types → constants → factory functions → constructors → assignment operators → destructor → other methods → data members
 
@@ -1159,36 +1159,36 @@ bool isValid() const { if (!ptr) return false; return ptr->check(); }  // BAD --
 **GOOD**
 
 ```cpp
-class Hdf5Reader
+class RecordReader
 {
 public:
     using RecordCallback = std::function<void(const RecordBatch&)>;   // 1: types
 
     static constexpr size_t DEFAULT_BATCH_SIZE = 1024;                // 2: constants
 
-    static Hdf5Reader open(const std::filesystem::path& path);        // 3: factory function
+    static RecordReader open(const std::filesystem::path& path);        // 3: factory function
 
-    explicit Hdf5Reader(const std::filesystem::path& path);           // 4: constructors
-    Hdf5Reader(Hdf5Reader&&) noexcept;
-    Hdf5Reader& operator=(Hdf5Reader&&) noexcept;                     // 5: assignment operators
-    ~Hdf5Reader();                                                     // 6: destructor
+    explicit RecordReader(const std::filesystem::path& path);           // 4: constructors
+    RecordReader(RecordReader&&) noexcept;
+    RecordReader& operator=(RecordReader&&) noexcept;                     // 5: assignment operators
+    ~RecordReader();                                                     // 6: destructor
 
-    std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);  // 7: other methods
+    std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);  // 7: other methods
     size_t recordCount() const;
 
 private:
-    hid_t fileHandle;                                                  // 8: data members
+    std::FILE* fileHandle;                                                  // 8: data members
 };
 ```
 
 **BAD**
 
 ```cpp
-class Hdf5Reader
+class RecordReader
 {
 public:
-    hid_t fileHandle;                    // BAD -- data member before constructors/methods
-    explicit Hdf5Reader(const std::filesystem::path& path);
+    std::FILE* fileHandle;                    // BAD -- data member before constructors/methods
+    explicit RecordReader(const std::filesystem::path& path);
 private:
     void logError(const std::string& msg);
 public:                                  // BAD -- a second public: block, scattered from the first

@@ -16,7 +16,7 @@ Numbered `0` so it sorts ahead of Section 1 without disturbing any existing sect
 - **Changing a constant is a normal MR** that updates this row, every rule listed in **Used in**, and nothing else.
 - **Adding a constant** means adding a row here in the same MR as the rule that introduced it.
 
-*Status: this registry is complete as an inventory, but the guide's prose has not yet been rewritten to the role-name convention above. That rewrite is tracked as a separate piece of work — see the note at the foot of this file.*
+*Status: the inventory is complete and the scope column is settled. The guide's prose has not yet been rewritten to the role-name convention above — see the generalization status section below.*
 
 ---
 
@@ -28,7 +28,7 @@ Numbered `0` so it sorts ahead of Section 1 without disturbing any existing sect
 | `project` | Set per project. A new project forks this guide and changes these values; the rules around them stay put. |
 | `product` | Specific to one product's business requirements. **Does not belong in a general standard** — these are the removal candidates. |
 
-Scope assignments below are a **proposal**. Rows marked ❓ are ones the drafting could not settle — they need confirming before the generalization pass runs.
+Scope assignments below are settled. See the generalization status section at the foot of this file for what each decision changed.
 
 ---
 
@@ -42,15 +42,15 @@ Scope assignments below are a **proposal**. Rows marked ❓ are ones the draftin
 | C-04 | MR template path | `.gitlab/merge_request_templates/` | `org` | 1.7.3 |
 | C-05 | Required approvals before merge | 1 | `org` | 1.7.1 |
 | C-06 | MR size target | ~400 changed lines | `org` | 1.7.2 |
-| C-07 | Review process | 4-step manual (agent → read → build → test) | `org` ❓ | 1.8.1 |
-| C-08 | Release cadence | Biweekly, day 14 of sprint | `project` ❓ | 2.2, 2.5.1 |
+| C-07 | Review process | 4-step manual (agent → read → build → test) | `org` | 1.8.1 |
+| C-08 | Release cadence | Biweekly, day 14 of sprint | `org` | 2.2 |
 
 ## Branches
 
 | ID | Constant | Current value | Scope | Used in |
 |---|---|---|---|---|
 | C-09 | Integration branch name | `development` | `org` | 1.1.1–1.1.3, 1.2.1–1.2.3, 1.4.1, 1.4.2, 1.5.1, 1.8.1, 2.4.1 |
-| C-10 | Production branch name | `release` | `org` | 1.1.1–1.1.4, 1.2.3, 1.4.2, 2.1.1, 2.2, 2.3.1, 2.4.1, 2.4.2, 2.5.1 |
+| C-10 | Production branch name | `release` | `org` | 1.1.1–1.1.4, 1.2.3, 1.4.2, 2.1.1, 2.2, 2.3.1, 2.4.1, 2.4.2, plus `PROJECT_PROFILE.md` |
 | C-11 | Merge method | Fast-forward, squash per-MR | `org` | 1.2.3, 1.4.1 |
 | C-12 | Stale branch thresholds | *not yet adopted — see D-07* | `org` | — |
 
@@ -59,7 +59,7 @@ Scope assignments below are a **proposal**. Rows marked ❓ are ones the draftin
 | ID | Constant | Current value | Scope | Used in |
 |---|---|---|---|---|
 | C-13 | Commit type vocabulary | feat, fix, style, chore, docs, refactor, test, perf, build, ci, revert | `org` | 1.2.2, 1.3.1 |
-| C-14 | Commit scope vocabulary | core, gui, cmake, ci, docs, tests, build | `project` | 1.3.1 |
+| C-14 | Commit scope vocabulary | *see project profile* | `project` | 1.3.1 |
 | C-15 | Commit subject cap | 72 characters | `org` | 1.3.1 |
 | C-16 | Commit body wrap | 100 characters | `org` | 1.3.1 |
 | C-17 | Version scheme | `0.MINOR.PATCH`, MAJOR pinned pre-1.0 | `org` | 2.1.1 |
@@ -77,17 +77,17 @@ Scope assignments below are a **proposal**. Rows marked ❓ are ones the draftin
 | C-24 | Build system | CMake | `org` | 1.1.3, 1.6.1 |
 | C-25 | Package manager | vcpkg | `org` | 1.3.1, 1.6.1, 6.5.8 |
 | C-26 | Warnings-as-errors | On | `org` | 3.20, 6.1.20 |
-| C-27 | Supported platforms | Windows only today | `project` | 1.8.1 |
+| C-27 | Supported platforms | *see project profile* | `project` | 1.8.1 |
 
 ## Code layout
 
 | ID | Constant | Current value | Scope | Used in |
 |---|---|---|---|---|
-| C-28 | Top-level source directories | `core`, `gui` | `project` | 3.2, 3.4, 3.11, 3.19, 5.4, 6.5.8, App. A |
+| C-28 | Top-level source directories | *see project profile* | `project` | 3.2, 3.4, 3.11, 3.19, 5.4, App. A |
 | C-29 | Source file extensions | `.h` / `.cpp` | `org` | 3.3, 3.17, 3.19, 4.1 |
-| C-30 | Test fixture directory | `test_data/` | `project` | 1.6.1, 1.6.2, 1.6.3 |
-| C-31 | Namespace documentation file | `docs/namespaces.h` | `project` | 5.4, App. A |
-| C-32 | Third-party include prefixes | Qt, hdf5, H5, vulkan, zip, zlib, duckdb, CLI, glaze, nlohmann | `project` | 6.5.8, App. B |
+| C-30 | Test fixture directory | *see project profile* | `project` | 1.6.1, 1.6.2, 1.6.3 |
+| C-31 | Namespace documentation file | *see project profile* | `project` | 5.4, App. A |
+| C-32 | Third-party include prefixes | *see project profile* | `project` | 6.5.8, App. B |
 
 ## Style limits
 
@@ -113,9 +113,9 @@ Scope assignments below are a **proposal**. Rows marked ❓ are ones the draftin
 
 | ID | Constant | Current value | Scope | Used in |
 |---|---|---|---|---|
-| C-43 | Default classification marking | `UNCLASSIFIED` | `org` ❓ | 3.3, 4.1, 5.4 |
-| C-44 | Default export-control statement | "not subject to export control regulations" | `org` ❓ | 4.1 |
-| C-45 | Export-control point of contact | *unnamed in the guide* | `project` | 4.1 |
+| C-43 | Default classification marking | `UNCLASSIFIED` | `org` | 3.3, 4.1, 5.4 |
+| C-44 | Default export-control statement | "not subject to export control regulations" | `org` | 4.1 |
+| C-45 | Export-control point of contact | *see project profile — still unnamed* | `project` | 4.1 |
 
 ---
 
@@ -125,19 +125,23 @@ These are the values that make this a *product* document rather than a *standard
 
 | ID | Constant | Current value | Used in | Proposed disposition |
 |---|---|---|---|---|
-| C-46 | Product name | CRNA PA Data Extraction & Visual Analysis | Title block, App. A `PROJECT_NAME` | Move to project profile |
-| C-47 | Build expiry mechanism | Poison-pill, 21 days | 2.2, 2.5.1 (whole rule) | Remove 2.5 from the standard; it is a product release requirement, not a coding standard |
-| C-48 | Data sensitivity determination | No PHI/PII; CUI/export-control only | 4.2 | Move to project profile — the *obligation to make* the determination is org-level, the *answer* is per-product |
-| C-49 | Running example types | `Hdf5Reader`, `RecordBatch`, `Hdf5Error` | 35 rules across §§ 1, 3, 5, 6 | ❓ Decide: keep as-is, or replace with a domain-neutral example. This is the single largest edit in the generalization |
+| C-46 | Product name | *moved* | App. A `PROJECT_NAME` now a placeholder | **done** — in `PROJECT_PROFILE.md` |
+| C-47 | Build expiry mechanism | *moved* | 2.5 removed; 2.2 generalized | **done** — rule text verbatim in `PROJECT_PROFILE.md`. Section number 2.5 left unused rather than reassigned |
+| C-48 | Data sensitivity determination | *moved* | 4.2 rewritten | **done** — 4.2 now requires every project to record a determination; this project's answer is in `PROJECT_PROFILE.md` |
+| C-49 | Running example types | `RecordReader`, `RecordBatch`, `ReadError`, `FileHandle` | §§ 1, 3, 5, 6 | **done** — domain-neutral throughout. `utf8decoder` retained in 3.1 and 3.3, which need a version-like token to demonstrate the fusion rule at all |
 
 ---
 
-## Open questions blocking the generalization pass
+## Generalization status
 
-1. **C-07, C-08** — is the 4-step review process and the biweekly cadence organization policy, or this project's?
-2. **C-43, C-44** — is classification marking an organization-wide obligation (every project marks files) or specific to programs under export control?
-3. **C-49** — the `Hdf5Reader` running example appears in 35 rules. Replacing it is mechanical but large, and a domain-neutral example (`FileReader`, `Buffer`) reads more like a textbook and less like this team's code. Worth doing, or leave it?
-4. **C-14, C-28, C-32** — confirmed `project` scope? These assume `core`/`gui` and the library list differ between projects.
+The scope column is settled. The generalization pass ran on this basis:
+
+- **C-07, C-08** — review process and release cadence are organization policy. 1.8 and 2.2 stay in the standard unchanged.
+- **C-43, C-44** — classification marking is an organization-wide obligation. Section 4 stays, with 4.2 rewritten to require a *determination* rather than to state this product's answer.
+- **C-49** — the running example is now domain-neutral.
+- **C-46, C-47, C-48** — product-scoped values moved to `PROJECT_PROFILE.md`.
+
+Still outstanding: the guide's prose states constant *values* inline rather than referring to them by role, so changing one still means visiting the rules its **Used in** column names rather than editing only this table. That rewrite is F-32 on the master topic list.
 
 ---
 

@@ -1,9 +1,9 @@
 # Appendix A: Example Doxyfile
 
 ```ini
-PROJECT_NAME           = "CRNA PA Data Extraction & Visual Analysis"
+PROJECT_NAME           = "<project name>"        # C-46, from the project profile
 OUTPUT_DIRECTORY       = docs/generated
-INPUT                  = core gui docs/namespaces.h
+INPUT                  = core gui docs/namespaces.h   # C-28, C-31: project source roots
 RECURSIVE              = YES
 
 # Comment style: explicit /** @brief ... */ everywhere (5.1) -- don't infer

@@ -16,7 +16,6 @@ A quick-reference map of every hard rule above to what actually enforces it. Any
 | Four-step manual review (agent → review → build → test) | 1.8 | Manual MR checklist — no automated gate exists |
 | Version bump derived from commit types | 2.1 | Manual MR checklist at release-cut time |
 | Release process sequence, tag-after-merge | 2.4 | Documented procedure, not tool-enforced |
-| Poison-pill reset rebuild trigger (day 14) | 2.5 | Manual — sprint close-out ritual |
 | Include guard naming (path-based, fused tokens) | 3.3 | clang-tidy llvm-header-guard (Manual MR checklist) |
 | Namespace/class/struct/enum/function/variable/member/parameter/template/macro casing | 3.4–3.9, 3.13–3.14 | clang-tidy readability-identifier-naming (Manual MR checklist) |
 | Boolean member/accessor naming (no collision) | 3.10 | Compiler-enforced (real gate) + Advisory for consistent application |

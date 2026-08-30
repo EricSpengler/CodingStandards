@@ -12,14 +12,14 @@ Documentation coverage isn't limited to the public API surface — private and p
 
 ```cpp
 /**
- * @brief Opens the given HDF5 file for reading.
+ * @brief Opens the given file for reading.
  */
 ```
 
 **BAD**
 
 ```cpp
-/// Opens the given HDF5 file for reading.  // BAD -- wrong comment style
+/// Opens the given file for reading.  // BAD -- wrong comment style
 ```
 
 **ENFORCEMENT**  Doxygen build warns on non-conforming comment styles it can't parse as documentation; otherwise Advisory — code review.
@@ -36,7 +36,7 @@ Documentation coverage isn't limited to the public API surface — private and p
 
 ### 5.3 Required tags: @brief, @param, and @return on everything (@return omitted only for void); @throws when a function can throw
 
-**RULE**  @brief is mandatory on every documented entity, even a short description for a trivial private member. @brief is written in third-person descriptive form with an implied subject of “This function/class/etc.” — e.g. “Reads the dataset” or “Opens the file,” not imperative mood (“Read the dataset,” “Open the file”). @param is mandatory for every parameter, with no exception for names that seem self-explanatory — same full-coverage principle as 5.2/5.5. @return is mandatory for every function with a non-void return type; a void function omits @return entirely, since there's no value to describe. @throws is required whenever a function can throw. Every Doxygen block spans multiple lines — opening /**, content, closing */ — never collapsed onto a single line, regardless of how short the content is.
+**RULE**  @brief is mandatory on every documented entity, even a short description for a trivial private member. @brief is written in third-person descriptive form with an implied subject of “This function/class/etc.” — e.g. “Reads the section” or “Opens the file,” not imperative mood (“Read the section,” “Open the file”). @param is mandatory for every parameter, with no exception for names that seem self-explanatory — same full-coverage principle as 5.2/5.5. @return is mandatory for every function with a non-void return type; a void function omits @return entirely, since there's no value to describe. @throws is required whenever a function can throw. Every Doxygen block spans multiple lines — opening /**, content, closing */ — never collapsed onto a single line, regardless of how short the content is.
 
 **RATIONALE**  Requiring @brief, @param, and @return everywhere (rather than leaving them to judgment) keeps coverage total and mechanical to check, consistent with the full-coverage principle already applied in 5.2 and 5.5 — no entity is skipped because it “seemed obvious.” Void is the one genuine structural exception, not a judgment call: there's no return value to describe, so @return would either be omitted or say something meaningless. The multi-line-always rule keeps every Doxygen block visually consistent regardless of content length, so a reader scanning code doesn't have to parse two different block shapes. The verb-tense rule removes a small but real inconsistency — without it, some @brief lines read as commands and others as descriptions, which is a needless variation once a whole codebase's worth of comments are read together.
 
@@ -44,11 +44,11 @@ Documentation coverage isn't limited to the public API surface — private and p
 
 ```cpp
 /**
- * @brief Reads one record batch from the currently open dataset.
- * @param datasetName Name of the HDF5 dataset to read.
- * @return The parsed batch, or an Hdf5Error if the read fails.
+ * @brief Reads one record batch from the currently open file.
+ * @param sectionName Name of the section to read.
+ * @return The parsed batch, or an ReadError if the read fails.
  */
-std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);
+std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);
 
 /**
  * @brief Closes the currently open file handle.
@@ -68,7 +68,7 @@ size_t bufferedCount;
 /**
  * @brief Reads one record batch.  // BAD -- missing @param and @return entirely
  */
-std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);
+std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);
 
 /**
  * @brief Close the currently open file handle.  // BAD -- imperative mood, should be "Closes"
@@ -82,33 +82,33 @@ void close(bool force);
 
 #### 5.3.1 Documenting std::expected<T, E>: @return covers both outcomes, error detail lives on the enum
 
-**RULE**  @return on a function returning std::expected<T, E> describes both the success and failure outcomes in one sentence. It does not itemize each specific error value with @retval — the meaning of each individual error (e.g. each Hdf5Error enumerator) is documented once, on the error enum's own definition, per 5.5's full-coverage requirement for enum members.
+**RULE**  @return on a function returning std::expected<T, E> describes both the success and failure outcomes in one sentence. It does not itemize each specific error value with @retval — the meaning of each individual error (e.g. each ReadError enumerator) is documented once, on the error enum's own definition, per 5.5's full-coverage requirement for enum members.
 
-**RATIONALE**  Itemizing every error value with @retval in every function that can return it creates the same duplicate-documentation problem 5.6 already solved for declaration-vs-definition — if there are 20 functions returning Hdf5Error, that block gets copy-pasted 20 times, and updating one error's meaning means finding and fixing all 20. Keeping error-value detail on the enum itself (already mandated by 5.5) gives it exactly one home.
+**RATIONALE**  Itemizing every error value with @retval in every function that can return it creates the same duplicate-documentation problem 5.6 already solved for declaration-vs-definition — if there are 20 functions returning ReadError, that block gets copy-pasted 20 times, and updating one error's meaning means finding and fixing all 20. Keeping error-value detail on the enum itself (already mandated by 5.5) gives it exactly one home.
 
 **GOOD**
 
 ```cpp
 /**
- * @brief Reads one record batch from the currently open dataset.
- * @param datasetName Name of the HDF5 dataset to read.
- * @return The parsed batch on success, or an Hdf5Error describing why the read failed.
+ * @brief Reads one record batch from the currently open file.
+ * @param sectionName Name of the section to read.
+ * @return The parsed batch on success, or an ReadError describing why the read failed.
  */
-[[nodiscard]] std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);
+[[nodiscard]] std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);
 ```
 
 **BAD**
 
 ```cpp
 /**
- * @brief Reads one record batch from the currently open dataset.
- * @param datasetName Name of the HDF5 dataset to read.
- * @return The parsed batch, or an Hdf5Error if the read fails.
- * @retval Hdf5Error::FileNotFound The dataset does not exist.        // BAD -- duplicates
- * @retval Hdf5Error::InvalidFormat The dataset format is wrong.      // documentation that
- * @retval Hdf5Error::ReadFailure A read error occurred.              // belongs on the enum
+ * @brief Reads one record batch from the currently open file.
+ * @param sectionName Name of the section to read.
+ * @return The parsed batch, or an ReadError if the read fails.
+ * @retval ReadError::FileNotFound The named section does not exist.        // BAD -- duplicates
+ * @retval ReadError::InvalidFormat The section format is wrong.      // documentation that
+ * @retval ReadError::ReadFailure A read error occurred.              // belongs on the enum
  */
-[[nodiscard]] std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);
+[[nodiscard]] std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);
 ```
 
 **ENFORCEMENT**  Advisory — code review.
@@ -179,7 +179,7 @@ class Buffer
 
 /**
  * @namespace core::io
- * @brief File I/O and format-specific readers/writers (HDF5, zip) for core.
+ * @brief File I/O and format-specific readers and writers for core.
  */
 ```
 
@@ -245,16 +245,16 @@ enum class LogLevel : uint8_t
 **GOOD**
 
 ```cpp
-// hdf5reader.h
+// recordreader.h
 /**
- * @brief Reads one record batch from the currently open dataset.
- * @param datasetName Name of the HDF5 dataset to read.
- * @return The parsed batch, or an Hdf5Error if the read fails.
+ * @brief Reads one record batch from the currently open file.
+ * @param sectionName Name of the section to read.
+ * @return The parsed batch, or an ReadError if the read fails.
  */
-std::expected<RecordBatch, Hdf5Error> readBatch(const std::string& datasetName);
+std::expected<RecordBatch, ReadError> readBatch(const std::string& sectionName);
 
-// hdf5reader.cpp
-std::expected<RecordBatch, Hdf5Error> Hdf5Reader::readBatch(const std::string& datasetName)
+// recordreader.cpp
+std::expected<RecordBatch, ReadError> RecordReader::readBatch(const std::string& sectionName)
 {
     // implementation notes, if any, as a plain comment -- no Doxygen block here
 }
@@ -263,13 +263,13 @@ std::expected<RecordBatch, Hdf5Error> Hdf5Reader::readBatch(const std::string& d
 **BAD**
 
 ```cpp
-// hdf5reader.cpp
+// recordreader.cpp
 /**
- * @brief Reads one record batch from the currently open dataset.  // BAD -- duplicated
- * @param datasetName Name of the HDF5 dataset to read.            // from the header,
- * @return The parsed batch, or an Hdf5Error if the read fails.    // now two sources of truth
+ * @brief Reads one record batch from the currently open file.  // BAD -- duplicated
+ * @param sectionName Name of the section to read.            // from the header,
+ * @return The parsed batch, or an ReadError if the read fails.    // now two sources of truth
  */
-std::expected<RecordBatch, Hdf5Error> Hdf5Reader::readBatch(const std::string& datasetName)
+std::expected<RecordBatch, ReadError> RecordReader::readBatch(const std::string& sectionName)
 {
     // ...
 }

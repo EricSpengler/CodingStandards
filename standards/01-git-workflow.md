@@ -62,7 +62,7 @@ git merge development  # BAD -- creates a merge commit if release has diverged, 
 **GOOD**
 
 ```cpp
-JIRA-123-hdf5-batch-reader
+JIRA-123-record-batch-reader
 JIRA-456-docking-layout-crash
 ```
 
@@ -71,7 +71,7 @@ JIRA-456-docking-layout-crash
 ```cpp
 JIRA-123  // missing description
 my-branch  // missing ticket number
-feat/JIRA-123-hdf5-batch-reader  // type prefix, but this isn't an umbrella branch
+feat/JIRA-123-record-batch-reader  // type prefix, but this isn't an umbrella branch
 ```
 
 **ENFORCEMENT**  Advisory — code review; a server-side branch-name hook (regex) is a good candidate if/when available on the GitLab tier in use.
@@ -85,7 +85,7 @@ feat/JIRA-123-hdf5-batch-reader  // type prefix, but this isn't an umbrella bran
 **GOOD**
 
 ```cpp
-feat/JIRA-123-hdf5-batch-reader  // umbrella branch, JIRA-456/JIRA-457/etc. will merge into this before it merges into development
+feat/JIRA-123-record-batch-reader  // umbrella branch, JIRA-456/JIRA-457/etc. will merge into this before it merges into development
 ```
 
 **BAD**
@@ -106,17 +106,17 @@ feat/JIRA-999-fix-typo  // BAD -- this is a single, standalone change; no type p
 
 ```bash
 git checkout development
-git merge --ff-only feat/JIRA-123-hdf5-work   # umbrella branch, NOT squashed
+git merge --ff-only feat/JIRA-123-record-batch-work   # umbrella branch, NOT squashed
 git push origin development
-# development now ends in: ...feat(core): add hdf5 batch reader (JIRA-456),
-#                           fix(core): correct hdf5 batch reader edge case (JIRA-457)
+# development now ends in: ...feat(core): add record batch reader (JIRA-456),
+#                           fix(core): correct record batch reader edge case (JIRA-457)
 ```
 
 **BAD**
 
 ```cpp
 # BAD -- squashing the umbrella branch into development collapses this into ONE commit:
-feat(core): JIRA-123 umbrella of hdf5 work
+feat(core): JIRA-123 umbrella of record batch work
 # git-cliff and the version-bump derivation (2.1) can no longer see the individual
 # feat/fix entries that made up this umbrella -- changelog and version accuracy both degrade
 ```
@@ -134,7 +134,7 @@ feat(core): JIRA-123 umbrella of hdf5 work
 **GOOD**
 
 ```cpp
-feat(core): add hdf5 batch reader (JIRA-123)
+feat(core): add record batch reader (JIRA-123)
 fix(cmake): correct vcpkg toolchain path (JIRA-456)
 style(gui): reformat dock_manager.cpp with clang-format (JIRA-789)
 ```
@@ -142,9 +142,9 @@ style(gui): reformat dock_manager.cpp with clang-format (JIRA-789)
 **BAD**
 
 ```cpp
-Added the HDF5 reader.
+Added the record reader.
 fix: bug (JIRA-123)  // too vague
-feat(HDF5Reader): ...  // scope not in the fixed list
+feat(RecordReader): ...  // scope not in the fixed list
 feat(core): add a much longer description that blows well past the seventy-two character subject line limit (JIRA-789)  // BAD -- too long, wrap the extra detail into the body instead
 ```
 
@@ -167,9 +167,9 @@ feat(core): add a much longer description that blows well past the seventy-two c
 **GOOD**
 
 ```cpp
-feat(core)!: change Hdf5Reader::readBatch return type (JIRA-456)
+feat(core)!: change RecordReader::readBatch return type (JIRA-456)
 
-BREAKING CHANGE: readBatch now returns std::expected<RecordBatch, Hdf5Error>
+BREAKING CHANGE: readBatch now returns std::expected<RecordBatch, ReadError>
 instead of a raw RecordBatch. Callers must check the result before use.
 ```
 
@@ -182,13 +182,13 @@ instead of a raw RecordBatch. Callers must check the result before use.
 **GOOD**
 
 ```cpp
-revert(core): remove hdf5 batch reader (JIRA-789)
+revert(core): remove record batch reader (JIRA-789)
 ```
 
 **BAD**
 
 ```cpp
-Revert "feat(core): add hdf5 batch reader (JIRA-456)"  // BAD -- raw git-generated message, not reformatted
+Revert "feat(core): add record batch reader (JIRA-456)"  // BAD -- raw git-generated message, not reformatted
 ```
 
 **ENFORCEMENT**  Advisory — code review, same as all other commit-format rules; also code review for whether a fresh ticket is warranted.
@@ -202,13 +202,13 @@ Revert "feat(core): add hdf5 batch reader (JIRA-456)"  // BAD -- raw git-generat
 **GOOD**
 
 ```cpp
-feat(core): add hdf5 batch reader (JIRA-123)  # single squashed commit, fast-forwarded onto development, no merge commit
+feat(core): add record batch reader (JIRA-123)  # single squashed commit, fast-forwarded onto development, no merge commit
 ```
 
 **BAD**
 
 ```cpp
-Merge branch 'JIRA-123-hdf5-batch-reader' into development  # BAD -- merge commits are never
+Merge branch 'JIRA-123-record-batch-reader' into development  # BAD -- merge commits are never
   # created under this project's merge method; this branch should have been squashed
 ```
 
@@ -243,7 +243,7 @@ git push --force   # no lease check — can silently destroy a teammate's commit
 **BAD**
 
 ```cpp
-feat(core): add hdf5 batch reader and fix related edge cases in the be...  // BAD -- truncated, merged without checking
+feat(core): add record batch reader and fix related edge cases in the be...  // BAD -- truncated, merged without checking
 ```
 
 **ENFORCEMENT**  Manual MR checklist — the person merging is responsible for this check every time; no tooling catches it today.
@@ -311,7 +311,7 @@ git add .vs/  # BAD -- IDE-local state, differs per developer
 
 **RATIONALE**  Without this file, what actually lands in the repository depends on each developer's local core.autocrlf. Two people with different settings editing the same file produce a diff in which every line changed, which makes reviewing the real one-line change impossible and makes git blame point at whoever last flipped the endings rather than whoever wrote the code. Today this is latent, since everyone is on Windows; it surfaces the moment anything is built or edited on a second platform, which is a stated future direction. The rule costs one file now and prevents a repository-wide reformatting event later.
 
-Marking binaries explicitly matters more here than in most repositories precisely because 1.6.2 commits test fixtures to git. Git's binary detection is good but not infallible, and a line-ending-normalized HDF5 file is a corrupted HDF5 file — one that fails at read time with an error pointing nowhere near the cause. Pinning the Windows script types is the mirror image of the same concern: cmd.exe mis-parses a .bat file that has LF endings.
+Marking binaries explicitly matters more here than in most repositories precisely because 1.6.2 commits test fixtures to git. Git's binary detection is good but not infallible, and a line-ending-normalized binary fixture is a corrupted fixture — one that fails at read time with an error pointing nowhere near the cause. Pinning the Windows script types is the mirror image of the same concern: cmd.exe mis-parses a .bat file that has LF endings.
 
 **GOOD**
 
@@ -336,9 +336,9 @@ Marking binaries explicitly matters more here than in most repositories precisel
 *.ps1    text eol=crlf
 
 # Binary -- never normalized, never diffed as text. This matters because
-# test_data/ is committed (1.6.2): a normalized .h5 is a corrupted .h5.
-*.h5     binary
-*.hdf5   binary
+# test_data/ is committed (1.6.2): a normalized binary fixture is a corrupted one.
+*.bin    binary
+*.dat    binary
 *.zip    binary
 *.png    binary
 *.ico    binary
