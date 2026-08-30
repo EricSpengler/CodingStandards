@@ -1,6 +1,6 @@
 # 1. Git Workflow
 
-This project uses a workflow we call GitHub Flow: development is the single required-stable integration branch (always buildable and runnable, per 1.1.3), and short-lived, PR-reviewed branches come off it and merge back into it. This is not Gitflow: there's no main/develop split where develop is allowed to be unstable, and no hotfix/* branch type, because the reason for having a hotfix escape hatch (an unstable develop that a production fix can't safely be pulled from) doesn't apply here. We extend the base workflow with a few additions of our own: a release branch that fast-forward-mirrors whatever's actually tagged/shipped, squash-merge/fast-forward-only with zero merge commits anywhere, and umbrella branches for work too large for one PR. See the separate References document for further reading.
+This project uses GitLab Flow with a production branch: development is the single required-stable integration branch (always buildable and runnable, per 1.1.3), short-lived, MR-reviewed branches come off it and merge back into it, and release is the production branch that trails development. This is not Gitflow: there's no main/develop split where develop is allowed to be unstable, and no hotfix/* branch type, because the reason for having a hotfix escape hatch (an unstable develop that a production fix can't safely be pulled from) doesn't apply here. It is also not GitHub Flow, which this document previously called it — GitHub Flow has exactly one long-lived branch and deploys from it, whereas the release branch below is a second long-lived branch, which is precisely the distinction GitLab Flow's production-branch variant describes. We extend that base with a few additions of our own: release only ever fast-forward-mirrors whatever's actually tagged/shipped, squash-merge/fast-forward-only with zero merge commits anywhere, and umbrella branches for work too large for one MR. See the separate References document for further reading.
 
 ## 1.1 Branching model
 
@@ -39,9 +39,9 @@ git merge development  # BAD -- creates a merge commit if release has diverged, 
 
 **RULE**  Known bugs are acceptable on development. A change that would leave development unable to build or unable to run (an incomplete CMakeLists.txt, a half-wired feature that crashes on startup, etc.) must not be merged there — that work stays on its feature/umbrella branch until it is at least buildable and non-crashing, even if functionally incomplete.
 
-**RATIONALE**  Since release is a fast-forward snapshot of development and there's no separate hotfix path, development being shippable-if-imperfect at all times is what makes “everything goes through development first” safe. It's also what makes the manual build/test review step (1.8) meaningful — a reviewer building development-plus-this-PR should always expect it to compile and run.
+**RATIONALE**  Since release is a fast-forward snapshot of development and there's no separate hotfix path, development being shippable-if-imperfect at all times is what makes “everything goes through development first” safe. It's also what makes the manual build/test review step (1.8) meaningful — a reviewer building development-plus-this-MR should always expect it to compile and run.
 
-**ENFORCEMENT**  Manual PR checklist — the manual build/test step in 1.8 is precisely what catches this.
+**ENFORCEMENT**  Manual MR checklist — the manual build/test step in 1.8 is precisely what catches this.
 
 #### 1.1.4 Single release line
 
@@ -71,34 +71,34 @@ JIRA-456-docking-layout-crash
 ```cpp
 JIRA-123  // missing description
 my-branch  // missing ticket number
-feature/JIRA-123-hdf5-batch-reader  // type prefix, but this isn't an umbrella branch
+feat/JIRA-123-hdf5-batch-reader  // type prefix, but this isn't an umbrella branch
 ```
 
 **ENFORCEMENT**  Advisory — code review; a server-side branch-name hook (regex) is a good candidate if/when available on the GitLab tier in use.
 
 #### 1.2.2 Exception: umbrella branches get a type prefix
 
-**RULE**  Only when a branch is itself an umbrella — i.e. other branches will be merged into it before it merges into development — does it get a type prefix: `<type>`/JIRA-XXX-kebab-desc, tied to the umbrella-level Jira ticket. `<type>` matches the commit type list in 1.3 (feature, fix, chore, docs, refactor, test, perf, build, ci). Sub-branches cut from that umbrella branch still follow the default in 1.2.1 (no prefix), since the umbrella branch already carries that context.
+**RULE**  Only when a branch is itself an umbrella — i.e. other branches will be merged into it before it merges into development — does it get a type prefix: `<type>`/JIRA-XXX-kebab-desc, tied to the umbrella-level Jira ticket. `<type>` is drawn from the same fixed type list as 1.3.1 — feat, fix, style, chore, docs, refactor, test, perf, build, ci, revert — using the identical short form, so a branch prefix and the commit it eventually becomes never disagree. Sub-branches cut from that umbrella branch still follow the default in 1.2.1 (no prefix), since the umbrella branch already carries that context.
 
 **RATIONALE**  Keeps the type prefix meaningful at exactly one level: the umbrella branch, which is the thing that eventually becomes a feat/fix/etc. commit on development. Applying it to every branch would be noise, since the vast majority of branches are never an umbrella for anything else.
 
 **GOOD**
 
 ```cpp
-feature/JIRA-123-hdf5-batch-reader  // umbrella branch, JIRA-456/JIRA-457/etc. will merge into this before it merges into development
+feat/JIRA-123-hdf5-batch-reader  // umbrella branch, JIRA-456/JIRA-457/etc. will merge into this before it merges into development
 ```
 
 **BAD**
 
 ```cpp
-feature/JIRA-999-fix-typo  // BAD -- this is a single, standalone change; no type prefix needed, see 1.2.1
+feat/JIRA-999-fix-typo  // BAD -- this is a single, standalone change; no type prefix needed, see 1.2.1
 ```
 
 **ENFORCEMENT**  Advisory — code review.
 
 #### 1.2.3 Sub-branches squash into the umbrella branch; the umbrella branch fast-forwards into development
 
-**RULE**  Each sub-branch PR into the umbrella branch is squashed to one commit, following the same Conventional Commits format as a normal development merge. The umbrella branch itself is the one exception to squashing: its merge into development is a fast-forward — no squash, no merge commit — which requires the umbrella branch to be rebased onto the latest development (1.4.2) immediately before merging so the fast-forward is possible. This preserves each sub-branch's individual squashed commit exactly as it appears on the umbrella branch.
+**RULE**  Each sub-branch MR into the umbrella branch is squashed to one commit, following the same Conventional Commits format as a normal development merge. The umbrella branch itself is the one exception to squashing: its merge into development is a fast-forward — no squash, no merge commit — which requires the umbrella branch to be rebased onto the latest development (1.4.2) immediately before merging so the fast-forward is possible. This preserves each sub-branch's individual squashed commit exactly as it appears on the umbrella branch.
 
 **RATIONALE**  If the umbrella branch also squashed into development, every sub-branch's Conventional Commit — type, scope, description, ticket — would collapse into a single commit by the time development's history is read. Since git-cliff (2.4.2) and the SemVer-bump derivation (2.1) both work by reading commit types from history between tags, that loss is not cosmetic: it silently produces an inaccurate changelog and can derive the wrong version bump for any release that included umbrella work. Fast-forward is the cleaner fix versus a merge commit: it avoids creating any new commit at all, consistent with how release (1.1.1) also only ever fast-forwards — same mechanism, already familiar elsewhere in this workflow.
 
@@ -106,7 +106,7 @@ feature/JIRA-999-fix-typo  // BAD -- this is a single, standalone change; no typ
 
 ```cpp
 git checkout development
-git merge --ff-only feature/JIRA-123-hdf5-work   # umbrella branch, NOT squashed
+git merge --ff-only feat/JIRA-123-hdf5-work   # umbrella branch, NOT squashed
 git push origin development
 # development now ends in: ...feat(core): add hdf5 batch reader (JIRA-456),
 #                           fix(core): correct hdf5 batch reader edge case (JIRA-457)
@@ -152,11 +152,11 @@ feat(core): add a much longer description that blows well past the seventy-two c
 
 #### 1.3.2 WIP commits are unformatted; only the squash message conforms
 
-**RULE**  Commits on a feature branch during active work are not required to follow Conventional Commits. The PR title (which becomes the squash commit message on merge) is the only commit message enforced.
+**RULE**  Commits on a feature branch during active work are not required to follow Conventional Commits. The MR title (which becomes the squash commit message on merge) is the only commit message enforced.
 
 **RATIONALE**  Enforcing format on commits nobody but the author will ever see is friction with no payoff. Enforcement effort belongs where it's actually visible in history.
 
-**ENFORCEMENT**  Advisory — not tool-checked; the PR title is what a reviewer checks, not individual pushes to the feature branch.
+**ENFORCEMENT**  Advisory — not tool-checked; the MR title is what a reviewer checks, not individual pushes to the feature branch.
 
 #### 1.3.3 Breaking changes use ! + a BREAKING CHANGE: footer
 
@@ -197,7 +197,7 @@ Revert "feat(core): add hdf5 batch reader (JIRA-456)"  // BAD -- raw git-generat
 
 #### 1.4.1 Merge method: fast-forward, with squash applied per-MR by default
 
-**RULE**  The GitLab project merge method is set to Fast-forward merge — no merge commits are ever created, for any branch, full stop. Combined with the per-MR squash option (checked by default), a normal branch's PR/MR into development results in a single squashed commit fast-forwarded into place, with no merge commit. The umbrella branch's own merge into development (1.2.3) is the one case where squash is left unchecked, so its already-squashed sub-branch commits fast-forward in individually. The squash commit message follows the Conventional Commits rule (1.3.1); since the PR title should already be in that format, the default squash message needs no editing — but see 1.4.3 for a GitLab-specific caveat on this.
+**RULE**  The GitLab project merge method is set to Fast-forward merge — no merge commits are ever created, for any branch, full stop. Combined with the per-MR squash option (checked by default), a normal branch's MR into development results in a single squashed commit fast-forwarded into place, with no merge commit. The umbrella branch's own merge into development (1.2.3) is the one case where squash is left unchecked, so its already-squashed sub-branch commits fast-forward in individually. The squash commit message follows the Conventional Commits rule (1.3.1); since the MR title should already be in that format, the default squash message needs no editing — but see 1.4.3 for a GitLab-specific caveat on this.
 
 **GOOD**
 
@@ -216,7 +216,7 @@ Merge branch 'JIRA-123-hdf5-batch-reader' into development  # BAD -- merge commi
 
 #### 1.4.2 Feature branches are rebased onto development, never merged from it
 
-**RULE**  While a PR is open, if development has moved forward, the dev rebases their feature branch onto the latest development and force-pushes with --force-with-lease (never bare --force). Rebase/force-push is only ever performed on your own feature branch — never on development or release. This applies to umbrella branches too: keeping an umbrella branch rebased onto development throughout its life is what makes its eventual fast-forward merge (1.2.3) possible at all.
+**RULE**  While a MR is open, if development has moved forward, the dev rebases their feature branch onto the latest development and force-pushes with --force-with-lease (never bare --force). Rebase/force-push is only ever performed on your own feature branch — never on development or release. This applies to umbrella branches too: keeping an umbrella branch rebased onto development throughout its life is what makes its eventual fast-forward merge (1.2.3) possible at all.
 
 **RATIONALE**  Keeps feature-branch history linear and easy to review incrementally, consistent with the fast-forward merge method (1.4.1). --force-with-lease prevents silently overwriting a collaborator's pushes to the same branch — the standard failure mode of bare --force that costs someone their work with no warning.
 
@@ -236,7 +236,7 @@ git push --force  // no lease check — can silently destroy a teammate's commit
 
 #### 1.4.3 GitLab truncates long squash-merge messages — verify before confirming
 
-**RULE**  This applies to normal squashed merges only (not the umbrella branch's un-squashed fast-forward, 1.2.3, which introduces no new commit message). GitLab auto-generates the squash-merge commit message from the PR's title/commits, but truncates it with a trailing “...” when it runs long. The person completing the merge must check the commit message field before confirming and, if truncated, manually retype it in full, correctly-formatted Conventional Commits form — never merge with a silently truncated message.
+**RULE**  This applies to normal squashed merges only (not the umbrella branch's un-squashed fast-forward, 1.2.3, which introduces no new commit message). GitLab auto-generates the squash-merge commit message from the MR's title/commits, but truncates it with a trailing “...” when it runs long. The person completing the merge must check the commit message field before confirming and, if truncated, manually retype it in full, correctly-formatted Conventional Commits form — never merge with a silently truncated message.
 
 **RATIONALE**  A truncated commit message breaks the same things the umbrella-squash trap (1.2.3) breaks — git-cliff and the version-bump derivation (2.1) both read this text, so a silently truncated message is a real correctness bug in the changelog, not just a cosmetic one. This can't be fully solved by a pre-commit hook, since the truncation happens inside GitLab at merge time, after any local check has already passed.
 
@@ -246,13 +246,13 @@ git push --force  // no lease check — can silently destroy a teammate's commit
 feat(core): add hdf5 batch reader and fix related edge cases in the be...  // BAD -- truncated, merged without checking
 ```
 
-**ENFORCEMENT**  Manual PR checklist — the person merging is responsible for this check every time; no tooling catches it today.
+**ENFORCEMENT**  Manual MR checklist — the person merging is responsible for this check every time; no tooling catches it today.
 
 ## 1.5 Branch cleanup
 
 #### 1.5.1 Branches auto-delete on merge
 
-**RULE**  Repository setting deletes the source branch automatically once a PR is merged into development.
+**RULE**  Repository setting deletes the source branch automatically once a MR is merged into development.
 
 **RATIONALE**  Free cleanup, zero downside — a merged branch has already had its content absorbed via squash.
 
@@ -295,7 +295,7 @@ git add build/  # BAD -- build output should never be tracked
 git add .vs/  # BAD -- IDE-local state, differs per developer
 ```
 
-**ENFORCEMENT**  Advisory — code review. .gitignore evolves by ordinary PR, no special process.
+**ENFORCEMENT**  Advisory — code review. .gitignore evolves by ordinary MR, no special process.
 
 #### 1.6.2 test_data/ is committed to the repository, with a controlled addition process
 
@@ -305,21 +305,21 @@ git add .vs/  # BAD -- IDE-local state, differs per developer
 
 **ENFORCEMENT**  Advisory — code review.
 
-## 1.7 Pull request mechanics
+## 1.7 Merge request mechanics
 
 #### 1.7.1 One required approval, any team member
 
-**RULE**  Minimum 1 approval before merge. No CODEOWNERS restriction, no seniority requirement — any team member may approve any PR.
+**RULE**  Minimum 1 approval before merge. No CODEOWNERS restriction, no seniority requirement — any team member may approve any MR.
 
 **ENFORCEMENT**  GitLab MR approval rule: 1 required approval, no restricted approver group (actual gate).
 
-#### 1.7.2 PR size is soft-guided, not hard-blocked
+#### 1.7.2 MR size is soft-guided, not hard-blocked
 
-**RULE**  Target under ~400 changed lines, excluding generated/lockfiles. PRs trending larger should be reconsidered as an umbrella-branch structure (1.2.2) rather than one large diff.
+**RULE**  Target under ~400 changed lines, excluding generated/lockfiles. MRs trending larger should be reconsidered as an umbrella-branch structure (1.2.2) rather than one large diff.
 
-**ENFORCEMENT**  Manual PR checklist / Advisory — reviewer's judgment during manual code review.
+**ENFORCEMENT**  Manual MR checklist / Advisory — reviewer's judgment during manual code review.
 
-#### 1.7.3 PR description follows a fixed template
+#### 1.7.3 MR description follows a fixed template
 
 **RULE**  What changed · Jira link · how it was tested · screenshots/recording for any UI-visible change.
 
@@ -327,14 +327,14 @@ git add .vs/  # BAD -- IDE-local state, differs per developer
 
 ## 1.8 Manual review process
 
-This project does not currently run an automated CI pipeline. Every PR is verified by the approving reviewer performing four steps, in order, before approving. This section documents that process explicitly — until now it existed only as tribal knowledge, which is itself the kind of ambiguity this whole document exists to remove.
+This project does not currently run an automated CI pipeline. Every MR is verified by the approving reviewer performing four steps, in order, before approving. This section documents that process explicitly — until now it existed only as tribal knowledge, which is itself the kind of ambiguity this whole document exists to remove.
 
 #### 1.8.1 Four-step sequence, performed by the approving reviewer
 
-**RULE**  1) AI agent review — reviewer exports the PR's .diff and runs it through the in-house review agent (checks standards adherence, commit message format, formatting/static-analysis conformance), and posts the agent's output as an MR comment before proceeding. 2) Manual code review — reviewer reads the diff themselves, informed by (not replaced by) the agent's output. 3) Manual build — reviewer pulls the branch and builds it locally. Windows only today, since no Linux development environment exists yet; revisit once one does. 4) Manual test — reviewer runs the relevant test suite locally and confirms the PR's stated “how tested” claims. A PR is not approved until all four steps are complete, in this order.
+**RULE**  1) AI agent review — reviewer exports the MR's .diff and runs it through the in-house review agent (checks standards adherence, commit message format, formatting/static-analysis conformance), and posts the agent's output as an MR comment before proceeding. 2) Manual code review — reviewer reads the diff themselves, informed by (not replaced by) the agent's output. 3) Manual build — reviewer pulls the branch and builds it locally. Windows only today, since no Linux development environment exists yet; revisit once one does. 4) Manual test — reviewer runs the relevant test suite locally and confirms the MR's stated “how tested” claims. A MR is not approved until all four steps are complete, in this order.
 
 **RATIONALE**  Without CI, every one of these checks depends entirely on a human remembering to do it, in a useful order — agent review first means the reviewer's own read of the diff isn't spent re-deriving problems a tool already caught; build and test last because they're the most expensive steps and shouldn't be run against code that's already failed static review. Posting the agent output as a comment is the only durable record that the step actually happened, useful for later auditing and for catching a reviewer who skipped it.
 
 *This is the single biggest reliability gap in the current process — every step depends on a human doing it correctly and in order, with no gate preventing an incomplete review from approving anyway. Standing up GitLab CI is the direct fix, and was discussed and deliberately deferred rather than built now.*
 
-**ENFORCEMENT**  Manual PR checklist — no automated gate exists today.
+**ENFORCEMENT**  Manual MR checklist — no automated gate exists today.

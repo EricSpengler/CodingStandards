@@ -28,7 +28,7 @@ Documentation coverage isn't limited to the public API surface — private and p
 
 **RATIONALE**  Documenting every access level, not just the public surface, is what makes the codebase understandable end-to-end — a private helper function is exactly the kind of thing that needs explaining, arguably more than a well-named public method whose signature already communicates most of its own intent.
 
-**ENFORCEMENT**  Doxygen build with EXTRACT_ALL=NO, EXTRACT_PRIVATE=YES, WARN_IF_UNDOCUMENTED=YES (see Appendix A) surfaces every undocumented entity at build time. Manual PR checklist today (reviewer runs the Doxygen build during the manual build step, 1.8) — CI gate once available (Section 7, known gap).
+**ENFORCEMENT**  Doxygen build with EXTRACT_ALL=NO, EXTRACT_PRIVATE=YES, WARN_IF_UNDOCUMENTED=YES (see Appendix A) surfaces every undocumented entity at build time. Manual MR checklist today (reviewer runs the Doxygen build during the manual build step, 1.8) — CI gate once available (Section 7, known gap).
 
 #### 5.3 Required tags: @brief, @param, and @return on everything (@return omitted only for void); @throws when a function can throw
 
@@ -152,7 +152,7 @@ class Buffer
 };
 ```
 
-**ENFORCEMENT**  Doxygen WARN_IF_UNDOCUMENTED (Manual PR checklist).
+**ENFORCEMENT**  Doxygen WARN_IF_UNDOCUMENTED (Manual MR checklist).
 
 #### 5.4 Namespaces are documented once, in a dedicated doc-only header
 

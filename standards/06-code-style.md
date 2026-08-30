@@ -24,7 +24,7 @@ Hdf5Reader* activeReader;                   // non-owning reference only
 Hdf5Reader* reader = new Hdf5Reader(path);  // BAD -- raw owning pointer, unclear lifetime
 ```
 
-**ENFORCEMENT**  clang-tidy cppcoreguidelines-owning-memory (Manual PR checklist).
+**ENFORCEMENT**  clang-tidy cppcoreguidelines-owning-memory (Manual MR checklist).
 
 #### 6.1.2 No C-style casts
 
@@ -215,7 +215,7 @@ for (const auto& record : records) { /* ... */ }
 for (size_t i = 0; i < records.size(); ++i) { use(records[i]); }  // BAD -- index isn't needed, prefer range-for
 ```
 
-**ENFORCEMENT**  clang-tidy modernize-loop-convert (Manual PR checklist).
+**ENFORCEMENT**  clang-tidy modernize-loop-convert (Manual MR checklist).
 
 #### 6.1.10 Algorithms/ranges vs hand-rolled loops
 
@@ -283,7 +283,7 @@ const size_t maxRetries = 3;                         // const local
 size_t recordCount();  // BAD -- doesn't mutate state, should be const
 ```
 
-**ENFORCEMENT**  clang-tidy misc-const-correctness (Manual PR checklist).
+**ENFORCEMENT**  clang-tidy misc-const-correctness (Manual MR checklist).
 
 #### 6.1.13 nullptr, never NULL or 0
 
@@ -335,7 +335,7 @@ public:
 class RecordId { public: RecordId(uint64_t value); };  // BAD -- allows silent implicit conversion, e.g. passing a raw uint64_t where a RecordId was expected
 ```
 
-**ENFORCEMENT**  clang-tidy google-explicit-constructor (Manual PR checklist).
+**ENFORCEMENT**  clang-tidy google-explicit-constructor (Manual MR checklist).
 
 #### 6.1.15 override and final
 
@@ -381,7 +381,7 @@ void swap(Buffer& other) noexcept;
 void processRecord(const Record& r) noexcept;  // BAD -- no real payoff here, and if this ever gains a throwing call, it becomes a std::terminate() footgun
 ```
 
-**ENFORCEMENT**  clang-tidy performance-noexcept-move-constructor (Manual PR checklist).
+**ENFORCEMENT**  clang-tidy performance-noexcept-move-constructor (Manual MR checklist).
 
 #### 6.1.17 No trailing return types
 
@@ -421,7 +421,7 @@ class Hdf5Reader
 public:
     explicit Hdf5Reader(std::string path);   // BAD example below shows why this stays std::string, not string_view
 private:
-    std::string path_;   // stored beyond the constructor call -- needs to own the data
+    std::string sourcePath;   // stored beyond the constructor call -- needs to own the data
 };
 ```
 
@@ -536,7 +536,7 @@ using namespace std;  // BAD -- never used, in headers or .cpp files
 string name;           // BAD -- relies on the banned using-namespace directive above
 ```
 
-**ENFORCEMENT**  clang-tidy google-build-using-namespace (Manual PR checklist).
+**ENFORCEMENT**  clang-tidy google-build-using-namespace (Manual MR checklist).
 
 #### 6.1.23 Virtual destructor required on any polymorphic base class
 
@@ -643,8 +643,8 @@ MyType& operator=(const MyType& other)
 ```cpp
 MyType& operator=(const MyType& other)
 {
-    delete data_;             // BAD -- if other is *this, this frees the data
-    data_ = new int(*other.data_);  // being read from on this line -- use-after-free
+    delete data;             // BAD -- if other is *this, this frees the data
+    data = new int(*other.data);  // being read from on this line -- use-after-free
     return *this;
 }
 ```
@@ -682,7 +682,7 @@ void processRecord(const Record& r)
 }
 ```
 
-**ENFORCEMENT**  clang-tidy readability-function-size (BranchThreshold: 10) plus readability-function-cognitive-complexity (Threshold: 25), together — Manual PR checklist. Note that neither check measures McCabe cyclomatic complexity directly; there is no clang-tidy check that does. See Appendix C for what the two actually measure, how closely the pair approximates a ceiling of 10, and the open item this leaves.
+**ENFORCEMENT**  clang-tidy readability-function-size (BranchThreshold: 10) plus readability-function-cognitive-complexity (Threshold: 25), together — Manual MR checklist. Note that neither check measures McCabe cyclomatic complexity directly; there is no clang-tidy check that does. See Appendix C for what the two actually measure, how closely the pair approximates a ceiling of 10, and the open item this leaves.
 
 #### 6.2.3 Max nesting depth: 3, use guard clauses
 
@@ -948,7 +948,7 @@ void takeOwnership(Hdf5Reader* reader);  // BAD -- unclear whether this takes ow
 
 ```cpp
 {
-    std::lock_guard<std::mutex> lock(mutex_);   // constructor locks
+    std::lock_guard<std::mutex> lock(bufferMutex);   // constructor locks
     doSomething();                               // if this throws...
 }                                                 // ...destructor still runs, unlocking automatically
 ```
@@ -1101,7 +1101,7 @@ if(isValid) { }  // BAD
 **GOOD**
 
 ```cpp
-size_t recordCount() const { return count_; }  // ok -- trivial getter
+size_t recordCount() const { return count; }  // ok -- trivial getter
 ```
 
 **BAD**
@@ -1145,7 +1145,7 @@ bool isValid() const { if (!ptr) return false; return ptr->check(); }  // BAD --
 #include "core/io/record_batch.h"
 ```
 
-**ENFORCEMENT**  clang-format (IncludeBlocks: Regroup, IncludeCategories — see Appendix B).
+**ENFORCEMENT**  clang-format (IncludeBlocks: Regroup, SortIncludes: CaseInsensitive, IncludeCategories — see Appendix B). The CaseInsensitive setting matters for the alphabetization claim above: clang-format's default ASCII sort would place every capitalised Qt header ahead of every lowercase third-party one, which is not what the example shows.
 
 #### 6.5.9 Member order: public/protected/private, then types → constants → factory functions → constructors → assignment operators → destructor → other methods → data members
 

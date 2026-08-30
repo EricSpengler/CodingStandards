@@ -30,7 +30,12 @@ AllowShortIfStatementsOnASingleLine: false
 
 # 6.5.8 -- include order: own header, first-party, third-party, C system + stdlib combined
 IncludeBlocks: Regroup
-SortIncludes: true
+# CaseInsensitive, not `true`: `true` sorts by raw ASCII, which puts every
+# capitalised Qt header (<QString>) ahead of every lowercase one (<hdf5.h>)
+# regardless of letter. 6.5.8 says groups are "alphabetized within
+# themselves", and this is the setting that makes that literally true.
+# Requires clang-format 13 or newer.
+SortIncludes: CaseInsensitive
 IncludeIsMainRegex: '(Test)?$'   # default -- own header auto-detected as Priority 0,
                                  # matched by base filename against the .cpp, not by the regexes below
 IncludeCategories:

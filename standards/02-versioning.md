@@ -23,7 +23,7 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 *This specific MINOR/PATCH split for the 0.y.z phase is our own addition on top of semantic versioning — pre-1.0 versions are understood to be free to change without a fixed sub-convention on their own, so we chose this split ourselves for consistency with our Conventional Commits types.*
 
-**ENFORCEMENT**  Manual PR checklist item at release-cut time (2.3). Strong future-automation candidate once CI exists, since the bump is mechanically derivable from git log.
+**ENFORCEMENT**  Manual MR checklist item at release-cut time (2.3). Strong future-automation candidate once CI exists, since the bump is mechanically derivable from git log.
 
 ## 2.2 Release cadence
 
@@ -39,7 +39,7 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 **RATIONALE**  A release process simple and well-documented enough that it isn't a single-person bus-factor risk is itself a goal worth stating explicitly.
 
-**ENFORCEMENT**  Manual PR checklist / Advisory — the procedure itself is the enforcement.
+**ENFORCEMENT**  Manual MR checklist / Advisory — the procedure itself is the enforcement.
 
 ## 2.4 Release process
 
@@ -49,11 +49,11 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 **RATIONALE**  Tagging after the squash-merge (rather than on the pre-merge release-prep branch) means the tag always points to a commit that's actually reachable from both development and release history. Squashing creates a new commit with a different hash — tagging before the merge would leave the tag pointing to an orphaned commit neither branch's log ever shows, defeating the purpose of a release tag. This keeps the universal squash-merge rule intact with no special case carved out for releases.
 
-**ENFORCEMENT**  Manual PR checklist / documented procedure — anyone should be able to execute this from the written steps, per 2.3.1.
+**ENFORCEMENT**  Manual MR checklist / documented procedure — anyone should be able to execute this from the written steps, per 2.3.1.
 
 #### 2.4.2 Changelog tooling: git-cliff
 
-**RULE**  Changelog entries are generated with git-cliff, configured via a committed cliff.toml at the repo root, grouping entries by Conventional Commit type and reading directly from commit history between tags. git-cliff must NOT be run with --first-parent-only history traversal — doing so would skip the individual sub-branch commits preserved by the umbrella-branch merge exception (1.2.3) and only see the merge commit itself.
+**RULE**  Changelog entries are generated with git-cliff, configured via a committed cliff.toml at the repo root, grouping entries by Conventional Commit type and reading directly from commit history between tags. git-cliff must be run over full history, never restricted to first-parent traversal — doing so would skip the individual sub-branch commits preserved by the umbrella-branch merge exception (1.2.3) and only see the merge commit itself. git-cliff exposes this as a `--first-parent` flag; confirm the exact spelling against the version actually installed before relying on it in a script, since the flag name has not been verified against a live install.
 
 *This requirement exists specifically because of the umbrella-branch merge exception in 1.2.3 — if that rule ever changes, this one needs to be reconsidered too.*
 
@@ -67,4 +67,4 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 **RATIONALE**  Anchoring the rebuild trigger to the existing sprint close-out means there's no separate calendar to watch — “did we ship a build this sprint” is already a natural checkpoint the team hits every two weeks, and a build always goes out at day 14 regardless of which case applies, so the 21-day timer never has a chance to lapse.
 
-**ENFORCEMENT**  Manual PR checklist / sprint close-out ritual.
+**ENFORCEMENT**  Manual MR checklist / sprint close-out ritual.

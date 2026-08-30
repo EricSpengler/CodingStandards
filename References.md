@@ -16,6 +16,10 @@ This document draws on established, external references rather than inventing co
 
 - Semantic Versioning 2.0.0 — https://semver.org/spec/v2.0.0.html
 
-- GitHub Flow — https://docs.github.com/en/get-started/quickstart/github-flow
+- GitLab Flow (production-branch variant) — the model this project actually follows, per Section 1 —
+  https://about.gitlab.com/topics/version-control/what-is-gitlab-flow/
+
+- GitHub Flow — cited for contrast in Section 1, not as the model in use —
+  https://docs.github.com/en/get-started/using-github/github-flow
 
 - Gitflow (Vincent Driessen's original branching model) — https://nvie.com/posts/a-successful-git-branching-model/

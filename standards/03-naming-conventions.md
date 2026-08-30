@@ -77,7 +77,7 @@ Hdf5Reader.h  // wrong casing, and doesn't match the class-name-only rule if the
 
 *The classification/Doxygen header shown here (UNCLASSIFIED, @file, @brief, @export_control) is the standard file header required on every tracked .h/.cpp file — see 4.1 for the full rule.*
 
-**ENFORCEMENT**  clang-tidy llvm-header-guard, configured to require path-based naming (Manual PR checklist — no CI today).
+**ENFORCEMENT**  clang-tidy llvm-header-guard, configured to require path-based naming (Manual MR checklist — no CI today).
 
 #### 3.4 Namespaces
 
@@ -101,7 +101,7 @@ namespace Core::IO  // wrong casing
 }
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (NamespaceCase: lower_case) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (NamespaceCase: lower_case) — Manual MR checklist.
 
 #### 3.5 Classes and structs
 
@@ -121,7 +121,7 @@ class hdf5_reader { /* ... */ };  // wrong casing
 struct record_batch { /* ... */ };  // wrong casing
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (ClassCase/StructCase: CamelCase) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (ClassCase/StructCase: CamelCase) — Manual MR checklist.
 
 #### 3.6 Enum class and enum members
 
@@ -151,7 +151,7 @@ enum LogLevel  // BAD -- plain enum, not scoped
 };
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (EnumCase/EnumConstantCase: CamelCase) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (EnumCase/EnumConstantCase: CamelCase) — Manual MR checklist.
 
 #### 3.7 Free functions and public member functions
 
@@ -184,7 +184,7 @@ public:
 };
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (FunctionCase: camelBack) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (FunctionCase: camelBack) — Manual MR checklist.
 
 #### 3.8 Local variables and function parameters
 
@@ -205,7 +205,7 @@ int iCount = 0;  // type-encoded
 std::string strErr;  // type-encoded, cryptic
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (VariableCase/ParameterCase: camelBack) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (VariableCase/ParameterCase: camelBack) — Manual MR checklist.
 
 #### 3.9 Member variables (private/protected)
 
@@ -233,7 +233,7 @@ private:
 };
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (MemberCase: camelBack) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (MemberCase: camelBack) — Manual MR checklist.
 
 #### 3.10 Boolean naming, and the member/accessor collision
 
@@ -296,7 +296,7 @@ namespace core::io
 }
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (ConstantCase: UPPER_CASE, scoped to class/namespace level) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (ConstantCase: UPPER_CASE, scoped to class/namespace level) — Manual MR checklist.
 
 #### 3.12 Constants — local (inside a function)
 
@@ -348,7 +348,7 @@ class Buffer
 };
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (TemplateParameterCase: CamelCase) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (TemplateParameterCase: CamelCase) — Manual MR checklist.
 
 #### 3.14 Macros
 
@@ -367,7 +367,7 @@ class Buffer
 #define MAX_RETRIES 3  // BAD -- macro used outside an include guard
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (MacroCase: UPPER_CASE) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (MacroCase: UPPER_CASE) — Manual MR checklist.
 
 #### 3.15 Static member variables
 
@@ -414,7 +414,7 @@ using BatchCallback = std::function<void(const RecordBatch&)>;
 using record_id_t = uint64_t;  // inconsistent with class/type casing elsewhere
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (TypeAliasCase: CamelCase) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (TypeAliasCase: CamelCase) — Manual MR checklist.
 
 #### 3.17 File extensions
 
@@ -461,7 +461,7 @@ public:
 class Readable { /* pure interface */ };  // BAD -- no I-prefix, looks like a concrete class
 ```
 
-**ENFORCEMENT**  clang-tidy readability-identifier-naming (ClassCase with a class-specific prefix rule for abstract classes) — Manual PR checklist.
+**ENFORCEMENT**  clang-tidy readability-identifier-naming (ClassCase with a class-specific prefix rule for abstract classes) — Manual MR checklist.
 
 #### 3.19 Internal-only namespaces: detail
 
