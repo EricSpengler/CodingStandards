@@ -19,6 +19,7 @@ A quick-reference map of every hard rule above to what actually enforces it. Any
 | Include guard naming (path-based, fused tokens) | 3.3 | clang-tidy llvm-header-guard (Manual MR checklist) |
 | Namespace/class/struct/enum/function/variable/member/parameter/template/macro casing | 3.4–3.9, 3.13–3.14 | clang-tidy readability-identifier-naming (Manual MR checklist) |
 | Boolean member/accessor naming (no collision) | 3.10 | Compiler-enforced (real gate) + Advisory for consistent application |
+| Parameter/member name collision | 3.20 | Compiler-enforced (real gate) — MSVC C4458 at /W4, an error under warnings-as-errors; GCC -Wshadow. Clang needs -Wshadow-all. Advisory for whether the renamed parameter still denotes the same value |
 | Class/namespace-level constant casing | 3.11 | clang-tidy readability-identifier-naming (Manual MR checklist) |
 | Type alias casing | 3.16 | clang-tidy readability-identifier-naming (Manual MR checklist) |
 | Classification header present | 4.1 | Advisory — code review (no automated scan today) |

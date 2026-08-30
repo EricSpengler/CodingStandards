@@ -419,9 +419,10 @@ void logMessage(std::string_view message);   // read-only, used and discarded wi
 class Hdf5Reader
 {
 public:
-    explicit Hdf5Reader(std::string path);   // BAD example below shows why this stays std::string, not string_view
+    explicit Hdf5Reader(std::string initialPath);   // parameter renamed per 3.20; BAD example
+                                                    // below shows why this stays std::string
 private:
-    std::string sourcePath;   // stored beyond the constructor call -- needs to own the data
+    std::string path;   // stored beyond the constructor call -- needs to own the data
 };
 ```
 

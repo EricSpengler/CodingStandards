@@ -211,7 +211,7 @@ std::string strErr;  // type-encoded, cryptic
 
 **RULE**  camelBack, no m_ prefix, no trailing underscore — same casing as a local variable. Readability comes from scope (you're inside the class), not name decoration.
 
-**RATIONALE**  Considered and rejected the m_ / trailing-underscore alternatives deliberately: they add a small amount of visual noise to every single member access in exchange for a distinction most readers can get from context (which function/class they're already reading). This choice has a direct consequence for boolean naming — see 3.10.
+**RATIONALE**  Considered and rejected the m_ / trailing-underscore alternatives deliberately: they add a small amount of visual noise to every single member access in exchange for a distinction most readers can get from context (which function/class they're already reading). This choice has two direct consequences elsewhere: for boolean naming, see 3.10, and for parameters that would otherwise take the same name as the member they initialize, see 3.20.
 
 **GOOD**
 
@@ -486,3 +486,57 @@ class Hdf5Reader { /* public interface, uses detail:: helpers internally */ };
 ```
 
 **ENFORCEMENT**  Advisory — code review.
+
+#### 3.20 Parameter names versus member names
+
+**RULE**  A function parameter is not required to carry the same name as the member it initializes or assigns, and where the two would otherwise be identical, the parameter is the side that changes — never the member. A renamed parameter must still denote the same value: name it for what it is inside the function, and let the function's own name supply the context the member name has to state explicitly. A parameter is never renamed to a name that denotes a different member, and never shortened to a placeholder that says nothing — 3.8 applies to it in full.
+
+**RATIONALE**  There are two reasons, one mechanical and one about readability. Mechanically, 3.8 and 3.9 give parameters and members identical naming rules, so a constructor that stores the value it was handed produces a parameter that shadows the member it initializes. MSVC reports that as C4458 at /W4, which under this project's warnings-as-errors build is not a warning but a build failure — the naming rules as written describe code that does not compile. Note that `this->` does not fix this: the diagnostic fires at the parameter's declaration, not at the point of use, so qualifying the member inside the function body leaves the error exactly where it was.
+
+The parameter is the side that changes because the member's name is read by every function in the class, while the parameter's name is read inside one. Letting a constructor dictate what a member is called for the rest of its life inverts that relationship for no gain.
+
+On readability: a setter named setInputPath has already said which path it takes, so repeating that in the parameter adds nothing. The parameter is named from inside the function, where the surrounding context is established; the member is named from inside the class, where it has to distinguish itself from every sibling member. That is why `inputPath` is right for the member and `path` is right for the parameter, in the same class. The "denotes the same value" constraint is what stops this becoming licence to rename freely — a parameter called outputPath that assigns to inputPath is a worse problem than the shadow it avoided.
+
+**GOOD**
+
+```cpp
+class Hdf5Exporter
+{
+public:
+    // Both parameters would collide with a member, so both are renamed -- to names
+    // that still denote exactly the same values.
+    Hdf5Exporter(std::filesystem::path source, std::filesystem::path destination);
+
+    // No collision: the function name already says which path this is, so the
+    // parameter does not repeat it.
+    void setInputPath(std::filesystem::path path);
+    void setOutputPath(std::filesystem::path path);
+
+private:
+    std::filesystem::path inputPath;
+    std::filesystem::path outputPath;
+};
+```
+
+**BAD**
+
+```cpp
+class Hdf5Exporter
+{
+public:
+    Hdf5Exporter(std::filesystem::path inputPath,         // BAD -- shadows the member it
+                 std::filesystem::path outputPath);        // initializes; C4458, and a build
+                                                           // failure under warnings-as-errors
+
+    void setInputPath(std::filesystem::path p);            // BAD -- collision dodged by saying
+                                                           // nothing at all; violates 3.8
+
+    void setOutputPath(std::filesystem::path inputPath);   // BAD -- renamed to a name that
+                                                           // denotes a different member
+private:
+    std::filesystem::path inputPath;
+    std::filesystem::path outputPath;
+};
+```
+
+**ENFORCEMENT**  Compiler (actual gate) for the collision itself — MSVC C4458, "declaration of 'x' hides class member," is emitted at /W4 and is an error under this project's warnings-as-errors build. GCC's -Wshadow reports the same declaration. Clang's plain -Wshadow does NOT — it deliberately exempts constructor parameters that shadow fields — so a future Clang toolchain needs -Wshadow-all, or specifically -Wshadow-field-in-constructor, to keep this gated. Whether a renamed parameter still denotes the same value is Advisory — code review.
