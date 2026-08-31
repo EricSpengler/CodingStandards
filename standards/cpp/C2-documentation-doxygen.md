@@ -30,7 +30,7 @@ Documentation coverage isn't limited to the public API surface — private and p
 
 **RATIONALE**  Documenting every access level, not just the public surface, is what makes the codebase understandable end-to-end — a private helper function is exactly the kind of thing that needs explaining, arguably more than a well-named public method whose signature already communicates most of its own intent.
 
-**ENFORCEMENT**  Doxygen build with EXTRACT_ALL=NO, EXTRACT_PRIVATE=YES, WARN_IF_UNDOCUMENTED=YES (see Appendix A) surfaces every undocumented entity at build time. Manual MR checklist today (reviewer runs the Doxygen build during the manual build step, P1.8) — CI gate once available (the Enforcement Summary, known gap).
+**ENFORCEMENT**  Doxygen build with EXTRACT_ALL=NO, EXTRACT_PRIVATE=YES, WARN_IF_UNDOCUMENTED=YES (see Appendix A) surfaces every undocumented entity at build time. Manual MR checklist — the reviewer runs the Doxygen build during the manual build step (P1.8).
 
 ## Required tags
 

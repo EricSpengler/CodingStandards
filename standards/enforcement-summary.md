@@ -1,8 +1,8 @@
 # Enforcement Summary
 
-A quick-reference map of every hard rule above to what actually enforces it. Anything not listed here is Advisory — code review by default. This covers the Git Workflow, Versioning, Naming Conventions, Classification Markings, Documentation, and Code Style sections — CMake structure and the remaining topics on the master list have not been built out yet.
+A quick-reference map of every hard rule in this standard to what actually enforces it. Anything not listed here is Advisory — code review by default.
 
-*Important: this project has no automated CI pipeline today. Rows marked “Manual MR checklist” are tool-checkable in principle but are only actually verified because the reviewer runs them by hand during the four-step review process (P1.8) — they are not a hard gate the way a CI-enforced row would be. Standing up GitLab CI would convert most of these into real gates; this was discussed and deliberately deferred rather than built now.*
+*Read the three categories literally. **Actual gate** means a tool rejects the change — a compiler, a repository setting, clang-format. **Manual MR checklist** means tool-checkable in principle, but verified only because the reviewer runs it by hand during the four-step review (P1.8); it is not a gate. **Advisory** means a person reading a diff, or nothing.*
 
 | Rule | Section | Enforcement |
 | --- | --- | --- |
@@ -50,4 +50,6 @@ A quick-reference map of every hard rule above to what actually enforces it. Any
 | Commit subject line ≤ 72 chars | P1.3.1 | Advisory — code review (no linting tool, see P1.3.1 note) |
 | Class member order (access level + intra-block) | C3.5.9 | Advisory — code review |
 
-**Known gap: standing up GitLab CI to run builds, warnings-as-errors, and clang-format/clang-tidy (including the identifier-naming checks above) automatically — once those sections are built out — would convert most “Manual MR checklist” rows above into real gates. Commit-message linting was considered and deliberately not adopted for now (see P1.3.1) given GitLab's squash-message truncation behavior (P1.4.3) limits what it can actually guarantee. Revisit both as a standalone initiative.**
+**What is not enforced.** Every row above marked *Manual MR checklist* is tool-checkable in principle and checked by a person in practice, because this project runs no automated pipeline. Every row marked *Advisory* is checked by a person reading a diff, or not at all. Those two categories are the majority of this table, and a reviewer should treat them as the part of the review that only they can do.
+
+Commit-message format is deliberately not linted: the host truncates long squash-merge messages at merge time (P1.4.3), after any local check has already passed, so a linter would pass and the recorded message would still be wrong.

@@ -17,13 +17,11 @@ Numbered `0` so it sorts ahead of P1 without disturbing any existing section num
 - **Adding a constant** means adding a row here in the same MR as the rule that introduced it.
 - **If a rule states a project-scoped value literally, it cites the constant id on the same line.** Stating the value is usually the more readable choice — what is not acceptable is stating it with nothing to tell a reader, or a fork of this guide, that it is a value rather than a principle. This is mechanically checked; see below.
 
-*Status: the inventory is complete and the scope column is settled. The guide's prose has not yet been rewritten to the role-name convention above — see the generalization status section below.*
-
 ---
 
 ## Consistency check
 
-`tools/check_constants.py` verifies this registry against the rules. Run it from the repository root; it exits non-zero on failure, so it can gate a merge once CI exists.
+`tools/check_constants.py` verifies this registry against the rules. Run it from the repository root. It exits non-zero on failure, so it is usable both by hand and as a merge gate.
 
 ```bash
 python3 tools/check_constants.py
@@ -69,7 +67,6 @@ Scope assignments below are settled. See the generalization status section at th
 | C-09 | Integration branch name | `development` | `org` | P1.1.1–P1.1.3, P1.2.1–P1.2.3, P1.4.1, P1.4.2, P1.5.1, P1.8.1, P2.4.1 |
 | C-10 | Production branch name | `release` | `org` | P1.1.1–P1.1.4, P1.2.3, P1.4.2, P2.1.1, P2.2, P2.3.1, P2.4.1, P2.4.2, plus `project/PROJECT_PROFILE.md` |
 | C-11 | Merge method | Fast-forward, squash per-MR | `org` | P1.2.3, P1.4.1 |
-| C-12 | Stale branch thresholds | *not yet adopted — see D-07* | `org` | — |
 
 ## Commits and versioning
 
@@ -90,7 +87,7 @@ Scope assignments below are settled. See the generalization status section at th
 |---|---|---|---|---|
 | C-21 | Language standard | C++23 | `org` | C3 intro, C3.1.6 |
 | C-22 | Compiler | MSVC | `org` | C1.20, C3.1.20 |
-| C-23 | Build generator | Ninja | `org` | — (not yet written up) |
+| C-23 | Build generator | Ninja | `org` | — |
 | C-24 | Build system | CMake | `org` | P1.1.3, P1.6.1 |
 | C-25 | Package manager | vcpkg | `org` | P1.3.1, P1.6.1, C3.5.8 |
 | C-26 | Warnings-as-errors | On | `org` | C1.20, C3.1.20 |
@@ -149,17 +146,4 @@ These are the values that make this a *product* document rather than a *standard
 
 ---
 
-## Generalization status
 
-The scope column is settled. The generalization pass ran on this basis:
-
-- **C-07, C-08** — review process and release cadence are organization policy. P1.8 and P2.2 stay in the standard unchanged.
-- **C-43, C-44** — classification marking is an organization-wide obligation. P3 stays, with P3.2 rewritten to require a *determination* rather than to state this product's answer.
-- **C-49** — the running example is now domain-neutral.
-- **C-46, C-47, C-48** — product-scoped values moved to `project/PROJECT_PROFILE.md`.
-
-Still outstanding: the guide's prose states constant *values* inline rather than referring to them by role, so changing one still means visiting the rules its **Used in** column names rather than editing only this table. That rewrite is F-32 on the master topic list.
-
----
-
-*Next step, not yet done: rewrite the guide's prose to the role-name convention described above, so that changing a value in this table requires touching only the rules its **Used in** column names. Tracked on the master topic list.*

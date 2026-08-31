@@ -297,11 +297,11 @@ git add .vs/  # BAD -- IDE-local state, differs per developer
 
 **ENFORCEMENT**  Advisory — code review. .gitignore evolves by ordinary MR, no special process.
 
-### P1.6.2 test_data/ is committed to the repository, with a controlled addition process
+### P1.6.2 test_data/ is committed to the repository
 
-**RULE**  Test fixtures and sample data live in test_data/ and are tracked normally in git — not gitignored. Adding new files to test_data/ requires following a specific process (details TBD — open item, not yet documented here).
+**RULE**  Test fixtures and sample data live in test_data/ and are tracked normally in git — not gitignored. A fixture is the smallest file that exercises the case it exists for, never a copy of a production dataset, and is confirmed to carry nothing whose classification exceeds the repository's own marking (P3.1) before it is committed.
 
-*Open item: the exact process for adding to test_data/ (approval step, size limits, a manifest file, etc.) still needs to be documented here once it's spelled out.*
+**RATIONALE**  Committing fixtures is what makes a test suite runnable from a fresh clone with no setup step, which matters more here than usual because the review process (P1.8) has a reviewer build and test the branch by hand. The size and classification constraints are the price of that: a repository is cloned by everyone and kept forever, so a large binary fixture is permanent, and a fixture derived from real data is the most common way controlled data reaches somewhere it should not be.
 
 **ENFORCEMENT**  Advisory — code review.
 
@@ -386,6 +386,6 @@ This project does not currently run an automated CI pipeline. Every MR is verifi
 
 **RATIONALE**  Without CI, every one of these checks depends entirely on a human remembering to do it, in a useful order — agent review first means the reviewer's own read of the diff isn't spent re-deriving problems a tool already caught; build and test last because they're the most expensive steps and shouldn't be run against code that's already failed static review. Posting the agent output as a comment is the only durable record that the step actually happened, useful for later auditing and for catching a reviewer who skipped it.
 
-*This is the single biggest reliability gap in the current process — every step depends on a human doing it correctly and in order, with no gate preventing an incomplete review from approving anyway. Standing up GitLab CI is the direct fix, and was discussed and deliberately deferred rather than built now.*
+*Every step here depends on a human performing it correctly and in order, and nothing prevents an incomplete review from approving anyway. That is a property of the process as it stands, and reviewers should read it as one.*
 
 **ENFORCEMENT**  Manual MR checklist — no automated gate exists today.

@@ -490,7 +490,7 @@ if (delta < count) { /* BAD -- delta is silently converted to a huge unsigned
                         number; this is false even though -1 < 5 looks obviously true */ }
 ```
 
-**ENFORCEMENT**  Compiler warning (-Wsign-compare / -Wsign-conversion on GCC/Clang, /W4's C4018/C4245 on MSVC) is the real gate once warnings-as-errors is configured — that belongs to the not-yet-built Toolchain/Build Specifics topic on the master list, so this isn't wired up as an actual gate yet. Advisory — code review in the meantime.
+**ENFORCEMENT**  Compiler (actual gate) — -Wsign-compare and -Wsign-conversion on GCC/Clang, C4018 and C4245 under /W4 on MSVC, each an error under this project's warnings-as-errors build.
 
 ### C3.1.21 Pre-increment (++X), not post-increment (X++), when the returned value isn't used
 

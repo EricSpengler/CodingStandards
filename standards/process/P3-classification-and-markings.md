@@ -29,7 +29,7 @@ Every tracked .h/.cpp file carries a classification header as the very first lin
 #define CORE_IO_RECORDREADER_H
 ```
 
-**ENFORCEMENT**  Advisory — code review today. A pre-commit hook or CI script checking the first 10 lines of every tracked .h/.cpp file for the marking is a strong automation candidate once available (see the Enforcement Summary, known gap).
+**ENFORCEMENT**  Advisory — code review. The marking is a fixed block in a fixed position, so a reviewer checks it by reading the first lines of any added file.
 
 ### P3.2 Data sensitivity scope
 

@@ -4,7 +4,7 @@
 
 How code in this organization is written, reviewed, versioned, documented, and shipped.
 
-The standard is in two halves. **Process** applies to any language — how work is branched, committed, reviewed, versioned and marked. **Language standards** cover one language each. C++ is the only one written today; adding another means adding a folder beside it, not rewriting anything.
+The standard is in two halves. **Process** applies to any language — how work is branched, committed, reviewed, versioned and marked. **Language standards** cover one language each.
 
 It is also written to be used by more than one project: anything true of only one project lives in that project's own profile, not here.
 
@@ -85,7 +85,7 @@ Two splits matter. **Process versus language**: a team writing Python adopts `pr
 |---|---|
 | [`project/PROJECT_PROFILE.md`](project/PROJECT_PROFILE.md) | **Everything specific to one project.** Source layout, commit scopes, third-party libraries, the data-sensitivity determination, product-specific release requirements. A new project forks this file and rewrites it — it does not fork the standard. |
 | [`planning/Master_Topic_List.md`](planning/Master_Topic_List.md) | The working tracker: topics not yet written, decisions awaiting a human, findings against written material, and notes parked for sections that do not exist yet. If something is open, it is in here. |
-| [`tools/check_constants.py`](tools/check_constants.py) | Verifies the Constants Registry against the rules. Exits non-zero, so it can gate a merge once CI exists. |
+| [`tools/check_constants.py`](tools/check_constants.py) | Verifies the Constants Registry against the rules. Exits non-zero, so it is usable by hand or as a merge gate. |
 
 ---
 
@@ -136,14 +136,6 @@ The version lives in exactly one place, the line under the title. A merge reques
 
 ## Status
 
-Six numbered sections are written — three process, three C++ — holding **106 rules**, plus the Constants Registry, Enforcement Summary and References. The tracker records what is not:
+**v0.1.0 — Draft.** Six numbered sections, holding **106 rules**, plus the Constants Registry, Enforcement Summary and References.
 
-| | Count |
-|---|---|
-| Topics with no section written yet | 24 |
-| Decisions awaiting a human | 9 |
-| Open findings against written material | 16 |
-
-The largest single open question is whether **MISRA C++:2023** applies contractually — it conflicts directly with the error-handling strategy in C3.3, so it would reshape C3 and the Enforcement Summary. That is `D-01`.
-
-The guide describes itself as covering the topics it covers. Sections that do not exist are absent, not implied.
+This standard states what it covers. It does not describe work that is not in it — open topics, pending decisions and outstanding findings are tracked in [`planning/Master_Topic_List.md`](planning/Master_Topic_List.md), which is the one place they live. A rule that is absent here is absent, not implied.

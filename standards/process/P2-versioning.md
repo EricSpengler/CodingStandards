@@ -23,7 +23,7 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 *This specific MINOR/PATCH split for the 0.y.z phase is our own addition on top of semantic versioning — pre-1.0 versions are understood to be free to change without a fixed sub-convention on their own, so we chose this split ourselves for consistency with our Conventional Commits types.*
 
-**ENFORCEMENT**  Manual MR checklist item at release-cut time (P2.3). Strong future-automation candidate once CI exists, since the bump is mechanically derivable from git log.
+**ENFORCEMENT**  Manual MR checklist item at release-cut time (P2.3). The bump is mechanically derivable from git log, so the check is reproducible even though it is performed by hand.
 
 ## P2.2 Release cadence
 

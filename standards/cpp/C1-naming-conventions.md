@@ -362,7 +362,7 @@ class Buffer
 
 ### C1.14 Macros
 
-**RULE**  UPPER_SNAKE_CASE, restricted to include guards only (language feature policy for macros generally is not yet covered).
+**RULE**  UPPER_SNAKE_CASE, restricted to include guards only. The general policy on macro use is C3.1.3, which bans them everywhere else.
 
 **GOOD**
 
