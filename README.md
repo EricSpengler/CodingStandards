@@ -1,8 +1,12 @@
-# C++ Coding Standards
+# Engineering Standards
 
 **v0.1.0 — Draft.** Not yet ratified. The major version stays at 0 until it is; see [Versioning this document](#versioning-this-document).
 
-A shared C++ standard: how code in this organization is written, reviewed, versioned, documented, and shipped. It is written to be used by more than one project — anything true of only one project lives in that project's own profile, not here.
+How code in this organization is written, reviewed, versioned, documented, and shipped.
+
+The standard is in two halves. **Process** applies to any language — how work is branched, committed, reviewed, versioned and marked. **Language standards** cover one language each. C++ is the only one written today; adding another means adding a folder beside it, not rewriting anything.
+
+It is also written to be used by more than one project: anything true of only one project lives in that project's own profile, not here.
 
 Every rule states what to do, why, what conforming and non-conforming code looks like, and what actually enforces it. Where nothing enforces a rule but a human reading a diff, it says so plainly.
 
@@ -10,11 +14,11 @@ Every rule states what to do, why, what conforming and non-conforming code looks
 
 ## Start here
 
-New to the codebase? Read **P1, C1 and C3** first — workflow, naming, code style. That is most of what you need to open your first merge request. The rest is reference.
+**New here?** Read **P1** (git workflow), then the standard for the language you are writing — **C1** and **C3** if that is C++. Between them that is most of what you need to open your first merge request. Everything else is reference.
 
-Reviewing a merge request? **the Enforcement Summary** is the enforcement map: it tells you which rules a tool would have caught and which are yours to check by eye.
+**Reviewing a merge request?** The **[Enforcement Summary](standards/enforcement-summary.md)** is the map: it tells you which rules a tool would already have caught and which are yours to check by eye.
 
-Changing a value rather than a rule — a branch name, a line limit, a library? Start at **the Constants Registry**, not at the rule.
+**Changing a value rather than a rule** — a branch name, a line limit, a library? Start at the **[Constants Registry](standards/constants.md)**, not at the rule that mentions it.
 
 ---
 
@@ -25,8 +29,9 @@ One file at the root — this one. Everything else is filed by what it is.
 ```
 README.md              you are here: scope, index, how to read a rule
 standards/
-  process/             language-agnostic: git, versioning, file markings
-  cpp/                 C++ only: naming, documentation, code style
+  process/             any language: git, versioning, file markings
+  cpp/                 C++: naming, documentation, code style
+                       (one folder per language -- add python/ etc. beside it)
   constants.md         every value that is a choice rather than a principle
   enforcement-summary.md   what actually gates each rule
   references.md        external standards this guide draws on
@@ -35,9 +40,9 @@ planning/              the working tracker: open topics, decisions, findings
 tools/                 scripts that check the standard against itself
 ```
 
-**Sections are prefixed by domain, and the prefix is part of the number.** `P` is process, `C` is C++ — so `P1.3.1` is a commit-message rule and `C3.1.4` is a language-feature rule, and you can tell which without looking either up. New sections append inside their own domain, so nothing is ever renumbered.
+**Sections are prefixed, and the prefix is part of the number.** `P` is process; a language gets its own letter, `C` for C++ — so `P1.3.1` is a commit-message rule and `C3.1.4` is a C++ language rule, and you can tell which without looking either up. New sections append inside their own prefix, so nothing is ever renumbered, and a new language claims an unused letter.
 
-Two splits matter. **`process/` versus `cpp/`**: a team writing Python would adopt `process/` unchanged and replace `cpp/` entirely. **`standards/` versus `project/`**: the standard is shared and changes rarely, the profile is rewritten by every project that adopts it. If you are about to add something to the standard that is true of only one project, or of only one language, it belongs elsewhere.
+Two splits matter. **Process versus language**: a team writing Python adopts `process/` unchanged and writes a `python/` folder — they never touch `cpp/`. **`standards/` versus `project/`**: the standard is shared and changes rarely, the profile is rewritten by every project that adopts it. If you are about to add something to the standard that is true of only one project, or of only one language, it belongs elsewhere.
 
 ## The documents
 
@@ -49,7 +54,7 @@ Two splits matter. **`process/` versus `cpp/`**: a team writing Python would ado
 | **P2** | [Versioning](standards/process/P2-versioning.md) | Version scheme, release cadence, the release procedure, changelog generation | 4 |
 | **P3** | [Classification & Markings](standards/process/P3-classification-and-markings.md) | The marking every tracked source file carries, and the data-sensitivity determination each project records | 2 |
 
-### C++ — language-specific
+### C++ — one language standard of potentially several
 
 | | Document | What it is | Rules |
 |---|---|---|---|
@@ -112,6 +117,7 @@ A change to the standard is an ordinary merge request against this repository, f
 - **Changing a rule** — edit the rule. If it has an entry in the Enforcement Summary, update that too.
 - **Changing a value** (branch name, a limit, a library) — edit its row in the Constants Registry first, then visit every rule its **Used in** column names. Run `python3 tools/check_constants.py` before pushing.
 - **Adding a rule** — add it at the end of its section and take the next number. Numbers are never reused or reassigned, so an existing reference is never ambiguous. P2.5 is deliberately unused for this reason.
+- **Adding a language** — create `standards/<language>/`, claim an unused prefix letter, and number its sections from 1 inside that prefix. Nothing in `process/` or any other language folder changes. The Enforcement Summary and Constants Registry gain rows; they are not forked.
 - **Anything unresolved** — record it in `planning/Master_Topic_List.md` rather than leaving it in a commit message. That file exists so open threads have somewhere to live.
 
 ### Versioning this document

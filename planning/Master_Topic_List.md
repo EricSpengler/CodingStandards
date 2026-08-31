@@ -1,6 +1,6 @@
-# C++ Standards & Styling Guide — Master Topic List
+# Engineering Standards — Master Topic List
 
-Running tracker for the whole standards effort: what exists, what is open, who owes a decision, and what was deliberately parked. Every open thread lives here — if it is not in this file it will be forgotten.
+Running tracker for the whole standards effort, across both process and language standards: what exists, what is open, who owes a decision, and what was deliberately parked. Every open thread lives here — if it is not in this file it will be forgotten.
 
 Update this file in the same commit as the change that affects it.
 
