@@ -93,13 +93,14 @@ Nothing here can be resolved by drafting. Each blocks or reshapes the work named
 | D-03 | C3.2.2 complexity metric. The rule names a McCabe ceiling of 10; no clang-tidy check computes McCabe. Appendix C substitutes `BranchThreshold` + cognitive complexity as a documented approximation. Ratify that, or adopt a real McCabe tool (`lizard`) in CI. | C3.2.2, App. C | open |
 | D-04 | JSON library: glaze vs nlohmann. | C7 (third-party) | open |
 | D-05 | Logging library. | C9 (logging) | open |
-| D-06 | Whether to add a **"Deviations from cited standards" appendix** recording where this guide knowingly departs from Google / LLVM / Core Guidelines (see F-10 … F-15). Recommended: yes — it is cheaper than changing any rule and removes the ambiguity. | new appendix | open |
+| D-06 | Whether to add a **"Deviations from cited standards" appendix** recording where this guide knowingly departs from Google / LLVM / Core Guidelines (see F-36). Recommended: yes — it is cheaper than changing any rule and removes the ambiguity. | new appendix | open |
 | D-07 | Stale/abandoned branch policy — wanted at all? Flagged in the original list as "unclear if this is even wanted". | § P1.5 | open |
 | D-08 | Blank-line conventions within a file, beyond what clang-format enforces — wanted at all? | § C3.5 | open |
 | D-09 | Member variable decoration: keep C1.9's no-`m_`/no-trailing-underscore rule, or adopt Google's `foo_`. | C1.9 | **done** — keep C1.9 as written |
 | D-10 | Confirm the scope column in the Constants Registry | the Constants Registry | **done** — review process and cadence are `org`; classification is `org`; layout, scopes and library list are `project` |
-| D-11 | C-49: replace the `Hdf5Reader` running example with a domain-neutral one, or keep it? 35 rules affected — the largest single edit in the generalization. | §P1, 3, 5, 6 | open |
+| D-11 | C-49: replace the `Hdf5Reader` running example with a domain-neutral one, or keep it? 35 rules affected — the largest single edit in the generalization. | §P1, 3, 5, 6 | **done** — replaced with `RecordReader`/`ReadError`/`FileHandle`; matches C-49 in the Constants Registry |
 | D-12 | C-47: poison-pill rule | P2 | **done** — moved verbatim to `project/PROJECT_PROFILE.md`; section number 2.5 retired, not reassigned |
+| D-13 | `assert()` restricted to profiled hot paths only (C3.3.3) vs CERT/Core Guidelines' broader recommended usage — genuinely worth reconsidering, not just documenting as a deviation. | C3.3.3 | open |
 
 ---
 
@@ -144,6 +145,10 @@ From the standards review. Done rows retained deliberately.
 | F-33 | No index or title page; the document set did not state its own scope | `README.md` | done |
 | F-34 | `CPP_Code_Standards_and_Styling_Guide.md` was left in place after the split and never updated, so it still carried the GitHub Flow misnomer, 49 `Hdf5Reader` mentions, 57 `Manual PR checklist` labels, the nonexistent `CyclomaticComplexityThreshold`, rule 2.5 and the product name — a stale duplicate of the entire guide | repo root | done — deleted; recoverable at `729b9de` |
 | F-35 | Four documents sat at the repository root, so a newcomer had no single obvious starting point | repo layout | done — `standards/`, `project/`, `planning/`, `tools/`; only `README.md` remains at the root |
+| F-36 | Five style choices deviate from cited external standards without being documented as deliberate: UPPER_SNAKE constants (C1.11) vs Google's `kFoo`; CamelCase enumerators (C1.6) vs Google's `kFoo`; `size_t` for indices (C3.1.20) vs Core Guidelines ES.107; `noexcept` on move/swap only (C3.1.16) vs Core Guidelines F.6; Allman brace style, 4-space indent, 100-column limit (C3.5) vs the Google/LLVM house styles those guides actually use | new appendix (see D-06) | open |
+| F-37 | Four rules govern something with no external standard to check against, and were never labeled as a deliberate house convention: the umbrella-branch fast-forward exception (P1.2.3) has no external precedent; the poison-pill rebuild (now in `project/PROJECT_PROFILE.md`) never got the suggested explicit failure-mode checklist language; `@brief` third-person mood (C2) is not labeled as a house convention; local-constant camelBack (C1.12) is accepted as permanently advisory but never stated as such | P1.2.3, C2, C1.12, `project/PROJECT_PROFILE.md` | open |
+| F-38 | "Start here" in README still points at nearly all of P1, C1 and C3 (~72 of 106 rules) as first reading for a new developer — the original complaint from the first README round, restated after the retitle rather than narrowed | `README.md` | open |
+| F-39 | Commit `f6fd366` (forward-reference cleanup: C1.14, C3.1.20, P1.6.2, P1.8.1, P2.1.1, P3.1, C2.2, the Constants Registry, the Enforcement Summary — 9 files) had no tracker entry | all | done — recorded after the fact |
 
 ---
 
@@ -181,6 +186,11 @@ Parked because the section that should hold them does not exist yet. Check this 
 | R-01 | Does this tool handle PHI/PII? | No. Only CUI/export-control applies. Recorded in 4.2. |
 | R-02 | Which git workflow is this? | GitLab Flow with a production branch — not GitHub Flow. Corrected in P1. |
 | R-03 | Does `this->member` clear the C4458 shadowing error? | No. The diagnostic fires at the parameter declaration, not the use. Verified with GCC and Clang. Recorded in 3.20. |
+| R-04 | Does the pre-1.0 MINOR/PATCH derivation in P2.1.1 conflict with SemVer? | No — SemVer §4 leaves 0.y.z undefined, so this is the guide's own addition, correctly scoped. No action needed. |
+| R-05 | Is this standard scoped to "this organization" or "this team"? | This organization — confirmed explicitly. |
+| R-06 | Should the standard carry its own "known gaps" appendix inside `standards/`, or is `planning/Master_Topic_List.md` the single tracker? | Tracker only. No appendix. |
+| R-07 | Should sections split into `process/` (any language) and `cpp/` (C++-specific) folders, with P/C domain-prefixed numbering? | Yes — implemented across `standards/process/` and `standards/cpp/`, 377 cross-references rewritten. **Reopened**: the full document review starting now includes this decision. |
+| R-08 | Is this a C++-only standard or a multi-domain (process + language) standard? | Multi-domain — retitled "Engineering Standards," framed as process applying to any language plus one folder per language. **Reopened**: included in the full document review starting now. |
 
 ---
 
