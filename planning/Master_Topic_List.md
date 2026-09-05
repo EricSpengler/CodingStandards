@@ -176,6 +176,7 @@ Parked because the section that should hold them does not exist yet. Check this 
 | X-01 | Standing up GitLab CI | Discussed and deliberately deferred. Converts most "Manual MR checklist" rows in the Enforcement Summary into real gates. |
 | X-02 | Docker container creation | Deferred. |
 | X-03 | Dedicated Linux building and testing | Deferred. Blocks UBSan/TSan and all cross-toolchain verification. |
+| X-04 | Review of the meta/summary layer — README, Constants Registry, Enforcement Summary, References, Project Profile | Deferred until the standard itself is complete: 24 topics (T-01…T-24) are still unwritten, so reviewing these now would mean repeating it once C4–C15 and P4–P8 land. Revisit when those are drafted, not merely once this review pass ends. |
 
 ---
 
