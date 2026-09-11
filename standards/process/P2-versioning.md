@@ -12,12 +12,12 @@ Semantic Versioning, pre-1.0 convention, derived mechanically from Conventional 
 
 **GOOD**
 
-```cpp
-Release with feat(core): add record batch reader (JIRA-101) and
-fix(gui): correct docking layout bug (JIRA-102)
+```text
+Release with feat(auth): add record batch reader (JIRA-101) and
+fix(ui): correct docking layout bug (JIRA-102)
   -> MINOR bump: 0.4.0 -> 0.5.0
 
-Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
+Release with only fix(deps): correct dependency path resolution (JIRA-103)
   -> PATCH bump: 0.5.0 -> 0.5.1
 ```
 
@@ -27,11 +27,13 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 ## P2.2 Release cadence
 
-- Releases are cut biweekly, tied to sprint close-out (day 14 of each two-week sprint).
+### P2.2.1 Biweekly, tied to sprint close-out
 
-- If a sprint's commits warrant a version bump, that's a normal release: new tag, changelog entry, the full process below. If they do not, no new tag and no changelog entry are created.
+**RULE**  Releases are cut biweekly, tied to sprint close-out (day 14 of each two-week sprint) (C-08). If a sprint's commits warrant a version bump per P2.1, that's a normal release: new tag, changelog entry, the full process in P2.4. If they do not, no new tag and no changelog entry are created. Whether a build still goes out when there is nothing to tag is a project matter, not a standard: a project whose distribution mechanism requires a periodic rebuild records that requirement, and its trigger, in its project profile.
 
-- Whether a build still goes out when there is nothing to tag is a project matter, not a standard: a project whose distribution mechanism requires a periodic rebuild records that requirement, and its trigger, in its project profile. *(P2.5 previously held one such product-specific rule; it moved to `project/PROJECT_PROFILE.md`. The number is left unused rather than reassigned, so existing references stay unambiguous.)*
+*(P2.5 previously held one such product-specific rule; it moved to `project/PROJECT_PROFILE.md`. The number is left unused rather than reassigned, so existing references stay unambiguous.)*
+
+**ENFORCEMENT**  Manual MR checklist / sprint close-out ritual.
 
 ## P2.3 Release-cutting
 
@@ -47,7 +49,7 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 ### P2.4.1 Full sequence
 
-**RULE**  1) Cut a release-prep branch off development, named JIRA-XXX-desc (a Jira ticket for the release itself; no type prefix, same as any other sub-branch). 2) Pull latest development into it. 3) Generate the changelog entry for commits since the last tag using git-cliff. 4) Append the generated entry to CHANGELOG.md. 5) Commit the changelog update, following standard Conventional Commits format (e.g. chore(docs): update changelog for v0.5.0 (JIRA-XXX)). 6) Push the branch, open an MR into development. 7) Squash-merge into development — standard merge rule, no exception. 8) Tag the resulting squash commit on development as v0.MINOR.PATCH (per P2.1), push the tag. 9) Fast-forward release to that same tagged commit, push. 10) Build from the tagged commit; package for distribution.
+**RULE**  1) Cut a release-prep branch off development, named JIRA-XXX-desc (a Jira ticket for the release itself; no type prefix, same as any other sub-branch). 2) Pull latest development into it. 3) Generate the changelog entry for commits since the last tag using git-cliff. 4) Append the generated entry to CHANGELOG.md. 5) Commit the changelog update, following standard Conventional Commits format (e.g. chore(auth): update changelog for v0.5.0 (JIRA-XXX)). 6) Push the branch, open an MR into development. 7) Squash-merge into development — standard merge rule, no exception. 8) Tag the resulting squash commit on development as v0.MINOR.PATCH (per P2.1), push the tag. 9) Fast-forward release to that same tagged commit, push. 10) Build from the tagged commit; package for distribution.
 
 **RATIONALE**  Tagging after the squash-merge (rather than on the pre-merge release-prep branch) means the tag always points to a commit that's actually reachable from both development and release history. Squashing creates a new commit with a different hash — tagging before the merge would leave the tag pointing to an orphaned commit neither branch's log ever shows, defeating the purpose of a release tag. This keeps the universal squash-merge rule intact with no special case carved out for releases.
 

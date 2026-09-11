@@ -127,9 +127,9 @@ feat(auth): JIRA-123 umbrella of record batch work
 
 ### P1.3.1 Format: type(scope): description (JIRA-XXX)
 
-**RULE**  Type is one of feat, fix, style, chore, docs, refactor, test, perf, build, ci, revert. Scope is required whenever the change is scoped to a specific part of the tree, and must be one of the fixed list recorded in the project profile (C-14), extendable only by amending that list, never invented ad hoc. Description is imperative mood, lowercase, no trailing period. Jira ticket reference is always required, no exceptions, even for trivial changes (typo fixes, dependency bumps get a real ticket first). The subject line (the whole type(scope): description (JIRA-XXX) string) is capped at 72 characters; if the change needs more explanation, that goes in the commit body, wrapped at 100 characters per line.
+**RULE**  Type is one of feat, fix, style, chore, docs, refactor, test, perf, build, ci, revert. Scope is required whenever the change is scoped to a specific part of the tree, and must be one of the fixed list recorded in the project profile (C-14), extendable only by amending that list, never invented ad hoc. Description is imperative mood, lowercase, no trailing period. Jira ticket reference is always required, no exceptions, even for trivial changes (typo fixes, dependency bumps get a real ticket first). The subject line (the whole type(scope): description (JIRA-XXX) string) should read as a single, concise thought, in the spirit of the traditional ~50-character git subject-line convention, allowed to run a bit longer to fit the mandatory type/scope/ticket overhead; if the change needs more explanation, that goes in the commit body, wrapped at 100 characters per line.
 
-**RATIONALE**  A fixed type/scope vocabulary turns commit history into a queryable log (git log --grep '^feat(auth)') instead of free-text prose that means something different depending on who wrote it — and pre-1.0 versioning (P2) is mechanically derived directly from these types. The 72-character subject limit is adapted from the traditional 50-character git convention, widened specifically to accommodate the mandatory type(scope)/JIRA-ticket overhead this format carries that a plain free-text commit message wouldn't — a strict 50 would leave almost no room for the actual description. It also directly helps avoid GitLab's squash-message truncation (P1.4.3), since a subject that never gets long in the first place can't hit the truncation threshold as easily.
+**RATIONALE**  A fixed type/scope vocabulary turns commit history into a queryable log (git log --grep '^feat(auth)') instead of free-text prose that means something different depending on who wrote it — and pre-1.0 versioning (P2) is mechanically derived directly from these types. Keeping the subject concise, in the spirit of the traditional ~50-character git convention though this format's mandatory type/scope/ticket overhead means it will typically run a bit longer, also helps avoid GitLab's squash-message truncation (P1.4.3): a subject that stays short in the first place is less likely to hit whatever truncation threshold GitLab applies.
 
 **GOOD**
 
@@ -147,7 +147,7 @@ Scope names above (`auth`, `deps`, `ui`) are illustrative only, not a universal 
 Added the record reader.
 fix: bug (JIRA-123)  // too vague
 feat(RecordReader): ...  // scope not in the fixed list
-feat(auth): add a much longer description that blows well past the seventy-two character subject line limit (JIRA-789)  // BAD -- too long, wrap the extra detail into the body instead
+feat(auth): add a much longer description that blows well past a concise subject line (JIRA-789)  // BAD -- too long, wrap the extra detail into the body instead
 ```
 
 **ENFORCEMENT**  Advisory — code review, checked as part of the four-step manual review process (P1.8). No commit-message linting tool is in use today; deliberately not adopting one for now given GitLab’s squash-message truncation behavior (P1.4.3) limits how much a tool like this can actually guarantee.

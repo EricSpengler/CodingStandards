@@ -58,7 +58,7 @@ Scope assignments below are settled. See the generalization status section at th
 | C-05 | Required approvals before merge | 1 | `org` | P1.7.1 |
 | C-06 | MR size target | ~400 changed lines | `org` | P1.7.2 |
 | C-07 | Review process | 4-step manual (agent → read → build → test) | `org` | P1.8.1 |
-| C-08 | Release cadence | Biweekly, day 14 of sprint | `org` | P2.2 |
+| C-08 | Release cadence | Biweekly, day 14 of sprint | `org` | P2.2.1 |
 
 ## Branches
 
