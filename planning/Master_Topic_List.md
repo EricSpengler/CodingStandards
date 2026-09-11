@@ -33,15 +33,15 @@ Sections are prefixed by domain: `P` for process (any language), `C` for C++. Th
 | **P1** | Git Workflow | `standards/process/P1-git-workflow.md` | done |
 | **P2** | Versioning | `standards/process/P2-versioning.md` | done |
 | **P3** | Classification & Markings | `standards/process/P3-classification-and-markings.md` | done |
-| **C1** | Naming Conventions | `standards/cpp/C1-naming-conventions.md` | done |
-| **C2** | Documentation (Doxygen) | `standards/cpp/C2-documentation-doxygen.md` | done |
-| **C3** | Code Style | `standards/cpp/C3-code-style.md` | done |
+| **C1** | Naming Conventions | `standards/languages/cpp/C1-naming-conventions.md` | done |
+| **C2** | Documentation (Doxygen) | `standards/languages/cpp/C2-documentation-doxygen.md` | done |
+| **C3** | Code Style | `standards/languages/cpp/C3-code-style.md` | done |
 | — | Constants Registry | `standards/constants.md` | done |
 | — | Enforcement Summary | `standards/enforcement-summary.md` | done — extend as sections land |
 | — | References | `standards/references.md` | done |
 | — | Index / front door | `README.md` | done — the only file at the repository root |
 | — | Project Profile | `project/PROJECT_PROFILE.md` | done |
-| A–D | Appendices | `standards/cpp/`, `standards/process/` | done |
+| A–D | Appendices | `standards/languages/cpp/`, `standards/process/` | done |
 
 Section numbering is preserved from the original single-file guide, so every cross-reference (`P1.2.3`, `C3.1.4`, `the Enforcement Summary`) still resolves. New sections take numbers 8 and up. the Enforcement Summary keeps its number and sits last in reading order.
 
@@ -190,8 +190,8 @@ Parked because the section that should hold them does not exist yet. Check this 
 | R-04 | Does the pre-1.0 MINOR/PATCH derivation in P2.1.1 conflict with SemVer? | No — SemVer §4 leaves 0.y.z undefined, so this is the guide's own addition, correctly scoped. No action needed. |
 | R-05 | Is this standard scoped to "this organization" or "this team"? | This organization — confirmed explicitly. |
 | R-06 | Should the standard carry its own "known gaps" appendix inside `standards/`, or is `planning/Master_Topic_List.md` the single tracker? | Tracker only. No appendix. |
-| R-07 | Should sections split into `process/` (any language) and `cpp/` (C++-specific) folders, with P/C domain-prefixed numbering? | Yes — implemented across `standards/process/` and `standards/cpp/`, 377 cross-references rewritten. **Reopened**: the full document review starting now includes this decision. |
-| R-08 | Is this a C++-only standard or a multi-domain (process + language) standard? | Multi-domain — retitled "Engineering Standards," framed as process applying to any language plus one folder per language. **Reopened**: included in the full document review starting now. |
+| R-07 | Should sections split into `process/` (any language) and a C++-specific folder, with P/C domain-prefixed numbering? | **Reaffirmed.** Yes, and deliberately so: the org also uses Python, Java, C#, and MATLAB, whose standards are not being written yet but will need the same separation when they are. |
+| R-08 | Is this a C++-only standard or a multi-domain (process + language) standard? | **Reaffirmed, structure changed.** Multi-domain. Each language gets its own standard living under `standards/languages/<language>/` (moved from the flat `standards/cpp/`), so `languages/` reads as one peer folder holding every language rather than C++ sitting directly under `standards/`. |
 
 ---
 

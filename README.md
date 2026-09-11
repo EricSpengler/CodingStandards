@@ -30,7 +30,8 @@ One file at the root — this one. Everything else is filed by what it is.
 README.md              you are here: scope, index, how to read a rule
 standards/
   process/             any language: git, versioning, file markings
-  cpp/                 C++: naming, documentation, code style
+  languages/
+    cpp/               C++: naming, documentation, code style
                        (one folder per language -- add python/ etc. beside it)
   constants.md         every value that is a choice rather than a principle
   enforcement-summary.md   what actually gates each rule
@@ -42,7 +43,7 @@ tools/                 scripts that check the standard against itself
 
 **Sections are prefixed, and the prefix is part of the number.** `P` is process; a language gets its own letter, `C` for C++ — so `P1.3.1` is a commit-message rule and `C3.1.4` is a C++ language rule, and you can tell which without looking either up. New sections append inside their own prefix, so nothing is ever renumbered, and a new language claims an unused letter.
 
-Two splits matter. **Process versus language**: a team writing Python adopts `process/` unchanged and writes a `python/` folder — they never touch `cpp/`. **`standards/` versus `project/`**: the standard is shared and changes rarely, the profile is rewritten by every project that adopts it. If you are about to add something to the standard that is true of only one project, or of only one language, it belongs elsewhere.
+Two splits matter. **Process versus language**: a team writing Python adopts `process/` unchanged and writes a `languages/python/` folder — they never touch `languages/cpp/`. **`standards/` versus `project/`**: the standard is shared and changes rarely, the profile is rewritten by every project that adopts it. If you are about to add something to the standard that is true of only one project, or of only one language, it belongs elsewhere.
 
 ## The documents
 
@@ -58,9 +59,9 @@ Two splits matter. **Process versus language**: a team writing Python adopts `pr
 
 | | Document | What it is | Rules |
 |---|---|---|---|
-| **C1** | [Naming Conventions](standards/cpp/C1-naming-conventions.md) | Files, namespaces, types, functions, variables, constants, macros | 20 |
-| **C2** | [Documentation](standards/cpp/C2-documentation-doxygen.md) | Doxygen style, required tags, coverage, where documentation lives | 6 |
-| **C3** | [Code Style](standards/cpp/C3-code-style.md) | Language feature policy, complexity limits, error handling, memory and ownership, formatting | 50 |
+| **C1** | [Naming Conventions](standards/languages/cpp/C1-naming-conventions.md) | Files, namespaces, types, functions, variables, constants, macros | 20 |
+| **C2** | [Documentation](standards/languages/cpp/C2-documentation-doxygen.md) | Doxygen style, required tags, coverage, where documentation lives | 6 |
+| **C3** | [Code Style](standards/languages/cpp/C3-code-style.md) | Language feature policy, complexity limits, error handling, memory and ownership, formatting | 50 |
 
 ### Across both
 
@@ -74,9 +75,9 @@ Two splits matter. **Process versus language**: a team writing Python adopts `pr
 
 | | Appendix | Governs | Domain |
 |---|---|---|---|
-| **A** | [Example Doxyfile](standards/cpp/appendix-a-doxyfile.md) | C2 documentation | C++ |
-| **B** | [Example .clang-format](standards/cpp/appendix-b-clang-format.md) | C3.5 formatting | C++ |
-| **C** | [Example .clang-tidy](standards/cpp/appendix-c-clang-tidy.md) | C1 naming, C3 style and complexity | C++ |
+| **A** | [Example Doxyfile](standards/languages/cpp/appendix-a-doxyfile.md) | C2 documentation | C++ |
+| **B** | [Example .clang-format](standards/languages/cpp/appendix-b-clang-format.md) | C3.5 formatting | C++ |
+| **C** | [Example .clang-tidy](standards/languages/cpp/appendix-c-clang-tidy.md) | C1 naming, C3 style and complexity | C++ |
 | **D** | [Example cliff.toml](standards/process/appendix-d-cliff-toml.md) | P2.4 changelog generation | Process |
 
 ### Supporting files
@@ -117,7 +118,7 @@ A change to the standard is an ordinary merge request against this repository, f
 - **Changing a rule** — edit the rule. If it has an entry in the Enforcement Summary, update that too.
 - **Changing a value** (branch name, a limit, a library) — edit its row in the Constants Registry first, then visit every rule its **Used in** column names. Run `python3 tools/check_constants.py` before pushing.
 - **Adding a rule** — add it at the end of its section and take the next number. Numbers are never reused or reassigned, so an existing reference is never ambiguous. P2.5 is deliberately unused for this reason.
-- **Adding a language** — create `standards/<language>/`, claim an unused prefix letter, and number its sections from 1 inside that prefix. Nothing in `process/` or any other language folder changes. The Enforcement Summary and Constants Registry gain rows; they are not forked.
+- **Adding a language** — create `standards/languages/<language>/`, claim an unused prefix letter, and number its sections from 1 inside that prefix. Nothing in `process/` or any other language folder changes. The Enforcement Summary and Constants Registry gain rows; they are not forked.
 - **Anything unresolved** — record it in `planning/Master_Topic_List.md` rather than leaving it in a commit message. That file exists so open threads have somewhere to live.
 
 ### Versioning this document
