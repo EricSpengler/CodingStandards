@@ -61,14 +61,14 @@ git merge development  # BAD -- creates a merge commit if release has diverged, 
 
 **GOOD**
 
-```cpp
+```text
 JIRA-123-record-batch-reader
 JIRA-456-docking-layout-crash
 ```
 
 **BAD**
 
-```cpp
+```text
 JIRA-123  // missing description
 my-branch  // missing ticket number
 feat/JIRA-123-record-batch-reader  // type prefix, but this isn't an umbrella branch
@@ -84,13 +84,13 @@ feat/JIRA-123-record-batch-reader  // type prefix, but this isn't an umbrella br
 
 **GOOD**
 
-```cpp
+```text
 feat/JIRA-123-record-batch-reader  // umbrella branch, JIRA-456/JIRA-457/etc. will merge into this before it merges into development
 ```
 
 **BAD**
 
-```cpp
+```text
 feat/JIRA-999-fix-typo  // BAD -- this is a single, standalone change; no type prefix needed, see P1.2.1
 ```
 
@@ -114,7 +114,7 @@ git push origin development
 
 **BAD**
 
-```cpp
+```text
 # BAD -- squashing the umbrella branch into development collapses this into ONE commit:
 feat(core): JIRA-123 umbrella of record batch work
 # git-cliff and the version-bump derivation (P2.1) can no longer see the individual
@@ -133,7 +133,7 @@ feat(core): JIRA-123 umbrella of record batch work
 
 **GOOD**
 
-```cpp
+```text
 feat(core): add record batch reader (JIRA-123)
 fix(cmake): correct vcpkg toolchain path (JIRA-456)
 style(gui): reformat dock_manager.cpp with clang-format (JIRA-789)
@@ -141,7 +141,7 @@ style(gui): reformat dock_manager.cpp with clang-format (JIRA-789)
 
 **BAD**
 
-```cpp
+```text
 Added the record reader.
 fix: bug (JIRA-123)  // too vague
 feat(RecordReader): ...  // scope not in the fixed list
@@ -166,7 +166,7 @@ feat(core): add a much longer description that blows well past the seventy-two c
 
 **GOOD**
 
-```cpp
+```text
 feat(core)!: change RecordReader::readBatch return type (JIRA-456)
 
 BREAKING CHANGE: readBatch now returns std::expected<RecordBatch, ReadError>
@@ -181,13 +181,13 @@ instead of a raw RecordBatch. Callers must check the result before use.
 
 **GOOD**
 
-```cpp
+```text
 revert(core): remove record batch reader (JIRA-789)
 ```
 
 **BAD**
 
-```cpp
+```text
 Revert "feat(core): add record batch reader (JIRA-456)"  // BAD -- raw git-generated message, not reformatted
 ```
 
@@ -201,13 +201,13 @@ Revert "feat(core): add record batch reader (JIRA-456)"  // BAD -- raw git-gener
 
 **GOOD**
 
-```cpp
+```text
 feat(core): add record batch reader (JIRA-123)  # single squashed commit, fast-forwarded onto development, no merge commit
 ```
 
 **BAD**
 
-```cpp
+```text
 Merge branch 'JIRA-123-record-batch-reader' into development  # BAD -- merge commits are never
   # created under this project's merge method; this branch should have been squashed
 ```
@@ -242,7 +242,7 @@ git push --force   # no lease check — can silently destroy a teammate's commit
 
 **BAD**
 
-```cpp
+```text
 feat(core): add record batch reader and fix related edge cases in the be...  // BAD -- truncated, merged without checking
 ```
 
