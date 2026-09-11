@@ -108,15 +108,15 @@ feat/JIRA-999-fix-typo  // BAD -- this is a single, standalone change; no type p
 git checkout development
 git merge --ff-only feat/JIRA-123-record-batch-work   # umbrella branch, NOT squashed
 git push origin development
-# development now ends in: ...feat(core): add record batch reader (JIRA-456),
-#                           fix(core): correct record batch reader edge case (JIRA-457)
+# development now ends in: ...feat(auth): add record batch reader (JIRA-456),
+#                           fix(auth): correct record batch reader edge case (JIRA-457)
 ```
 
 **BAD**
 
 ```text
 # BAD -- squashing the umbrella branch into development collapses this into ONE commit:
-feat(core): JIRA-123 umbrella of record batch work
+feat(auth): JIRA-123 umbrella of record batch work
 # git-cliff and the version-bump derivation (P2.1) can no longer see the individual
 # feat/fix entries that made up this umbrella -- changelog and version accuracy both degrade
 ```
@@ -129,15 +129,17 @@ feat(core): JIRA-123 umbrella of record batch work
 
 **RULE**  Type is one of feat, fix, style, chore, docs, refactor, test, perf, build, ci, revert. Scope is required whenever the change is scoped to a specific part of the tree, and must be one of the fixed list recorded in the project profile (C-14), extendable only by amending that list, never invented ad hoc. Description is imperative mood, lowercase, no trailing period. Jira ticket reference is always required, no exceptions, even for trivial changes (typo fixes, dependency bumps get a real ticket first). The subject line (the whole type(scope): description (JIRA-XXX) string) is capped at 72 characters; if the change needs more explanation, that goes in the commit body, wrapped at 100 characters per line.
 
-**RATIONALE**  A fixed type/scope vocabulary turns commit history into a queryable log (git log --grep '^feat(core)') instead of free-text prose that means something different depending on who wrote it — and pre-1.0 versioning (P2) is mechanically derived directly from these types. The 72-character subject limit is adapted from the traditional 50-character git convention, widened specifically to accommodate the mandatory type(scope)/JIRA-ticket overhead this format carries that a plain free-text commit message wouldn't — a strict 50 would leave almost no room for the actual description. It also directly helps avoid GitLab's squash-message truncation (P1.4.3), since a subject that never gets long in the first place can't hit the truncation threshold as easily.
+**RATIONALE**  A fixed type/scope vocabulary turns commit history into a queryable log (git log --grep '^feat(auth)') instead of free-text prose that means something different depending on who wrote it — and pre-1.0 versioning (P2) is mechanically derived directly from these types. The 72-character subject limit is adapted from the traditional 50-character git convention, widened specifically to accommodate the mandatory type(scope)/JIRA-ticket overhead this format carries that a plain free-text commit message wouldn't — a strict 50 would leave almost no room for the actual description. It also directly helps avoid GitLab's squash-message truncation (P1.4.3), since a subject that never gets long in the first place can't hit the truncation threshold as easily.
 
 **GOOD**
 
 ```text
-feat(core): add record batch reader (JIRA-123)
-fix(cmake): correct vcpkg toolchain path (JIRA-456)
-style(gui): reformat dock_manager.cpp with clang-format (JIRA-789)
+feat(auth): add record batch reader (JIRA-123)
+fix(deps): correct dependency path resolution (JIRA-456)
+style(ui): reformat dock_manager per the configured formatter (JIRA-789)
 ```
+
+Scope names above (`auth`, `deps`, `ui`) are illustrative only, not a universal list — see C-14 for what any given project actually configures.
 
 **BAD**
 
@@ -145,7 +147,7 @@ style(gui): reformat dock_manager.cpp with clang-format (JIRA-789)
 Added the record reader.
 fix: bug (JIRA-123)  // too vague
 feat(RecordReader): ...  // scope not in the fixed list
-feat(core): add a much longer description that blows well past the seventy-two character subject line limit (JIRA-789)  // BAD -- too long, wrap the extra detail into the body instead
+feat(auth): add a much longer description that blows well past the seventy-two character subject line limit (JIRA-789)  // BAD -- too long, wrap the extra detail into the body instead
 ```
 
 **ENFORCEMENT**  Advisory — code review, checked as part of the four-step manual review process (P1.8). No commit-message linting tool is in use today; deliberately not adopting one for now given GitLab’s squash-message truncation behavior (P1.4.3) limits how much a tool like this can actually guarantee.
@@ -167,10 +169,11 @@ feat(core): add a much longer description that blows well past the seventy-two c
 **GOOD**
 
 ```text
-feat(core)!: change RecordReader::readBatch return type (JIRA-456)
+feat(auth)!: change how ReadBatch reports failure (JIRA-456)
 
-BREAKING CHANGE: readBatch now returns std::expected<RecordBatch, ReadError>
-instead of a raw RecordBatch. Callers must check the result before use.
+BREAKING CHANGE: ReadBatch now reports failure via a ReadError result
+instead of an unchecked return value. Callers must check for an error
+before using the result.
 ```
 
 **ENFORCEMENT**  Advisory — code review, both for footer format and for whether a change actually warrants the marker.
@@ -182,13 +185,13 @@ instead of a raw RecordBatch. Callers must check the result before use.
 **GOOD**
 
 ```text
-revert(core): remove record batch reader (JIRA-789)
+revert(auth): remove record batch reader (JIRA-789)
 ```
 
 **BAD**
 
 ```text
-Revert "feat(core): add record batch reader (JIRA-456)"  // BAD -- raw git-generated message, not reformatted
+Revert "feat(auth): add record batch reader (JIRA-456)"  // BAD -- raw git-generated message, not reformatted
 ```
 
 **ENFORCEMENT**  Advisory — code review, same as all other commit-format rules; also code review for whether a fresh ticket is warranted.
@@ -202,7 +205,7 @@ Revert "feat(core): add record batch reader (JIRA-456)"  // BAD -- raw git-gener
 **GOOD**
 
 ```text
-feat(core): add record batch reader (JIRA-123)  # single squashed commit, fast-forwarded onto development, no merge commit
+feat(auth): add record batch reader (JIRA-123)  # single squashed commit, fast-forwarded onto development, no merge commit
 ```
 
 **BAD**
@@ -243,7 +246,7 @@ git push --force   # no lease check — can silently destroy a teammate's commit
 **BAD**
 
 ```text
-feat(core): add record batch reader and fix related edge cases in the be...  // BAD -- truncated, merged without checking
+feat(auth): add record batch reader and fix related edge cases in the be...  // BAD -- truncated, merged without checking
 ```
 
 **ENFORCEMENT**  Manual MR checklist — the person merging is responsible for this check every time; no tooling catches it today.
