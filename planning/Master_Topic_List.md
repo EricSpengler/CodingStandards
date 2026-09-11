@@ -227,6 +227,7 @@ Parked because the section that should hold them does not exist yet. Check this 
 | X-02 | Docker container creation | Deferred. |
 | X-03 | Dedicated Linux building and testing | Deferred. Blocks UBSan/TSan and all cross-toolchain verification. |
 | X-04 | Review of the meta/summary layer — README, Constants Registry, Enforcement Summary, References, Project Profile | Deferred until the standard itself is complete: 24 topics (T-01…T-24) are still unwritten, so reviewing these now would mean repeating it once C4–C15 and P4–P8 land. Revisit when those are drafted, not merely once this review pass ends. |
+| X-05 | Convert every cross-reference (rule IDs like P1.2.3/C3.1.4, constant IDs like C-27, tracker IDs like F-36/D-01/T-01, and named appendix/doc references like "App. B" or "the Enforcement Summary") into a working link, using an explicit stable anchor (`<a id="p1-2-3"></a>` before each heading, not GitHub's auto-generated heading slug) so links survive later wording changes to the heading text. Decided; scope and mechanism settled. | Deferred until the full review (Phase 0–2: P1–P3, C1–C3) finishes — headings and rule text are still being edited during review, so linking now would mean re-touching every file again once wording settles. |
 
 ---
 
