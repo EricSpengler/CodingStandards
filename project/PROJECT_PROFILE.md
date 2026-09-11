@@ -24,6 +24,30 @@ Constant IDs below refer to [`standards/constants.md`](../standards/constants.md
 | C-30 Test fixture directory | `test_data/` |
 | C-31 Namespace documentation file | `docs/namespaces.h` |
 
+## Repository hygiene
+
+Concrete `.gitignore` entries for this project's toolchain, instantiating the categories required by P1.6.1.
+
+```gitignore
+# build output
+build/
+out/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# vcpkg
+vcpkg_installed/
+
+# IDE
+.vs/
+.idea/
+cmake-build-*/
+
+# local logs
+*.log
+```
+
 ## Dependencies
 
 | Constant | Value |

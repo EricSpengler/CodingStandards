@@ -269,30 +269,27 @@ feat(core): add record batch reader and fix related edge cases in the be...  // 
 **GOOD**
 
 ```gitignore
-# build output
+# build output (names depend on your build system)
 build/
 out/
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
 
-# vcpkg
-vcpkg_installed/
+# package-manager artifacts (names depend on your package manager)
+vendor/
 
-# IDE
-.vs/
+# IDE-local state (names depend on your IDE)
 .idea/
-cmake-build-*/
 
 # local logs
 *.log
 ```
 
+The categories above are what the rule requires; the concrete entries for any one project's actual build system, package manager, and IDEs are that project's own values — see the project profile's Repository hygiene section for this project's list.
+
 **BAD**
 
 ```bash
 git add build/  # BAD -- build output should never be tracked
-git add .vs/  # BAD -- IDE-local state, differs per developer
+git add .idea/  # BAD -- IDE-local state, differs per developer
 ```
 
 **ENFORCEMENT**  Advisory — code review. .gitignore evolves by ordinary MR, no special process.
@@ -309,7 +306,7 @@ git add .vs/  # BAD -- IDE-local state, differs per developer
 
 **RULE**  A .gitattributes at the repository root sets `* text=auto`, so text files are stored with LF in the repository and checked out with whatever endings the developer's platform expects. File types that require CRLF to function (.bat, .cmd, .ps1) are pinned to CRLF explicitly. Binary file types committed under test_data/ (P1.6.2) are marked binary explicitly rather than left to git's content-detection heuristic. No developer relies on a personal core.autocrlf setting to get correct results.
 
-**RATIONALE**  Without this file, what actually lands in the repository depends on each developer's local core.autocrlf. Two people with different settings editing the same file produce a diff in which every line changed, which makes reviewing the real one-line change impossible and makes git blame point at whoever last flipped the endings rather than whoever wrote the code. Today this is latent, since everyone is on Windows; it surfaces the moment anything is built or edited on a second platform, which is a stated future direction. The rule costs one file now and prevents a repository-wide reformatting event later.
+**RATIONALE**  Without this file, what actually lands in the repository depends on each developer's local core.autocrlf. Two people with different settings editing the same file produce a diff in which every line changed, which makes reviewing the real one-line change impossible and makes git blame point at whoever last flipped the endings rather than whoever wrote the code. Whether this risk is currently latent or already active depends on how many platforms the project profile (C-27) lists as supported — a single-platform project won't see it until a second platform is added. The rule costs one file now and prevents a repository-wide reformatting event later regardless.
 
 Marking binaries explicitly matters more here than in most repositories precisely because P1.6.2 commits test fixtures to git. Git's binary detection is good but not infallible, and a line-ending-normalized binary fixture is a corrupted fixture — one that fails at read time with an error pointing nowhere near the cause. Pinning the Windows script types is the mirror image of the same concern: cmd.exe mis-parses a .bat file that has LF endings.
 
