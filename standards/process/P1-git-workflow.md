@@ -1,6 +1,6 @@
 # P1. Git Workflow
 
-This project uses GitLab Flow with a production branch: development is the single required-stable integration branch (always buildable and runnable, per P1.1.3), short-lived, MR-reviewed branches come off it and merge back into it, and release is the production branch that trails development. This is not Gitflow: there's no main/develop split where develop is allowed to be unstable, and no hotfix/* branch type, because the reason for having a hotfix escape hatch (an unstable develop that a production fix can't safely be pulled from) doesn't apply here. It is also not GitHub Flow, which this document previously called it — GitHub Flow has exactly one long-lived branch and deploys from it, whereas the release branch below is a second long-lived branch, which is precisely the distinction GitLab Flow's production-branch variant describes. We extend that base with a few additions of our own: release only ever fast-forward-mirrors whatever's actually tagged/shipped, squash-merge/fast-forward-only with zero merge commits anywhere, and umbrella branches for work too large for one MR. See the separate References document for further reading.
+This project uses GitLab Flow with a production branch: development is the single required-stable integration branch (always buildable and runnable, per P1.1.3), short-lived, MR-reviewed branches come off it and merge back into it, and release is the production branch that trails development. This is not Gitflow: there's no main/develop split where develop is allowed to be unstable, and no hotfix/* branch type, because the reason for having a hotfix escape hatch (an unstable develop that a production fix can't safely be pulled from) doesn't apply here. It is also not GitHub Flow: GitHub Flow has exactly one long-lived branch and deploys from it, whereas the release branch below is a second long-lived branch, which is precisely the distinction GitLab Flow's production-branch variant describes. We extend that base with a few additions of our own: release only ever fast-forward-mirrors whatever's actually tagged/shipped, squash-merge/fast-forward-only with zero merge commits anywhere, and umbrella branches for work too large for one MR. See the separate References document for further reading.
 
 ## P1.1 Branching model
 
@@ -265,7 +265,7 @@ feat(auth): add record batch reader and fix related edge cases in the be...  // 
 
 ### P1.6.1 .gitignore follows durable principles, not a locked exhaustive list
 
-**RULE**  Entries fall into a small set of categories — build output, package-manager artifacts, IDE-local state for both supported IDEs — and new entries are added as they come up rather than requiring this document to be revised for every one. Note that test_data/ is NOT in this list — see P1.6.2, it's committed to the repo, not ignored.
+**RULE**  Entries fall into a small set of categories — build output, package-manager artifacts, IDE-local state for both supported IDEs — and new entries are added as they come up. test_data/ is not in this list — see P1.6.2, it's committed to the repo, not ignored.
 
 **RATIONALE**  A .gitignore that tries to be a complete, permanent list becomes stale the moment the toolchain changes. Better to state the categories that should always be excluded and let the file grow organically as new instances show up.
 
@@ -376,16 +376,16 @@ git config --global core.autocrlf true  # BAD as the project's answer -- this is
 
 **ENFORCEMENT**  GitLab MR description template file (.gitlab/merge_request_templates/).
 
-## P1.8 Manual review process
+## P1.8 MR verification
 
-This project does not currently run an automated CI pipeline. Every MR is verified by the approving reviewer performing four steps, in order, before approving. This section documents that process explicitly — until now it existed only as tribal knowledge, which is itself the kind of ambiguity this whole document exists to remove.
+Every MR is verified before merge — checked against the standards, read by a human, built, and tested.
 
-### P1.8.1 Four-step sequence, performed by the approving reviewer
+### P1.8.1 Manual verification sequence
 
 **RULE**  1) AI agent review — reviewer exports the MR's .diff and runs it through the in-house review agent (checks standards adherence, commit message format, formatting/static-analysis conformance), and posts the agent's output as an MR comment before proceeding. 2) Manual code review — reviewer reads the diff themselves, informed by (not replaced by) the agent's output. 3) Manual build — reviewer pulls the branch and builds it locally, on every platform the project profile lists as supported (C-27). 4) Manual test — reviewer runs the relevant test suite locally and confirms the MR's stated “how tested” claims. A MR is not approved until all four steps are complete, in this order.
 
 **RATIONALE**  Without CI, every one of these checks depends entirely on a human remembering to do it, in a useful order — agent review first means the reviewer's own read of the diff isn't spent re-deriving problems a tool already caught; build and test last because they're the most expensive steps and shouldn't be run against code that's already failed static review. Posting the agent output as a comment is the only durable record that the step actually happened, useful for later auditing and for catching a reviewer who skipped it.
 
-*Every step here depends on a human performing it correctly and in order, and nothing prevents an incomplete review from approving anyway. That is a property of the process as it stands, and reviewers should read it as one.*
+*This sequence depends entirely on each step being performed correctly and in order; nothing in it prevents an incomplete review from being approved anyway.*
 
 **ENFORCEMENT**  Manual MR checklist — no automated gate exists today.

@@ -39,7 +39,7 @@ Release with only fix(cmake): correct vcpkg toolchain path (JIRA-103)
 
 **RULE**  Any team member should be able to cut a release by following the written procedure in P2.4; it is not restricted to a specific individual by design, even though one person does it today in practice.
 
-**RATIONALE**  A release process simple and well-documented enough that it isn't a single-person bus-factor risk is itself a goal worth stating explicitly.
+**RATIONALE**  A release process simple and well-documented enough that it isn't a single-person bus-factor risk.
 
 **ENFORCEMENT**  Manual MR checklist / Advisory — the procedure itself is the enforcement.
 
